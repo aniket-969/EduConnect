@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { stringValidation } from "@/lib/utils";
 
 const passwordSchema = z
   .string()
@@ -13,4 +14,11 @@ const passwordSchema = z
 export const loginSchema = z.object({
   email: z.string().email(),
   password: passwordSchema,
+});
+
+export const registerSchema = z.object({
+  name: stringValidation(3, 30, 'Name'),
+  email: z.string().email(),
+  password: stringValidation(6, 20, 'Password'),
+  role: z.enum(['student', 'instructor']),
 });
