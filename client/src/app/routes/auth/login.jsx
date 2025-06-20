@@ -18,7 +18,7 @@ const Login = () => {
     </CardContent>
 
     <CardFooter className="pb-6 sm:pb-8 text-center px-4 sm:px-8">
-      <p className="text-sm">
+      <p className="text-sm text-muted">
         New here?{' '}
         <Link to="/auth/register" className="text-secondary hover:underline">
           Sign up

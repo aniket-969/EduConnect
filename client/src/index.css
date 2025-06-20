@@ -141,3 +141,13 @@
     @apply bg-background text-foreground;
   }
 }
+
+.bb{
+  border:2px solid blue
+}
+.bgr{
+  border:2px solid green
+}
+.br{
+  border:2px solid red
+}
