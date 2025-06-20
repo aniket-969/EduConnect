@@ -5,28 +5,29 @@ import { Link } from "react-router-dom";
 
 const Login = () => {
   return (
-     <div className="min-h-screen bg-background flex items-center justify-center">
-      <Card className="backdrop-blur-md rounded-2xl shadow-lg w-full max-w-md">
-        <CardHeader className="pt-8 text-center">
-          <CardTitle className="text-2xl font-semibold">
-            Welcome Back
-          </CardTitle>
-        </CardHeader>
+     <div className="min-h-screen bg-background flex items-center justify-center px-4">
+  <Card className="backdrop-blur-md rounded-2xl shadow-lg w-full max-w-sm sm:max-w-md ">
+    <CardHeader className="pt-6 sm:pt-8 text-center px-4 sm:px-8">
+      <CardTitle className="text-xl sm:text-2xl font-semibold">
+        Welcome Back
+      </CardTitle>
+    </CardHeader>
 
-        <CardContent className="px-8 pb-4">
-          <LoginForm />
-        </CardContent>
+    <CardContent className="px-4 sm:px-8 pb-6 sm:pb-8">
+      <LoginForm />
+    </CardContent>
 
-        <CardFooter className="pb-8 text-center">
-          <p className="text-sm text-muted">
-            New here?{' '}
-            <Link to="/auth/register" className="text-secondary hover:underline">
-              Sign up
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </div>
+    <CardFooter className="pb-6 sm:pb-8 text-center px-4 sm:px-8">
+      <p className="text-sm">
+        New here?{' '}
+        <Link href="/auth/register" className="text-secondary hover:underline">
+          Sign up
+        </Link>
+      </p>
+    </CardFooter>
+  </Card>
+</div>
+
   );
 };
 
