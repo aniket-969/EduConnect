@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 const passwordSchema = z
   .string()
   .refine((value) => /[0-9]/.test(value), {

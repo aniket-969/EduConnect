@@ -77,55 +77,61 @@
   --sidebar-ring: oklch(0.708 0 0);
 }
 
-/* Twilight indigo theme */
 .dark {
   /* Core backgrounds & text */
-  --background: #121212;            /* page background */ 
-  --foreground: #E0E0E0;            /* main text */
+  --background:           #000000; /* pure black page bg */
+  --foreground:           #E5E5FF; /* very pale lavender text */
+
+  /* Borders & focus */
+  --border:               #2E2E3D; /* dark slate */
+  --ring:                 #7C3AED; /* vibrant violet */
+
+  /* Form fields */
+  --input:                #2E2E3D; /* same as border */
 
   /* Cards & surfaces */
-  --card: #1E1E2E;                  /* card/bg surfaces */ 
-  --card-foreground: #E0E0E0;       /* text on cards */
+  --card:                 #1B0033; /* deep purple */
+  --card-foreground:      #E5E5FF; /* match foreground */
 
-  --popover: #1E1E2E;               /* popovers, dialogs */
-  --popover-foreground: #E0E0E0;    /* popover text */
+  --popover:              #1B0033;
+  --popover-foreground:   #E5E5FF;
 
   /* Brand colors */
-  --primary: #6C71C4;               /* primary actions/buttons */ 
-  --primary-foreground: #E0E0E0;    /* text on primary bg */
+  --primary:              #7C3AED; /* Tailwind violet-600 */
+  --primary-foreground:   #FFFFFF;
 
-  --secondary: #647BE6;             /* secondary highlights */ 
-  --secondary-foreground: #E0E0E0;  /* text on secondary */
+  --secondary:            #9333EA; /* violet-700 */
+  --secondary-foreground: #FFFFFF;
 
-  --accent: #6C71C4;                /* accents (links, progress) */ 
-  --accent-foreground: #E0E0E0;
+  --accent:               #C084FC; /* violet-300 */
+  --accent-foreground:    #000000;
 
-  /* Muted text & borders */
-  --muted: #B0B0D0;                 /* helper text, placeholders */ 
-  --muted-foreground: #A0A0C0;      /* finer secondary text */
+  /* Muted text & placeholders */
+  --muted:                #6B7280; /* gray-500 */
+  --muted-foreground:     #9CA3AF; /* gray-400 */
 
-  --destructive: #E06C75;           /* error/warning */
-  --border: #2A2A3C;                /* outlines, dividers */
-  --input: #2A2A3C;                 /* form fields */
-  --ring: #6C71C4;                  /* focus rings */
+  /* Destructive (errors, warnings) */
+  --destructive:          #DC2626; /* red-600 */
+  --destructive-foreground:#FFFFFF;
 
-  /* (Optional) Chart colors can be derived or kept */
-  --chart-1: #647BE6;
-  --chart-2: #7B72DB;
-  --chart-3: #334CC7;
-  --chart-4: #3F669D;
-  --chart-5: #263863;
+  /* Chart palette (optional) */
+  --chart-1:              #7C3AED;
+  --chart-2:              #9333EA;
+  --chart-3:              #C084FC;
+  --chart-4:              #8B5CF6; 
+  --chart-5:              #6B21A8;
 
-  /* Sidebar theming—reuse card/surface tokens or customize */
-  --sidebar: #1E1E2E;
-  --sidebar-foreground: #E0E0E0;
-  --sidebar-primary: #6C71C4;
-  --sidebar-primary-foreground: #E0E0E0;
-  --sidebar-accent: #647BE6;
-  --sidebar-accent-foreground: #E0E0E0;
-  --sidebar-border: #2A2A3C;
-  --sidebar-ring: #6C71C4;
+  /* Sidebar (if you use those tokens) */
+  --sidebar:              #1B0033;
+  --sidebar-foreground:   #E5E5FF;
+  --sidebar-primary:      #7C3AED;
+  --sidebar-primary-foreground:#FFFFFF;
+  --sidebar-accent:       #C084FC;
+  --sidebar-accent-foreground:#000000;
+  --sidebar-border:       #2E2E3D;
+  --sidebar-ring:         #7C3AED;
 }
+
 
 
 @layer base {
