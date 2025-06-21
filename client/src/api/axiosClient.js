@@ -1,10 +1,9 @@
 import Axios, { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
-import { env } from '@/config/env';
 
 // Basic API client 
 export const api = Axios.create({
-  baseURL: env.API_URL,
+  baseURL: import.meta.VITE_API_BASE_URL,
   withCredentials: true,
   headers: {
     Accept: 'application/json',
