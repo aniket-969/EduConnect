@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 const RegisterPage = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
-      <Card className="backdrop-blur-md rounded-2xl shadow-lg w-full max-w-sm sm:max-w-md lg:max-w-lg">
+      <Card className="backdrop-blur-md rounded-2xl shadow-lg w-full max-w-sm sm:max-w-md ">
         <CardHeader className="pt-6 sm:pt-8 text-center px-4 sm:px-8">
           <CardTitle className="text-xl sm:text-2xl font-semibold text-primary">
             Create Account
