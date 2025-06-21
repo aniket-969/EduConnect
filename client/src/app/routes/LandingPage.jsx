@@ -4,7 +4,7 @@ import HeroSection from "@/components/landing/HeroSection";
 import PopularCourses from "@/components/landing/PopularCourses";
 import Footer from "@/components/landing/Footer";
 
-const landingPage = () => {
+const LandingPage = () => {
   return (
     <div className="bg-background text-foreground min-h-screen">
       <Navbar />
@@ -21,4 +21,4 @@ const landingPage = () => {
   )
 }
 
-export default landingPage
+export default LandingPage

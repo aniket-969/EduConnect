@@ -24,7 +24,7 @@ export function createAppRouter(queryClient) {
     [
       {
         path: paths.home.path,
-        lazy: () => import('./routes/pages/landingPage.jsx').then(c),
+        lazy: () => import('./routes/LandingPage.jsx').then(c),
         // route-level fallback
         hydrateFallbackElement: (
           <div className="flex h-screen w-screen items-center justify-center">
