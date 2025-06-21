@@ -3,6 +3,8 @@ package com.educonnect.educonnect.entity;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.educonnect.educonnect.Role;
+
 @Entity
 @Table(name = "users")
 public class User {
@@ -22,9 +24,18 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
-    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL)
+ // Courses created by the user if their role is INSTRUCTOR
+    @OneToMany(mappedBy = "instructor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Course> createdCourses;
+
+    // Courses this user is enrolled in (as a STUDENT)
+    @ManyToMany
+    @JoinTable(
+        name = "course_student",
+        joinColumns = @JoinColumn(name = "student_id"),
+        inverseJoinColumns = @JoinColumn(name = "course_id")
+    )
+    private List<Course> enrolledCourses;
 
     // === Constructors ===
 

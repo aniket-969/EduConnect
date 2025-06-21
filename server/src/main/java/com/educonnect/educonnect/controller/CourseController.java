@@ -1,8 +1,8 @@
 package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.entity.*;
+import com.educonnect.educonnect.CourseStatus;
 import com.educonnect.educonnect.dao.*;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

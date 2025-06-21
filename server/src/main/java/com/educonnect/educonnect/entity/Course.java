@@ -3,6 +3,8 @@ package com.educonnect.educonnect.entity;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.educonnect.educonnect.CourseStatus;
+
 @Entity
 @Table(name = "courses")
 public class Course {
