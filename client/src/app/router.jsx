@@ -24,7 +24,7 @@ export function createAppRouter(queryClient) {
     [
       {
         path: paths.home.path,
-        lazy: () => import('./routes/landingPage.jsx').then(c),
+        lazy: () => import('./routes/pages/landingPage.jsx').then(c),
         // route-level fallback
         hydrateFallbackElement: (
           <div className="flex h-screen w-screen items-center justify-center">
@@ -35,17 +35,29 @@ export function createAppRouter(queryClient) {
       {
         path: paths.auth.register.path,
         lazy: () => import('./routes/auth/register').then(c),
-        hydrateFallbackElement: <Spinner size="lg" />,
+        hydrateFallbackElement: (
+          <div className="flex h-screen w-screen items-center justify-center">
+            <Spinner size="lg" />
+          </div>
+        ),
       },
       {
         path: paths.auth.login.path,
         lazy: () => import('./routes/auth/login').then(c),
-        hydrateFallbackElement: <Spinner size="lg" />,
+        hydrateFallbackElement: (
+          <div className="flex h-screen w-screen items-center justify-center">
+            <Spinner size="lg" />
+          </div>
+        ),
       },
       {
         path: '*',
         lazy: () => import('./routes/not-found').then(c),
-        hydrateFallbackElement: <Spinner size="lg" />,
+        hydrateFallbackElement: (
+          <div className="flex h-screen w-screen items-center justify-center">
+            <Spinner size="lg" />
+          </div>
+        ),
       },
     ],
     {
