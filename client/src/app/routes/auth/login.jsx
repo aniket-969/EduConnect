@@ -16,7 +16,7 @@ const Login = () => {
         to="/"
         className="flex items-center gap-3 text-primary font-bold text-xl absolute top-4 left-6 sm:left-30"
       >
-        <img src={logo} alt="Logo" className="h-6 w-6" />
+        <img src={logo} alt="Logo" className="h-8 w-8" />
         <span className="text-2xl font-bold text-primary">EduConnect</span>{" "}
       </Link>
       <div className="flex items-center justify-center min-h-screen px-4">
@@ -27,7 +27,7 @@ const Login = () => {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="px-4 sm:px-8 pb-6 sm:pb-8">
+          <CardContent className="px-4 sm:px-8 pb-2">
             <LoginForm />
           </CardContent>
 
