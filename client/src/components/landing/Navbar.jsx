@@ -17,8 +17,8 @@ const Navbar = () => {
       <nav className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-0">
         {/* Logo + Brand */}
         <Link to="/" className="flex items-center gap-3 text-primary font-bold text-xl">
-          <img src={logo} alt="Logo" className="h-6 w-6" />
-          EduConnect
+          <img src={logo} alt="Logo" className="h-8 w-8" />
+          <span className="text-2xl font-bold text-primary">EduConnect</span>
         </Link>
 
         {/* Desktop Nav */}
