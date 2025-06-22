@@ -91,19 +91,19 @@ const RegisterForm = () => {
                   value={field.value}
                   onValueChange={field.onChange}
                   aria-label="Role selection"
-                  className="bg-input p-1 rounded-md inline-flex gap-2"
+                  className="bg-input p-1 rounded-md flex gap-2 w-full sm:w-fit"
                 >
                   <ToggleGroupItem
                     value="student"
                     aria-label="Student"
-                    className="px-3 py-1 rounded"
+                    className="px-8 sm:px-16 py-1 rounded"
                   >
                     Student
                   </ToggleGroupItem>
                   <ToggleGroupItem
                     value="instructor"
                     aria-label="Instructor"
-                    className="px-3 py-1 rounded "
+                    className="px-8 sm:px-16 py-1 rounded "
                   >
                     Instructor
                   </ToggleGroupItem>
