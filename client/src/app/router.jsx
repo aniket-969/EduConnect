@@ -3,10 +3,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
 import { Spinner } from "@/components/ui/spinner";
 import { paths } from "@/config/paths";
-import AppRoot, {
-  ErrorBoundary as AppRootErrorBoundary,
-} from "./routes/app/root";
 import { ProtectedRoute } from "@/lib/ProtectedRoute";
+import DashboardLayout,{ErrorBoundary as AppRootErrorBoundary} from "@/components/layouts/DashboardLayout";
 
 function convert(queryClient) {
   return (module) => {
@@ -60,7 +58,7 @@ export function createAppRouter(queryClient) {
         path: paths.app.root.path,
         element: (
           <ProtectedRoute>
-            <AppRoot />
+            <DashboardLayout />
           </ProtectedRoute>
         ),
         ErrorBoundary: AppRootErrorBoundary,
