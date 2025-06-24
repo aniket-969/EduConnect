@@ -15,7 +15,8 @@ import {
   BookOpen,
   User,
   PlusCircle,
-  PieChart,
+  Users,
+  LogOut
 } from 'lucide-react';
 import { paths } from '@/config/paths';
 
@@ -44,31 +45,31 @@ const linkConfig = {
       icon: Home,
     },
     {
-      to: '/app/courses',
-      label: 'My Courses',
-      icon: BookOpen,
-    },
-    {
-      to: '/app/courses/new',
-      label: 'Create Course',
+      to: "/app/courses/new",
+      label: "Add Course",
       icon: PlusCircle,
     },
     {
-      to: '/app/analytics',
-      label: 'Analytics',
-      icon: PieChart,
+      to: "/app/courses",
+      label: "My Courses",
+      icon: BookOpen,
     },
     {
-      to: '/app/profile',
-      label: 'Profile',
+      to: "/app/enrolled-students",
+      label: "Enrolled Students",
+      icon: Users,
+    },
+    {
+      to: "/app/profile",
+      label: "Profile",
       icon: User,
     },
   ],
 };
 
+
 const AppSidebar = React.memo(function AppSidebar({ user }) {
   const location = useLocation();
-console.log("in sidebar")
   const items = useMemo(() => linkConfig[user.role] || [], [user.role]);
 
   return (
@@ -104,7 +105,7 @@ console.log("in sidebar")
                   onClick={() => {/* logout logic */}}
                   className="w-full text-left flex items-center space-x-3 p-2 rounded hover:bg-accent/20"
                 >
-                  <User className="w-5 h-5" />
+                  <LogOut className="w-5 h-5" />
                   <span className="text-sm font-medium">Logout</span>
                 </button>
               </SidebarMenuButton>
