@@ -1,7 +1,7 @@
-import React from 'react'
 
 const StudenDashboard = () => {
-  return (
+  console.log("here in student") 
+  return ( 
     <div>StudenDashboard</div>
   )
 }

@@ -1,6 +1,5 @@
 
-import React from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import React,{ useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Sidebar,
@@ -67,18 +66,14 @@ const linkConfig = {
   ],
 };
 
-export default function AppSidebar() {
-  const { session } = useAuth();
-  const user = session?.data;
+const AppSidebar = React.memo(function AppSidebar({ user }) {
   const location = useLocation();
-
-  const items = user ? linkConfig[user.role] : [];
+console.log("in sidebar")
+  const items = useMemo(() => linkConfig[user.role] || [], [user.role]);
 
   return (
     <Sidebar className="w-60 border-r">
-      
       <div className="px-4 py-3 text-xl font-bold">EduConnect</div>
-
       <SidebarContent className="flex-1 space-y-2 px-2">
         <SidebarMenu>
           {items.map(({ to, label, icon: Icon }) => (
@@ -100,17 +95,13 @@ export default function AppSidebar() {
           ))}
         </SidebarMenu>
       </SidebarContent>
-
-      {/* Logout at bottom */}
       <SidebarGroup className="mt-auto">
         <SidebarGroupContent>
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <button
-                  onClick={() => {
-                    /*  logout logic */
-                  }}
+                  onClick={() => {/* logout logic */}}
                   className="w-full text-left flex items-center space-x-3 p-2 rounded hover:bg-accent/20"
                 >
                   <User className="w-5 h-5" />
@@ -123,4 +114,6 @@ export default function AppSidebar() {
       </SidebarGroup>
     </Sidebar>
   );
-}
+});
+
+export default AppSidebar;
