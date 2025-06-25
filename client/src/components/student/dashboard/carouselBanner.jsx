@@ -31,7 +31,7 @@ const slides = [
 
 export default function CarouselBanner() {
   return (
-    <Carousel className="w-full h-80 relative overflow-hidden bb">
+    <Carousel className="w-full h-80 relative overflow-hidden ">
       <CarouselContent>
         {slides.map((slide) => {
          

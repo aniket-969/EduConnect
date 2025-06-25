@@ -12,7 +12,7 @@ const StudenDashboard = () => {
   if(session.isError)return <>Something went wrong , please refresh</>
   console.log("here in student") 
   return ( 
-    <div className="w-full flex flex-col gap-6 justify-center items-center bb">
+    <div className="w-full flex flex-col gap-6 ">
       <ProfileHeader user ={session.data}/>
       <CarouselBanner/>
       <MyLearning courses={fakeCourses} />

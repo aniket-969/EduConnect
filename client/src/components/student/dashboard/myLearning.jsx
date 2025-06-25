@@ -23,7 +23,7 @@ export default function MyLearningCarousel({ courses = [] }) {
       </div>
 
       {/* Carousel wrapper */}
-      <Carousel className="lg:w-[56rem] md:w-[38rem] w-[18rem] my-4">
+      <Carousel className="xl:w-[72rem] lg:w-[56rem] md:w-[38rem] w-[18rem] my-4 ">
         <CarouselContent
           className={`-ml-4 ${
             courses.length < 3
@@ -34,7 +34,7 @@ export default function MyLearningCarousel({ courses = [] }) {
           {courses.map((course) => (
             <CarouselItem
               key={course.id}
-              className="pl-4 md:basis-1/2 lg:basis-1/3"
+              className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
             >
               <div className="p-1">
                 <CourseCard course={course} />

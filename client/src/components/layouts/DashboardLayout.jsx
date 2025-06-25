@@ -18,7 +18,7 @@ export default function DashboardLayout() {
 
   return (
     <SidebarProvider>
-      <div className="min-h-screen flex">
+      <div className="min-h-screen flex w-full">
         <AppSidebar user={stableUser} />
         <main className="flex-1 p-6 relative">
           <SidebarTrigger className="md:hidden absolute top-4 left-4 z-10" />
