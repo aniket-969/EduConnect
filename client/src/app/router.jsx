@@ -94,7 +94,7 @@ export function createAppRouter(queryClient) {
                 lazy: () => import("./routes/app/instructorDashboard").then(c),
               },
               {
-                path: "enrolled-students",
+                path: paths.app.enrolledStudents.path,
                 lazy: () => import("./routes/app/enrolledStudents").then(c),
               },
               {

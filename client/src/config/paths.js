@@ -31,8 +31,8 @@ export const paths = {
       getHref: () => "/app/student",
     },
     enrolledStudents: {
-      path: "enrolled-students",
-      getHref: () => "/app/enrolled-students",
+      path: "instructor/enrolled-students",
+      getHref: () => "/app/instructor/enrolled-students",
     },
     myCourses: {
       path: "instructor/courses",

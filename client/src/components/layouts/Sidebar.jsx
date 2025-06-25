@@ -50,12 +50,12 @@ const linkConfig = {
       icon: PlusCircle,
     },
     {
-      to: "/app/instructor/courses",
+      to: paths.app.myCourses.path,
       label: "My Courses",
       icon: BookOpen,
     },
     {
-      to: "/app/enrolled-students",
+      to: paths.app.enrolledStudents.path,
       label: "Enrolled Students",
       icon: Users,
     },
