@@ -31,5 +31,28 @@ export const getEnrolledStudents = async () => {
       courseTitle: "Advanced Java",
       enrolledAt: "2025-06-23",
     },
+    {
+    id: 4,
+    studentName: "Aarav Patel",
+    courseTitle: "React Basics",
+    enrolledAt: "2024-12-01",
+  },
+  {
+    id: 5,
+    studentName: "Bhavish",
+    courseTitle: "Spring Boot API",
+    enrolledAt: "2025-03-10",
+  },    {
+    id: 6,
+    studentName: "Aanya Singh",
+    courseTitle: "React Basics",
+    enrolledAt: "2024-12-21",
+  },
+  {
+    id: 7,
+    studentName: "Sanya Rao",
+    courseTitle: "Spring Boot API",
+    enrolledAt: "2025-01-10",
+  },
   ];
 };

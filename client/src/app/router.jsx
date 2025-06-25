@@ -73,7 +73,7 @@ export function createAppRouter(queryClient) {
 
       // protected /app routes
       {
-        path: paths.app.root.path,    // "/app"
+        path: paths.app.root.path, // "/app"
         element: <ProtectedRoute />,
         ErrorBoundary: AppRootErrorBoundary,
         children: [
@@ -85,15 +85,19 @@ export function createAppRouter(queryClient) {
 
               // student dashboard
               {
-                path: paths.app.studentDashboard.path,  // "student"
+                path: paths.app.studentDashboard.path, // "student"
                 lazy: () => import("./routes/app/studentDashboard").then(c),
               },
               // instructor dashboard
               {
-                path: paths.app.instructorDashboard.path,  
+                path: paths.app.instructorDashboard.path,
                 lazy: () => import("./routes/app/instructorDashboard").then(c),
+                
               },
-
+              {
+                path: "enrolled-students",
+                lazy: () => import("./routes/app/enrolledStudents").then(c),
+              },
             ],
           },
         ],

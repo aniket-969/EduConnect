@@ -21,6 +21,15 @@ const FAKE_STUDENT = {
   lastLogin: "2025-06-23T14:32:00.000Z",
 };
 
+const FAKE_INSTRUCTOR = {
+  id: "ins_00123",
+  name: "Instructor Jane",
+  email: "instructor@example.com",
+  role: "instructor",
+  avatarUrl: "https://i.pravatar.cc/150?img=18",
+};
+
+
 export const useAuth = () => {
   const isDev = "development";
 
@@ -28,7 +37,7 @@ export const useAuth = () => {
     return {
       session: {
         isLoading: false,
-        data: FAKE_STUDENT,
+        data: FAKE_INSTRUCTOR,
       },
     };
   }

@@ -22,11 +22,11 @@ export default function DashboardLayout() {
         <AppSidebar user={stableUser} />
         <main className="flex-1 p-6 relative">
           <SidebarTrigger className="md:hidden absolute top-4 left-4 z-10" />
-          <div className="pt-10">
+          <div className="pt-5">
             <Outlet />
           </div>
         </main>
       </div>
     </SidebarProvider>
-  );
+  );git 
 }
