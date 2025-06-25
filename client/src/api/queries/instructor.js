@@ -75,7 +75,7 @@ export const getInstructorCourses = async () => {
   return [
     {
       id: 1,
-      title: "React for Beginners",
+      title: "React for Beginnerssssssssssss sssssssssssssssssssss sssssssss",
       studentCount: 42,
       status: "Published",
       publishedAt: "2024-10-05",
@@ -102,6 +102,32 @@ export const getInstructorCourses = async () => {
       publishedAt: "2025-06-02",
     },
     {
+      id: 5,
+      title: "TypeScript for Beginners",
+      studentCount: 4,
+      status: "Published",
+      publishedAt: "2024-10-25",
+    },
+    {
+      id: 6,
+      title: "Advanced Java",
+      studentCount: 28,
+      status: "Draft",
+      publishedAt: "2025-06-09",
+    },{
+      id: 5,
+      title: "TypeScript for Beginners",
+      studentCount: 4,
+      status: "Published",
+      publishedAt: "2024-10-25",
+    },
+    {
+      id: 6,
+      title: "Advanced Java",
+      studentCount: 28,
+      status: "Draft",
+      publishedAt: "2025-06-09",
+    },{
       id: 5,
       title: "TypeScript for Beginners",
       studentCount: 4,

@@ -3,8 +3,6 @@ import {
   ArrowUp,
   ArrowDown,
   ArrowUpDown,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import {
   Table,
@@ -23,7 +21,6 @@ import {
   PaginationLink,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
 
 export default function EnrolledStudentsTable({ data }) {
   const [sortField, setSortField] = useState(null);
@@ -110,12 +107,12 @@ export default function EnrolledStudentsTable({ data }) {
                 key={index}
                 className="hover:bg-accent/30 transition-colors"
               >
-                <TableCell className="px-4 py-2">
+                <TableCell className="px-4 py-4">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-2">{student.studentName}</TableCell>
-                <TableCell className="px-4 py-2">{student.courseTitle}</TableCell>
-                <TableCell className="px-4 py-2">
+                <TableCell className="px-4 py-4">{student.studentName}</TableCell>
+                <TableCell className="px-4 py-4">{student.courseTitle}</TableCell>
+                <TableCell className="px-4 py-4">
                   {new Date(student.enrolledAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>
@@ -123,54 +120,87 @@ export default function EnrolledStudentsTable({ data }) {
           </TableBody>
         </Table>
       </div>
-      <div className="mt-6 flex justify-center">
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                href="#"
-                onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                className={page === 1 ? "pointer-events-none opacity-50" : ""}
-              />
-            </PaginationItem>
+       <div className="mt-4 flex justify-center">
+  <Pagination>
+    <PaginationContent>
+      {/* Previous */}
+      <PaginationItem>
+        <PaginationPrevious
+          href="#"
+          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+          className={page === 1 ? "pointer-events-none opacity-50" : ""}
+        />
+      </PaginationItem>
 
-            {[...Array(totalPages)].map((_, i) => {
-              const pg = i + 1;
-              return (
-                <PaginationItem key={pg}>
-                  <PaginationLink
-                    href="#"
-                    isActive={pg === page}
-                    onClick={() => setPage(pg)}
-                  >
-                    {pg}
-                  </PaginationLink>
-                </PaginationItem>
-              );
-            })}
+      {/* Page 1 always visible */}
+      <PaginationItem>
+        <PaginationLink
+          href="#"
+          isActive={page === 1}
+          onClick={() => setPage(1)}
+        >
+          1
+        </PaginationLink>
+      </PaginationItem>
 
-            {totalPages > 5 && page < totalPages - 2 && (
-              <PaginationItem>
-                <PaginationEllipsis />
-              </PaginationItem>
-            )}
+      {/* Ellipsis before current page group */}
+      {page > 3 && (
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+      )}
 
-            <PaginationItem>
-              <PaginationNext
-                href="#"
-                onClick={() =>
-                  setPage((prev) => Math.min(prev + 1, totalPages))
-                }
-                className={
-                  page === totalPages
-                    ? "pointer-events-none opacity-50"
-                    : ""
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      </div>
+      {/* Middle pages: show around current */}
+      {Array.from({ length: totalPages }, (_, i) => i + 1)
+        .filter(
+          (pg) =>
+            pg !== 1 &&
+            pg !== totalPages &&
+            Math.abs(pg - page) <= 1 // only show near current
+        )
+        .map((pg) => (
+          <PaginationItem key={pg}>
+            <PaginationLink
+              href="#"
+              isActive={pg === page}
+              onClick={() => setPage(pg)}
+            >
+              {pg}
+            </PaginationLink>
+          </PaginationItem>
+        ))}
+
+      {/* Ellipsis after current page group */}
+      {page < totalPages - 2 && (
+        <PaginationItem>
+          <PaginationEllipsis />
+        </PaginationItem>
+      )}
+
+      {/* Last page always visible (if more than one) */}
+      {totalPages > 1 && (
+        <PaginationItem>
+          <PaginationLink
+            href="#"
+            isActive={page === totalPages}
+            onClick={() => setPage(totalPages)}
+          >
+            {totalPages}
+          </PaginationLink>
+        </PaginationItem>
+      )}
+
+      {/* Next */}
+      <PaginationItem>
+        <PaginationNext
+          href="#"
+          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+          className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+        />
+      </PaginationItem>
+    </PaginationContent>
+  </Pagination>
+</div>
     </div>
   );
 }
