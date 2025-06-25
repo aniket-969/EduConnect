@@ -18,7 +18,7 @@ export const paths = {
   },
 
   app: {
-    root: { 
+    root: {
       path: "/app",
       getHref: () => "/app",
     },
@@ -31,9 +31,12 @@ export const paths = {
       getHref: () => "/app/student",
     },
     enrolledStudents: {
-       path: "enrolled-students",
-      getHref: () => "/app/enrolled-students" 
+      path: "enrolled-students",
+      getHref: () => "/app/enrolled-students",
     },
-
+    myCourses: {
+      path: "instructor/courses",
+      getHref: () => "/app/instructor/courses",
+    },
   },
 };

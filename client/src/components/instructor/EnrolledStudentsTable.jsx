@@ -71,7 +71,7 @@ export default function EnrolledStudentsTable({ data }) {
         <ArrowDown className="w-4 h-4 ml-1 inline" />
       );
     }
-    return <ArrowUpDown className="w-4 h-4 ml-1 inline opacity-30" />;
+    return <ArrowUpDown className="w-4 h-4 ml-1 inline opacity-90" />;
   };
 
   const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
@@ -81,7 +81,7 @@ export default function EnrolledStudentsTable({ data }) {
     <div className="w-full">
       <div className="overflow-x-auto rounded-md border border-border">
         <Table className="max-w-full">
-          <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-10">
+          <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-1">
             <TableRow>
               <TableHead className="px-4 py-3">#</TableHead>
               <TableHead
