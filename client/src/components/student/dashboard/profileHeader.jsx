@@ -1,9 +1,31 @@
-import React from 'react'
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 
-const ProfileHeader = () => {
+
+export default function ProfileHeader({ user }) {
+  const initials = user.name
+    .split(' ')
+    .map(n => n[0])
+    .join('');
+
   return (
-    <div>ProfileHeader</div>
-  )
-}
+    <div className="flex items-center justify-between w-full">
+      {/* Avatar + Welcome */}
+      <div className="flex items-center space-x-4">
+        <Avatar className="w-12 h-12">
+          <AvatarImage src={user.avatarUrl} alt={`${user.name} avatar`} />
+          <AvatarFallback>{initials}</AvatarFallback>
+        </Avatar>
+        <h1 className="text-2xl font-semibold leading-tight">
+          Welcome back,&nbsp;
+          <span className=" max-w-xs truncate">
+            {user.name}
+          </span>
+        </h1>
+      </div>
 
-export default ProfileHeader
+    </div>
+  );
+}
