@@ -31,7 +31,7 @@ const slides = [
 
 export default function CarouselBanner() {
   return (
-    <Carousel className="w-full h-80 relative overflow-hidden">
+    <Carousel className="w-full h-80 relative overflow-hidden bb">
       <CarouselContent>
         {slides.map((slide) => {
          
@@ -49,7 +49,7 @@ export default function CarouselBanner() {
               <div className="relative z-10 flex h-full items-center">
                 <Card className="bg-white max-w-md ml-4 shadow-lg">
                   <CardContent>
-                    <CardTitle className="text-2xl">
+                    <CardTitle className="text-2xl text-primary">
                       {slide.title}
                     </CardTitle>
                     <CardDescription className="mt-2">

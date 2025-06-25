@@ -4,6 +4,7 @@ import ProfileHeader from "@/components/student/dashboard/profileHeader"
 import RecommendedCourses from "@/components/student/dashboard/recommendedCourses"
 import { Spinner } from "@/components/ui/spinner"
 import { useAuth } from "@/hooks/useAuth"
+import { fakeCourses } from "@/data/fakeCourses"
 
 const StudenDashboard = () => {
   const {session} = useAuth()
@@ -11,11 +12,11 @@ const StudenDashboard = () => {
   if(session.isError)return <>Something went wrong , please refresh</>
   console.log("here in student") 
   return ( 
-    <div className="w-full flex flex-col gap-6">
+    <div className="w-full flex flex-col gap-6 justify-center items-center bb">
       <ProfileHeader user ={session.data}/>
       <CarouselBanner/>
-      <MyLearning/>
-      <RecommendedCourses/>
+      <MyLearning courses={fakeCourses} />
+      <RecommendedCourses />
     </div>
   )
 }
