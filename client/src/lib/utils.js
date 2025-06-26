@@ -16,3 +16,28 @@ export const stringValidation = (min, max, fieldName) => {
       message: `${fieldName} must be no more than ${max} characters long.`,
     });
 };
+
+const CLOUD_NAME = "dni3ccfha";
+
+export function cld(publicId, options = {}) {
+  const {
+    width,
+    height,
+    crop    = "fill",
+    quality = "auto",
+    format  = "auto",
+  } = options;
+
+  // build the transformation string
+  const transforms = [
+    `c_${crop}`,
+    width    ? `w_${width}`    : null,
+    height   ? `h_${height}`   : null,
+    `q_${quality}`,
+    `f_${format}`,
+  ]
+    .filter(Boolean)
+    .join(",");
+
+  return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transforms}/${publicId}`;
+}
