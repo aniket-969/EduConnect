@@ -50,12 +50,12 @@ const linkConfig = {
       icon: PlusCircle,
     },
     {
-      to: paths.app.myCourses.path,
+      to: paths.app.myCourses.getHref(),
       label: "My Courses",
       icon: BookOpen,
     },
     {
-      to: paths.app.enrolledStudents.path,
+      to: paths.app.enrolledStudents.getHref(),
       label: "Enrolled Students",
       icon: Users,
     },

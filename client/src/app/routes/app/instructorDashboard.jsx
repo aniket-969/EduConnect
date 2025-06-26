@@ -1,3 +1,18 @@
+
+
+export default function InstructorDashboard() {
+  return (
+    <div>Instructor
+      {/* <div>stats</div>
+      <div>Recently added course/draft
+
+      </div>
+      <div>Latest enrollment</div> */}
+    </div>
+  );
+}
+
+
 // import { useInstructorStats } from "@/hooks/useInstructorStats";
 // import { Star, BookOpen, Users } from "lucide-react";
 
@@ -11,17 +26,17 @@
 //   </div>
 // );
 
-export default function InstructorDashboard() {
-  // const { data, isLoading } = useInstructorStats();
+// export default function InstructorDashboard() {
+//   const { data, isLoading } = useInstructorStats();
 
-  // if (isLoading) return <div>Loading...</div>;
+//   if (isLoading) return <div>Loading...</div>;
 
-  return (
-    // <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
-    //   <StatCard icon={BookOpen} label="Total Courses" value={data.totalCourses} />
-    //   <StatCard icon={Users} label="Total Enrollments" value={data.totalEnrollments} />
-    //   <StatCard icon={Star} label="Average Rating" value={data.averageRating.toFixed(1)} />
-    // </div>
-    <div>Instructor</div>
-  );
-}
+//   return (
+//     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
+//       <StatCard icon={BookOpen} label="Total Courses" value={data.totalCourses} />
+//       <StatCard icon={Users} label="Total Enrollments" value={data.totalEnrollments} />
+//       <StatCard icon={Star} label="Average Rating" value={data.averageRating.toFixed(1)} />
+//     </div>
+//     <div>Instructor</div>
+//   );
+// }
