@@ -99,7 +99,7 @@ export const getInstructorCourses = async () => {
       title: "Advanced MERN",
       studentCount: 8,
       status: "Draft",
-      publishedAt: "2025-06-02",
+      //publishedAt: "2025-06-02",
     },
     {
       id: 5,
@@ -113,7 +113,7 @@ export const getInstructorCourses = async () => {
       title: "Beginer Java",
       studentCount: 28,
       status: "Draft",
-      publishedAt: "2025-06-09",
+      //publishedAt: "2025-06-09",
     },{
       id: 7,
       title: "TypeScript for Expert",
@@ -125,7 +125,7 @@ export const getInstructorCourses = async () => {
       id: 8,
       title: "Advanced .NET",
       studentCount: 58,
-      status: "Draft",
+      status: "Published",
       publishedAt: "2025-06-09",
     },{
       id: 9,
@@ -139,7 +139,7 @@ export const getInstructorCourses = async () => {
       title: "Advanced SAP",
       studentCount: 22,
       status: "Draft",
-      publishedAt: "2025-06-09",
+      //publishedAt: "2025-06-09",
     },
     // Add more mock courses
   ];

@@ -91,36 +91,36 @@ export default function MyCoursesTable({ data }) {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-border min-h-[405px] flex flex-col justify-between">
-        <Table className="w-full">
-          <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-2">
-            <TableRow>
-              <TableHead className="px-4 py-3">#</TableHead>
+      <div className="overflow-x-auto rounded-md border border-border min-h-[370px] flex flex-col justify-between">
+        <Table className="w-full text-center ">
+          <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-2 ">
+            <TableRow >
+              <TableHead className="px-4 py-4 text-center ">#</TableHead>
               <TableHead
                 onClick={() => handleSort("title")}
-                className="px-4 py-3 cursor-pointer"
+                className="px-4 py-4 cursor-pointer text-left "
               >
                 Course Title <SortIcon field="title" />
               </TableHead>
               <TableHead
                 onClick={() => handleSort("studentCount")}
-                className="px-4 py-3 cursor-pointer"
+                className="px-4 py-4 cursor-pointer text-center "
               >
                 Students <SortIcon field="studentCount" />
               </TableHead>
               <TableHead
                 onClick={() => handleSort("status")}
-                className="px-4 py-3 cursor-pointer"
+                className="px-4 py-4 cursor-pointer text-center "
               >
                 Status <SortIcon field="status" />
               </TableHead>
               <TableHead
                 onClick={() => handleSort("publishedAt")}
-                className="px-4 py-3 cursor-pointer"
+                className="px-4 py-3 cursor-pointer text-center "
               >
                 Published On <SortIcon field="publishedAt" />
               </TableHead>
-              <TableHead className="px-4 py-3">Action</TableHead>
+              <TableHead className="px-4 py-3 text-center ">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -129,18 +129,20 @@ export default function MyCoursesTable({ data }) {
                 key={course.id}
                 className="hover:bg-accent/30 transition-colors"
               >
-                <TableCell className="px-4 py-3">
+                <TableCell className="px-4 py-2">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-3 max-w-[250px] whitespace-normal break-words">
+                <TableCell className="px-4 py-3 max-w-[250px] whitespace-normal break-words text-left">
                   {course.title}
                 </TableCell>
-                <TableCell className="px-4 py-3">{course.studentCount}</TableCell>
-                <TableCell className="px-4 py-3 capitalize">{course.status}</TableCell>
-                <TableCell className="px-4 py-3">
-                  {new Date(course.publishedAt).toLocaleDateString()}
+                <TableCell className="px-4 py-2  ">{course.studentCount}</TableCell>
+                <TableCell className="px-4 py-2 capitalize">{course.status}</TableCell>
+                <TableCell className="px-4 py-2">
+                  {course.status === "draft" || !course.publishedAt
+                    ? " - "
+                    : new Date(course.publishedAt).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="px-4 py-3">
+                <TableCell className="px-4 py-2">
                   <Button variant="ghost" size="icon">
                     <Pencil className="w-4 h-4" />
                   </Button>
