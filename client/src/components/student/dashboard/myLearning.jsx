@@ -44,16 +44,6 @@ export default function MyLearningCarousel({ courses = [] }) {
         </CarouselContent>
 
         {/* hide arrows if only one */}
-        {/* <CarouselPrevious
-          className={`${
-            courses.length <= 1 ? 'invisible' : ''
-          } sm:ml-0 ml-4`}
-        />
-        <CarouselNext
-          className={`${
-            courses.length <= 1 ? 'invisible' : ''
-          } sm:mr-0 mr-4`}
-        /> */}
             <CarouselPrevious
           className={`${
             courses.length <= 1 ? 'invisible' : ''

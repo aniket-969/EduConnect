@@ -16,7 +16,7 @@ const StudenDashboard = () => {
       <ProfileHeader user ={session.data}/>
       <CarouselBanner/>
       <MyLearning courses={fakeCourses} />
-      <RecommendedCourses />
+      <RecommendedCourses courses={fakeCourses}/>
     </div>
   )
 }
