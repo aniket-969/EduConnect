@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableHeader,
@@ -53,11 +53,12 @@ export default function MyCoursesTable({ data }) {
     });
   }, [filteredData, sortField, ascending]);
 
-  const paginatedData = sortedData.slice(
-    (page - 1) * pageSize,
-    page * pageSize
-  );
-  const totalPages = Math.ceil(sortedData.length / pageSize);
+  const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
+  const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+
+  useEffect(() => {
+    setPage(1); // Reset to first page when search or sort changes
+  }, [search, sortField, ascending]);
 
   const handleSort = (field) => {
     if (sortField === field) {
@@ -81,14 +82,16 @@ export default function MyCoursesTable({ data }) {
 
   return (
     <div className="w-full space-y-4">
-      <Input
-        placeholder="Search by course title..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        className="max-w-sm"
-      />
+      <div className="flex justify-end">
+        <Input
+          placeholder="Search by course title..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="max-w-sm"
+        />
+      </div>
 
-      <div className="overflow-x-auto rounded-md border border-border">
+      <div className="overflow-x-auto rounded-md border border-border min-h-[405px] flex flex-col justify-between">
         <Table className="w-full">
           <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-2">
             <TableRow>
@@ -122,11 +125,16 @@ export default function MyCoursesTable({ data }) {
           </TableHeader>
           <TableBody>
             {paginatedData.map((course, index) => (
-              <TableRow key={course.id} className="hover:bg-accent/30 transition-colors">
+              <TableRow
+                key={course.id}
+                className="hover:bg-accent/30 transition-colors"
+              >
                 <TableCell className="px-4 py-3">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-3 max-w-[250px] whitespace-normal break-words">{course.title}</TableCell>
+                <TableCell className="px-4 py-3 max-w-[250px] whitespace-normal break-words">
+                  {course.title}
+                </TableCell>
                 <TableCell className="px-4 py-3">{course.studentCount}</TableCell>
                 <TableCell className="px-4 py-3 capitalize">{course.status}</TableCell>
                 <TableCell className="px-4 py-3">
@@ -141,91 +149,86 @@ export default function MyCoursesTable({ data }) {
             ))}
           </TableBody>
         </Table>
+        {/* Pagination */}
+      {totalPages > 1 && (
+        <div className=" flex justify-center border-t-2 p-2 bg-primary/5">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href="#"
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                  className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+
+              <PaginationItem>
+                <PaginationLink
+                  href="#"
+                  isActive={page === 1}
+                  onClick={() => setPage(1)}
+                >
+                  1
+                </PaginationLink>
+              </PaginationItem>
+
+              {page > 3 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (pg) =>
+                    pg !== 1 &&
+                    pg !== totalPages &&
+                    Math.abs(pg - page) <= 1
+                )
+                .map((pg) => (
+                  <PaginationItem key={pg}>
+                    <PaginationLink
+                      href="#"
+                      isActive={pg === page}
+                      onClick={() => setPage(pg)}
+                    >
+                      {pg}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+              {page < totalPages - 2 && (
+                <PaginationItem>
+                  <PaginationEllipsis />
+                </PaginationItem>
+              )}
+
+              {totalPages > 1 && (
+                <PaginationItem>
+                  <PaginationLink
+                    href="#"
+                    isActive={page === totalPages}
+                    onClick={() => setPage(totalPages)}
+                  >
+                    {totalPages}
+                  </PaginationLink>
+                </PaginationItem>
+              )}
+
+              <PaginationItem>
+                <PaginationNext
+                  href="#"
+                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
+                  className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
+      )}
       </div>
 
-      {/* Updated Smart Pagination */}
-     <div className="mt-4 flex justify-center">
-  <Pagination>
-    <PaginationContent>
-      {/* Previous */}
-      <PaginationItem>
-        <PaginationPrevious
-          href="#"
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          className={page === 1 ? "pointer-events-none opacity-50" : ""}
-        />
-      </PaginationItem>
-
-      {/* Page 1 always visible */}
-      <PaginationItem>
-        <PaginationLink
-          href="#"
-          isActive={page === 1}
-          onClick={() => setPage(1)}
-        >
-          1
-        </PaginationLink>
-      </PaginationItem>
-
-      {/* Ellipsis before current page group */}
-      {page > 3 && (
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-      )}
-
-      {/* Middle pages: show around current */}
-      {Array.from({ length: totalPages }, (_, i) => i + 1)
-        .filter(
-          (pg) =>
-            pg !== 1 &&
-            pg !== totalPages &&
-            Math.abs(pg - page) <= 1 // only show near current
-        )
-        .map((pg) => (
-          <PaginationItem key={pg}>
-            <PaginationLink
-              href="#"
-              isActive={pg === page}
-              onClick={() => setPage(pg)}
-            >
-              {pg}
-            </PaginationLink>
-          </PaginationItem>
-        ))}
-
-      {/* Ellipsis after current page group */}
-      {page < totalPages - 2 && (
-        <PaginationItem>
-          <PaginationEllipsis />
-        </PaginationItem>
-      )}
-
-      {/* Last page always visible (if more than one) */}
-      {totalPages > 1 && (
-        <PaginationItem>
-          <PaginationLink
-            href="#"
-            isActive={page === totalPages}
-            onClick={() => setPage(totalPages)}
-          >
-            {totalPages}
-          </PaginationLink>
-        </PaginationItem>
-      )}
-
-      {/* Next */}
-      <PaginationItem>
-        <PaginationNext
-          href="#"
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-        />
-      </PaginationItem>
-    </PaginationContent>
-  </Pagination>
-</div>
-
+      
     </div>
   );
 }

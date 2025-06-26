@@ -74,8 +74,8 @@ export const getInstructorCourses = async () => {
 
   return [
     {
-      id: 1,
-      title: "React for Beginnerssssssssssss sssssssssssssssssssss sssssssss",
+      id: 11111,
+      title: "React for Beginners",
       studentCount: 42,
       status: "Published",
       publishedAt: "2024-10-05",
@@ -85,7 +85,7 @@ export const getInstructorCourses = async () => {
       title: "Advanced Spring Boot",
       studentCount: 28,
       status: "Draft",
-      publishedAt: "2024-06-02",
+      //publishedAt: "-",
     },
     {
       id: 3,
@@ -110,34 +110,34 @@ export const getInstructorCourses = async () => {
     },
     {
       id: 6,
-      title: "Advanced Java",
+      title: "Beginer Java",
       studentCount: 28,
       status: "Draft",
       publishedAt: "2025-06-09",
     },{
-      id: 5,
-      title: "TypeScript for Beginners",
+      id: 7,
+      title: "TypeScript for Expert",
+      studentCount: 24,
+      status: "Published",
+      publishedAt: "2024-10-25",
+    },
+    {
+      id: 8,
+      title: "Advanced .NET",
+      studentCount: 58,
+      status: "Draft",
+      publishedAt: "2025-06-09",
+    },{
+      id: 9,
+      title: "HTML for Beginners",
       studentCount: 4,
       status: "Published",
       publishedAt: "2024-10-25",
     },
     {
-      id: 6,
-      title: "Advanced Java",
-      studentCount: 28,
-      status: "Draft",
-      publishedAt: "2025-06-09",
-    },{
-      id: 5,
-      title: "TypeScript for Beginners",
-      studentCount: 4,
-      status: "Published",
-      publishedAt: "2024-10-25",
-    },
-    {
-      id: 6,
-      title: "Advanced Java",
-      studentCount: 28,
+      id: 10,
+      title: "Advanced SAP",
+      studentCount: 22,
       status: "Draft",
       publishedAt: "2025-06-09",
     },

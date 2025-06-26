@@ -74,6 +74,8 @@ export default function EnrolledStudentsTable({ data }) {
   const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
   const totalPages = Math.ceil(sortedData.length / pageSize);
 
+  
+
   return (
     <div className="w-full">
       <div className="overflow-x-auto rounded-md border border-border">
