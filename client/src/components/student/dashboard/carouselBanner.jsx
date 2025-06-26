@@ -48,7 +48,7 @@ export default function CarouselBanner() {
               {/* Slide card overlay on the left */}
               <div className="relative z-10 flex h-full items-center ">
                 {/* slide */}
-                <Card className="bg-white max-w-md ml-4 shadow-lg  ">
+                <Card className="bg-white sm:max-w-md max-w-xs ml-4 shadow-lg  ">
                   <CardContent>
                     <CardTitle className="text-2xl text-primary">
                       {slide.title}
