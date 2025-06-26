@@ -7,15 +7,7 @@ import {
   TableRow,
   TableCell,
 } from "@/components/ui/table";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationPrevious,
-  PaginationNext,
-  PaginationLink,
-  PaginationEllipsis,
-} from "@/components/ui/pagination";
+import TablePagination from "./common/TablePagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
@@ -128,7 +120,7 @@ export default function MyCoursesTable({ data }) {
               <TableRow
                 key={course.id}
                 className="hover:bg-accent/30 transition-colors"
-              >
+              > 
                 <TableCell className="px-4 py-2">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
@@ -151,83 +143,9 @@ export default function MyCoursesTable({ data }) {
             ))}
           </TableBody>
         </Table>
-        {/* Pagination */}
-      {totalPages > 1 && (
-        <div className=" flex justify-center border-t-2 p-2 bg-primary/5">
-          <Pagination>
-            <PaginationContent>
-              <PaginationItem>
-                <PaginationPrevious
-                  href="#"
-                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-                  className={page === 1 ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-
-              <PaginationItem>
-                <PaginationLink
-                  href="#"
-                  isActive={page === 1}
-                  onClick={() => setPage(1)}
-                >
-                  1
-                </PaginationLink>
-              </PaginationItem>
-
-              {page > 3 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {Array.from({ length: totalPages }, (_, i) => i + 1)
-                .filter(
-                  (pg) =>
-                    pg !== 1 &&
-                    pg !== totalPages &&
-                    Math.abs(pg - page) <= 1
-                )
-                .map((pg) => (
-                  <PaginationItem key={pg}>
-                    <PaginationLink
-                      href="#"
-                      isActive={pg === page}
-                      onClick={() => setPage(pg)}
-                    >
-                      {pg}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-
-              {page < totalPages - 2 && (
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-              )}
-
-              {totalPages > 1 && (
-                <PaginationItem>
-                  <PaginationLink
-                    href="#"
-                    isActive={page === totalPages}
-                    onClick={() => setPage(totalPages)}
-                  >
-                    {totalPages}
-                  </PaginationLink>
-                </PaginationItem>
-              )}
-
-              <PaginationItem>
-                <PaginationNext
-                  href="#"
-                  onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-                  className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-                />
-              </PaginationItem>
-            </PaginationContent>
-          </Pagination>
-        </div>
-      )}
+        {totalPages > 1 && (
+                  <TablePagination page={page} setPage={setPage} totalPages={totalPages} />
+                )}
       </div>
 
       

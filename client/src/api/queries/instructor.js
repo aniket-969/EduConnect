@@ -134,13 +134,13 @@ export const getInstructorCourses = async () => {
       status: "Published",
       publishedAt: "2024-10-25",
     },
-    {
-      id: 10,
-      title: "Advanced SAP",
-      studentCount: 22,
-      status: "Draft",
-      //publishedAt: "2025-06-09",
-    },
+    // {
+    //   id: 10,
+    //   title: "Advanced SAP",
+    //   studentCount: 22,
+    //   status: "Draft",
+    //   //publishedAt: "2025-06-09",
+    // },
     // Add more mock courses
   ];
 };
