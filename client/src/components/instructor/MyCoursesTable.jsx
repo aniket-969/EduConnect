@@ -32,8 +32,8 @@ export default function MyCoursesTable({ data }) {
       let valB = b[sortField];
 
       if (sortField === "publishedAt") {
-        valA = new Date(valA);
-        valB = new Date(valB);
+        valA = valA?new Date(valA).getTime():0;
+        valB = valB?new Date(valB).getTime():0;
       } else if (typeof valA === "string") {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
