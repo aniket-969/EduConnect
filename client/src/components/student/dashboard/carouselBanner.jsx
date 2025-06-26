@@ -38,7 +38,7 @@ export default function CarouselBanner() {
           const bgUrl = cld(slide.id, { width: 1920, crop: 'fill' });
 
           return (
-            <CarouselItem key={slide.id} className="relative w-full h-80">
+            <CarouselItem key={slide.id} className="relative w-full h-80 ">
               {/* Background image covers entire slide */}
               <div
                 className="absolute inset-0 bg-cover bg-center"
@@ -46,8 +46,9 @@ export default function CarouselBanner() {
               />
 
               {/* Slide card overlay on the left */}
-              <div className="relative z-10 flex h-full items-center">
-                <Card className="bg-white max-w-md ml-4 shadow-lg">
+              <div className="relative z-10 flex h-full items-center ">
+                {/* slide */}
+                <Card className="bg-white max-w-md ml-4 shadow-lg  ">
                   <CardContent>
                     <CardTitle className="text-2xl text-primary">
                       {slide.title}

@@ -13,7 +13,7 @@ import CourseCard from '../course/courseCard';
 
 export default function MyLearningCarousel({ courses = [] }) {
   return (
-    <div className="mx-2 my-5">
+    <div className=" my-5 ">
       {/* Section header */}
       <div className="flex items-center justify-between mb-2 px-2">
         <h3 className="font-semibold text-lg">My Learning</h3>
@@ -23,7 +23,7 @@ export default function MyLearningCarousel({ courses = [] }) {
       </div>
 
       {/* Carousel wrapper */}
-      <Carousel className="xl:w-[72rem] lg:w-[56rem] md:w-[38rem] w-[18rem] my-4 ">
+      <Carousel className="min-w-full xl:w-[74rem] lg:w-[56rem] md:w-[38rem] max-w-[18rem] my-4 ">
         <CarouselContent
           className={`-ml-4 ${
             courses.length < 3
@@ -34,7 +34,7 @@ export default function MyLearningCarousel({ courses = [] }) {
           {courses.map((course) => (
             <CarouselItem
               key={course.id}
-              className="pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+              className="md:basis-1/2 lg:basis-1/3  "
             >
               <div className="p-1">
                 <CourseCard course={course} />
@@ -44,7 +44,7 @@ export default function MyLearningCarousel({ courses = [] }) {
         </CarouselContent>
 
         {/* hide arrows if only one */}
-        <CarouselPrevious
+        {/* <CarouselPrevious
           className={`${
             courses.length <= 1 ? 'invisible' : ''
           } sm:ml-0 ml-4`}
@@ -53,6 +53,16 @@ export default function MyLearningCarousel({ courses = [] }) {
           className={`${
             courses.length <= 1 ? 'invisible' : ''
           } sm:mr-0 mr-4`}
+        /> */}
+            <CarouselPrevious
+          className={`${
+            courses.length <= 1 ? 'invisible' : ''
+          } left-1 sm:left-2 md:left-4`}
+        />
+        <CarouselNext
+          className={`${
+            courses.length <= 1 ? 'invisible' : ''
+          } right-1 sm:right-2 md:right-4`}
         />
       </Carousel>
     </div>
