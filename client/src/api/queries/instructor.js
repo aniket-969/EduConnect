@@ -83,7 +83,7 @@ export const getInstructorCourses = async () => {
     },
     {
       id: 2,
-      title: "Advanced Spring Boot",
+      title: "Advanced Spring Boot ",
       studentCount: 28,
       status: "Draft",
       thumbnail:"https://img.freepik.com/free-vector/programming-concept-illustration_114360-1351.jpg"

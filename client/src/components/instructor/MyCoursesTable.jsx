@@ -128,7 +128,7 @@ export default function MyCoursesTable({ data }) {
                 <TableCell className="px-4 py-2">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-2 text-left align-top  ">
+                <TableCell className="px-4 py-2 text-left align-top  max-w-70  ">
                   <div className="flex items-center sm: gap-3 max-w-full ">
                     <img
                       src={course.thumbnail || defaultThumbnail}
