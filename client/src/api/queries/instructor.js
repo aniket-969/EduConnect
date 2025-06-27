@@ -75,16 +75,19 @@ export const getInstructorCourses = async () => {
   return [
     {
       id: 11111,
-      title: "React for Beginners",
+      title: "React for Beginners ",
       studentCount: 42,
       status: "Published",
       publishedAt: "2024-10-05",
+      thumbnail:"https://dummyimage.com/80x60/cccccc/000000&text=React",
     },
     {
       id: 2,
       title: "Advanced Spring Boot",
       studentCount: 28,
       status: "Draft",
+      thumbnail:"https://img.freepik.com/free-vector/programming-concept-illustration_114360-1351.jpg"
+      
       //publishedAt: "-",
     },
     {
@@ -93,6 +96,8 @@ export const getInstructorCourses = async () => {
       studentCount: 2,
       status: "Published",
       publishedAt: "2024-8-05",
+      thumbnail: "https://img.freepik.com/free-vector/javascript-programming-language-computer-code_23-2148829146.jpg",
+
     },
     {
       id: 4,
@@ -107,6 +112,7 @@ export const getInstructorCourses = async () => {
       studentCount: 4,
       status: "Published",
       publishedAt: "2024-10-25",
+      thumbnail: "https://img.freepik.com/free-vector/software-code-testing-concept_114360-1435.jpg",
     },
     {
       id: 6,

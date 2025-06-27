@@ -11,6 +11,7 @@ import TablePagination from "./common/TablePagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Pencil, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import defaultThumbnail from "@/assets/defaultThumbnail.png";
 
 export default function MyCoursesTable({ data }) {
   const [search, setSearch] = useState("");
@@ -32,8 +33,8 @@ export default function MyCoursesTable({ data }) {
       let valB = b[sortField];
 
       if (sortField === "publishedAt") {
-        valA = valA?new Date(valA).getTime():0;
-        valB = valB?new Date(valB).getTime():0;
+        valA = valA ? new Date(valA).getTime() : 0;
+        valB = valB ? new Date(valB).getTime() : 0;
       } else if (typeof valA === "string") {
         valA = valA.toLowerCase();
         valB = valB.toLowerCase();
@@ -46,7 +47,10 @@ export default function MyCoursesTable({ data }) {
   }, [filteredData, sortField, ascending]);
 
   const totalPages = Math.max(1, Math.ceil(sortedData.length / pageSize));
-  const paginatedData = sortedData.slice((page - 1) * pageSize, page * pageSize);
+  const paginatedData = sortedData.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
 
   useEffect(() => {
     setPage(1); // Reset to first page when search or sort changes
@@ -83,10 +87,10 @@ export default function MyCoursesTable({ data }) {
         />
       </div>
 
-      <div className="overflow-x-auto rounded-md border border-border min-h-[370px] flex flex-col justify-between">
+      <div className="overflow-x-auto rounded-md border border-border min-h-[395px] flex flex-col justify-between">
         <Table className="w-full text-center ">
           <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-2 ">
-            <TableRow >
+            <TableRow>
               <TableHead className="px-4 py-4 text-center ">#</TableHead>
               <TableHead
                 onClick={() => handleSort("title")}
@@ -120,15 +124,33 @@ export default function MyCoursesTable({ data }) {
               <TableRow
                 key={course.id}
                 className="hover:bg-accent/30 transition-colors"
-              > 
+              >
                 <TableCell className="px-4 py-2">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-3 max-w-[250px] whitespace-normal break-words text-left">
-                  {course.title}
+                <TableCell className="px-4 py-2 text-left align-top  ">
+                  <div className="flex items-center sm: gap-3 max-w-full ">
+                    <img
+                      src={course.thumbnail || defaultThumbnail}
+                      onError={(e) => (e.currentTarget.src = defaultThumbnail)}
+                      alt={course.title}
+                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0"
+                    />
+                    <div
+                      title={course.title}
+                      className="text-sm sm:text-base font-medium text-start min-w-[150px] max-w-[200px] sm:max-w-xs whitespace-break-spaces "
+                    >
+                      <p className="break-words">{course.title}</p>
+                    </div>
+                  </div>
                 </TableCell>
-                <TableCell className="px-4 py-2  ">{course.studentCount}</TableCell>
-                <TableCell className="px-4 py-2 capitalize">{course.status}</TableCell>
+
+                <TableCell className="px-4 py-2 ">
+                  {course.studentCount}
+                </TableCell>
+                <TableCell className="px-4 py-2 capitalize">
+                  {course.status}
+                </TableCell>
                 <TableCell className="px-4 py-2">
                   {course.status === "draft" || !course.publishedAt
                     ? " - "
@@ -144,11 +166,13 @@ export default function MyCoursesTable({ data }) {
           </TableBody>
         </Table>
         {totalPages > 1 && (
-                  <TablePagination page={page} setPage={setPage} totalPages={totalPages} />
-                )}
+          <TablePagination
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
+        )}
       </div>
-
-      
     </div>
   );
 }
