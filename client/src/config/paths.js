@@ -29,6 +29,10 @@ export const paths = {
     studentDashboard: {
       path: "student",
       getHref: () => "/app/student",
+      profile:{
+         path: "profile",
+      getHref: () => "/app/student/profile",
+      }
     },
   },
 };

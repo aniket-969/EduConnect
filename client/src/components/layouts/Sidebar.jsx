@@ -32,7 +32,7 @@ const linkConfig = {
       icon: BookOpen,
     },
     {
-      to: '/app/profile',
+      to: '/app/student/profile',
       label: 'Profile',
       icon: User,
     },

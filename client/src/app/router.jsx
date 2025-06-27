@@ -84,10 +84,19 @@ export function createAppRouter(queryClient) {
               { index: true, element: <RoleRedirector /> },
 
               // student dashboard
-              {
-                path: paths.app.studentDashboard.path,  // "student"
-                lazy: () => import("./routes/app/studentDashboard").then(c),
-              },
+           {
+  path: paths.app.studentDashboard.path,  // "student"
+  children: [
+    {
+      index: true,
+      lazy: () => import("./routes/app/studentDashboard").then(c),
+    },
+    {
+      path: paths.app.studentDashboard.profile.path, // "profile"
+      lazy: () => import("./routes/app/student/profile").then(c),
+    },
+  ],
+},
               // instructor dashboard
               {
                 path: paths.app.instructorDashboard.path,  
