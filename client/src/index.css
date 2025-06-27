@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "react-quill/dist/quill.snow.css";
+
 
 /* Defaults for tailwind */
 @custom-variant dark (&:is(.dark *));

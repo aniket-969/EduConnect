@@ -11,6 +11,9 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.1.1",
+    "@mantine/core": "^5.10.5",
+    "@mantine/hooks": "^5.10.5",
+    "@mantine/rte": "^5.10.5",
     "@radix-ui/react-avatar": "^1.1.10",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-label": "^2.1.7",

@@ -45,7 +45,7 @@ const linkConfig = {
       icon: Home,
     },
     {
-      to: "/app/courses/new",
+      to:paths.app.addCourse.getHref(),
       label: "Add Course",
       icon: PlusCircle,
     },
