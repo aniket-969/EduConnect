@@ -15,7 +15,7 @@ export const getEnrolledStudents = async () => {
   return [
     {
       id: 1,
-      studentName: "Aditi Rao",
+      studentName: "Aditi Rao ",
       courseTitle: "JavaScript Basics",
       enrolledAt: "2025-06-20",
     },
