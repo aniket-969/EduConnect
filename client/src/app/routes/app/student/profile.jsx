@@ -73,7 +73,7 @@ export default function Profile() {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className=" bg-background p-6 ">
       <Card className="max-w-lg mx-auto bg-card text-card-foreground">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl">Profile</CardTitle>
