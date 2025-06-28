@@ -17,7 +17,6 @@ import { useAuth } from "@/hooks/useAuth";
 function RoleRedirector() {
   const { session } = useAuth();
   const user = session.data;
-  // choose based on role
   const to =
     user.role === "instructor"
       ? paths.app.instructorDashboard.getHref()
@@ -42,7 +41,7 @@ export function createAppRouter(queryClient) {
 
   return createBrowserRouter(
     [
-      // public routes
+      // Public routes
       {
         path: paths.home.path,
         lazy: () => import("./routes/LandingPage.jsx").then(c),
@@ -71,7 +70,7 @@ export function createAppRouter(queryClient) {
         ),
       },
 
-      // protected /app routes
+      // Protected /app routes
       {
         path: paths.app.root.path, // "/app"
         element: <ProtectedRoute />,
@@ -80,42 +79,65 @@ export function createAppRouter(queryClient) {
           {
             element: <DashboardLayout />,
             children: [
-              // redirect index "/app" → "/app/student" or "/app/instructor"
+              // "/app" → instructor or student
               { index: true, element: <RoleRedirector /> },
 
-              // student dashboard
-           {
-  path: paths.app.studentDashboard.path,  // "student"
-  children: [
-    {
-      index: true,
-      lazy: () => import("./routes/app/studentDashboard").then(c),
-    },
-    {
-      path: paths.app.studentDashboard.profile.path, // "profile"
-      lazy: () => import("./routes/app/student/profile").then(c),
-    },
-  ],
-},
-              // instructor dashboard
+              // Student dashboard & sub-routes
               {
-                path: paths.app.instructorDashboard.path,
-                lazy: () => import("./routes/app/instructorDashboard").then(c),
+                path: paths.app.studentDashboard.path, // "student"
+                children: [
+                  {
+                    index: true,
+                    lazy: () =>
+                      import("./routes/app/studentDashboard").then(c),
+                  },
+                  {
+                    path: paths.app.studentDashboard.profile.path, // "profile"
+                    lazy: () =>
+                      import("./routes/app/student/profile").then(c),
+                  },
+                  {
+                    path: paths.app.studentDashboard.courses.path, // "courses"
+                    lazy: () =>
+                      import("./routes/app/student/courses").then(c),
+                  },
+                ],
               },
+
+              // Instructor dashboard & sub-routes
               {
-                path: paths.app.enrolledStudents.path,
-                lazy: () => import("./routes/app/instructor/enrolledStudents.jsx").then(c),
-              },
-              {
-                path: paths.app.myCourses.path,
-                lazy: () => import("./routes/app/instructor/myCourses.jsx").then(c),
+                path: paths.app.instructorDashboard.path, // "instructor"
+                children: [
+                  {
+                    index: true,
+                    lazy: () =>
+                      import("./routes/app/instructorDashboard").then(c),
+                  },
+                  {
+                    path: paths.app.instructorDashboard.courses.path, // "courses"
+                    lazy: () =>
+                      import("./routes/app/instructor/myCourses.jsx").then(c),
+                  },
+                  {
+                    path: paths.app.instructorDashboard.enrolledStudents.path, // "enrolled-students"
+                    lazy: () =>
+                      import(
+                        "./routes/app/instructor/enrolledStudents.jsx"
+                      ).then(c),
+                  },
+                  {
+                    path: "profile",
+                    lazy: () =>
+                      import("./routes/app/instructor/profile.jsx").then(c),
+                  },
+                ],
               },
             ],
           },
         ],
       },
 
-      // catch-all 404
+      // Catch-all 404
       {
         path: "*",
         lazy: () => import("./routes/not-found").then(c),

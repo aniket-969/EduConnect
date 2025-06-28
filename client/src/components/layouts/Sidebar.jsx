@@ -1,5 +1,4 @@
-
-import React,{ useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   Sidebar,
@@ -16,7 +15,7 @@ import {
   User,
   PlusCircle,
   Users,
-  LogOut
+  LogOut,
 } from 'lucide-react';
 import { paths } from '@/config/paths';
 
@@ -28,12 +27,12 @@ const linkConfig = {
       icon: Home,
     },
     {
-      to: '/app/courses',
+      to: paths.app.studentDashboard.courses.getHref(),
       label: 'Browse Courses',
       icon: BookOpen,
     },
     {
-      to: '/app/student/profile',
+      to: paths.app.studentDashboard.profile.getHref(),
       label: 'Profile',
       icon: User,
     },
@@ -45,28 +44,27 @@ const linkConfig = {
       icon: Home,
     },
     {
-      to: "/app/courses/new",
-      label: "Add Course",
+      to: `${paths.app.instructorDashboard.courses.getHref()}/new`,
+      label: 'Add Course',
       icon: PlusCircle,
     },
     {
-      to: paths.app.myCourses.getHref(),
-      label: "My Courses",
+      to: paths.app.instructorDashboard.courses.getHref(),
+      label: 'My Courses',
       icon: BookOpen,
     },
     {
-      to: paths.app.enrolledStudents.getHref(),
-      label: "Enrolled Students",
+      to: paths.app.instructorDashboard.enrolledStudents.getHref(),
+      label: 'Enrolled Students',
       icon: Users,
     },
     {
-      to: "/app/profile",
-      label: "Profile",
+      to: `${paths.app.instructorDashboard.getHref()}/profile`,
+      label: 'Profile',
       icon: User,
     },
   ],
 };
-
 
 const AppSidebar = React.memo(function AppSidebar({ user }) {
   const location = useLocation();
