@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import RichTextEditor from "./common/RichTextEditor";
+import { toast } from 'react-toastify';
+
 
 const levels = ["Beginner", "Intermediate", "Expert"];
 const categories = ["Web Development", "Data Science", "AI", "Cloud", "Others"];
@@ -22,7 +24,41 @@ export default function AddNewCourse() {
     }
   };
 
-  const isPublishDisabled = !title || !level || !category || !price || !description;
+  const validateForm = () => {
+  if (title.trim().length < 5) {
+    toast.error("Title must be at least 5 characters.");
+    return false;
+  }
+  if (subtitle.trim().length < 5) {
+    toast.error("Subtitle must be at least 5 characters.");
+    return false;
+  }
+  if (!description || description.trim().length < 20) {
+    toast.error("Description is too short.");
+    return false;
+  }
+  if (!level) {
+    toast.error("Please select a level.");
+    return false;
+  }
+  if (!category) {
+    toast.error("Please select a category.");
+    return false;
+  }
+  if (!price || isNaN(price) || Number(price) <= 0) {
+    toast.error("Enter a valid positive price.");
+    return false;
+  }
+
+  return true;
+};
+
+const handlePublish = () => {
+  if (validateForm()) {
+    toast.success("Course is valid. Ready to submit!");
+    // ⏩ Proceed to submit or simulate API call
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6 shadow rounded-md">
@@ -65,9 +101,9 @@ export default function AddNewCourse() {
           onChange={(e) => setCategory(e.target.value)}
           className="w-full p-2 border rounded"
         >
-          <option value="">Select Category</option>
+          <option value="" className="bg-primary">Select Category</option>
           {categories.map((cat) => (
-            <option key={cat}>{cat}</option>
+            <option className="bg-card" key={cat}>{cat}</option>
           ))}
         </select>
 
@@ -76,6 +112,7 @@ export default function AddNewCourse() {
           placeholder="Course Price (₹)"
           value={price}
           onChange={(e) => setPrice(e.target.value)}
+          min={0}
         />
 
         <div className="flex items-center gap-4">
@@ -92,7 +129,7 @@ export default function AddNewCourse() {
 
       <div className="flex gap-4 pt-4">
         <Button variant="outline">Save as Draft</Button>
-        <Button disabled={isPublishDisabled}>Publish</Button>
+        <Button onClick={handlePublish}>Publish</Button>
       </div>
     </div>
   );

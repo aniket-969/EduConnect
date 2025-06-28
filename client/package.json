@@ -38,6 +38,7 @@
     "draft-js": "^0.11.7",
     "embla-carousel-react": "^8.6.0",
     "lucide-react": "^0.517.0",
+    "next-themes": "^0.4.6",
     "prettier": "^3.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -47,6 +48,7 @@
     "react-router-dom": "^7.6.2",
     "react-router-hash-link": "^2.4.3",
     "react-toastify": "^11.0.5",
+    "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "tailwindcss": "^4.1.10",
     "zod": "^3.25.67"
