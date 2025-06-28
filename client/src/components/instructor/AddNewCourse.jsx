@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-//import { RichTextEditor } from "@mantine/rte";
+import RichTextEditor from "./common/RichTextEditor";
 
 const levels = ["Beginner", "Intermediate", "Expert"];
 const categories = ["Web Development", "Data Science", "AI", "Cloud", "Others"];
@@ -9,7 +9,7 @@ const categories = ["Web Development", "Data Science", "AI", "Cloud", "Others"];
 export default function AddNewCourse() {
   const [title, setTitle] = useState("");
   const [subtitle, setSubtitle] = useState("");
- // const [description, setDescription] = useState("");
+  const [description, setDescription] = useState(""); // Rich text HTML
   const [level, setLevel] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
@@ -22,7 +22,7 @@ export default function AddNewCourse() {
     }
   };
 
-  const isPublishDisabled = !title || !description || !level || !category || !price;
+  const isPublishDisabled = !title || !level || !category || !price || !description;
 
   return (
     <div className="max-w-4xl mx-auto p-6 space-y-6 shadow rounded-md">
@@ -40,14 +40,10 @@ export default function AddNewCourse() {
           onChange={(e) => setSubtitle(e.target.value)}
         />
 
-        {/* <div>
-          <label className="font-medium mb-1 block">Course Description</label>
-          <RichTextEditor
-            value={description}
-            onChange={setDescription}
-            className="bg-white dark:bg-card rounded"
-          />
-        </div> */}
+        <div>
+          <label className="block font-medium mb-1">Course Description</label>
+          <RichTextEditor value={description} onChange={setDescription} />
+        </div>
 
         <div className="flex gap-4">
           {levels.map((lvl) => (
