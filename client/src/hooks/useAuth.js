@@ -37,7 +37,7 @@ export const useAuth = () => {
     return {
       session: {
         isLoading: false,
-        data: FAKE_STUDENT,
+        data: FAKE_INSTRUCTOR,
       },
     };
   }

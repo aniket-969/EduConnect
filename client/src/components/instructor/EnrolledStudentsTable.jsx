@@ -15,7 +15,8 @@ import {
 import TablePagination from "./common/TablePagination";
 
 
-export default function EnrolledStudentsTable({ data }) {
+export default function EnrolledStudentsTable({ enrolledStudents }) {
+  
   const [sortField, setSortField] = useState(null);
   const [ascending, setAscending] = useState(true);
   const [page, setPage] = useState(1);
@@ -23,8 +24,8 @@ export default function EnrolledStudentsTable({ data }) {
 
   // Sort logic
   const sortedData = (() => {
-    if (!sortField) return data;
-    const sorted = [...data].sort((a, b) => {
+    if (!sortField) return enrolledStudents;
+    const sorted = [...enrolledStudents].sort((a, b) => {
       const valA =
         sortField === "enrolledAt"
           ? new Date(a[sortField])
