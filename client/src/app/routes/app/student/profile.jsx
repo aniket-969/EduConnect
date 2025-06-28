@@ -1,3 +1,4 @@
+// src/pages/student/Profile.jsx
 import React, { useState, useEffect, useRef } from "react"
 import { useAuth } from "@/hooks/useAuth"
 import { Spinner } from "@/components/ui/spinner"
@@ -32,15 +33,13 @@ export default function Profile() {
   const [isEditingName, setIsEditingName] = useState(false)
   const fileInputRef = useRef(null)
 
-  // initialize from session data
   useEffect(() => {
     setName(data.name)
     setAvatarUrl(data.avatarUrl)
   }, [data])
 
-  // derive counts & values
   const enrolledCount = data.enrolledCourses.length
-  const completedCount = 10  
+  const completedCount = 10  // hardcoded placeholder
   const avgProgress = enrolledCount
     ? Math.round(
         data.enrolledCourses.reduce((sum, c) => sum + c.progress, 0) /
@@ -73,16 +72,16 @@ export default function Profile() {
   }
 
   return (
-    <div className=" bg-background p-6 ">
-      <Card className="max-w-lg mx-auto bg-card text-card-foreground">
-        <CardHeader className="text-center">
+    <div className="min-h-screen bg-background sm:p-6 p-4">
+      <Card className="max-w-lg mx-auto bg-card text-card-foreground flex flex-col">
+        <CardHeader className="text-center w-full">
           <CardTitle className="text-2xl">Profile</CardTitle>
         </CardHeader>
 
-        <CardContent className="grid gap-6 md:grid-cols-[auto_1fr]">
+        <CardContent className="grid gap-6 justify-items-center md:grid-cols-[auto_1fr]  ">
           {/* Avatar */}
-          <div className="relative w-32 h-32">
-            <Avatar className="w-full h-full border-2 border-border">
+          <div className="relative w-32 h-32 ">
+            <Avatar className="w-full h-full border-2 border-border sm:ml-3 ml-0">
               <AvatarImage src={avatarUrl} alt="Avatar" />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
@@ -101,7 +100,7 @@ export default function Profile() {
           </div>
 
           {/* Details */}
-          <div className="space-y-4">
+          <div className="space-y-4 ">
             {/* Name */}
             <div className="flex items-center gap-2">
               {isEditingName ? (
