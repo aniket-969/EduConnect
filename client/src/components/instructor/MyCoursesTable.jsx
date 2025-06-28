@@ -134,7 +134,7 @@ export default function MyCoursesTable({ InstructorCourses }) {
                       src={course.thumbnail || defaultThumbnail}
                       onError={(e) => (e.currentTarget.src = defaultThumbnail)}
                       alt={course.title}
-                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0"
+                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0 rounded-sm"
                     />
                     <div
                       title={course.title}

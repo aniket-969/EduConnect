@@ -179,3 +179,6 @@
 .editor-content li {
   @apply mb-1;
 }
+.editor-content a {
+  @apply text-blue-600 underline cursor-pointer hover:text-blue-800;
+}
