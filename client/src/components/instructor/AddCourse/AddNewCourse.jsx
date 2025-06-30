@@ -1,4 +1,3 @@
-// 📁 src/app/routes/pages/AddNewCourse.jsx
 import React, { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -166,7 +165,7 @@ export default function AddNewCourse() {
             onChange={(e) => setSubtitle(e.target.value)}
           />
           <div>
-            <label className="block font-medium mb-1">Course Description</label>
+            <label className="block font-medium mb-2">Course Description</label>
             <RichTextEditor value={description} onChange={setDescription} />
           </div>
           <div className="flex flex-wrap gap-4">
@@ -189,9 +188,9 @@ export default function AddNewCourse() {
             onChange={(e) => setCategory(e.target.value)}
             className="w-full p-2 border rounded"
           >
-            <option value="">Select Category</option>
+            <option value="" className="bg-primary">Select Category</option>
             {categories.map((cat) => (
-              <option key={cat} value={cat}>
+              <option key={cat} value={cat} className="bg-background">
                 {cat}
               </option>
             ))}
@@ -204,7 +203,9 @@ export default function AddNewCourse() {
             min={0}
           />
           <div className="flex items-center gap-4">
-            <Input type="file" accept="image/*" onChange={handleThumbnailChange} />
+            <Input type="file" accept="image/*" onChange={handleThumbnailChange}
+            className="file:mr-4 file:font-normal file:text-gray-500 "
+             />
             {thumbnail && (
               <img
                 src={thumbnail}
@@ -217,8 +218,8 @@ export default function AddNewCourse() {
 
         {/* Right Column */}
         <div>
-          <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-semibold">Chapters & Lessons</h3>
+          <div className="flex justify-between items-end mb-4">
+            <h3 className="font-semibold">Chapters & Lessons</h3>
             <Button onClick={addChapter} size="sm">
               + Add Chapter
             </Button>

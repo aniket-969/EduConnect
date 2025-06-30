@@ -1,4 +1,3 @@
-// 📁 src/app/routes/pages/ChapterList.jsx
 import React from "react";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {

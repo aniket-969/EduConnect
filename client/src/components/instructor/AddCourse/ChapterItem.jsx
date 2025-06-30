@@ -58,7 +58,7 @@ export default function ChapterItem({
             className="flex-grow"
           />
         </div>
-        <Button size="icon" variant="ghost" onClick={remove} title="Remove Chapter">
+        <Button size="icon" variant="none"  className="text-white hover:text-red-500 transition-colors duration-200" onClick={remove} title="Remove Chapter">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
