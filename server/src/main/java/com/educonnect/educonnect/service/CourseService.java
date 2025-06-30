@@ -1,12 +1,14 @@
 package com.educonnect.educonnect.service;
 
 import com.educonnect.educonnect.entity.*;
+import com.educonnect.educonnect.CourseStatus;
 import com.educonnect.educonnect.dao.CourseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class CourseService {
@@ -19,13 +21,35 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
+    // Update course by ID
+    public Optional<Course> updateCourse(UUID id, Course updatedCourse) {
+        return courseRepository.findById(id).map(existing -> {
+            existing.setTitle(updatedCourse.getTitle());
+            existing.setDescription(updatedCourse.getDescription());
+            existing.setCategory(updatedCourse.getCategory());
+            existing.setStatus(updatedCourse.getStatus());
+            existing.setThumbnailUrl(updatedCourse.getThumbnailUrl());
+            existing.setImageUrls(updatedCourse.getImageUrls());
+            return courseRepository.save(existing);
+        });
+    }
+
+    // Delete course by ID
+    public boolean deleteCourse(UUID id) {
+        if (courseRepository.existsById(id)) {
+            courseRepository.deleteById(id);
+            return true;
+        }
+        return false;
+    }
+
     // Get all courses
     public List<Course> getAllCourses() {
         return courseRepository.findAll();
     }
 
-    // Get course by ID
-    public Optional<Course> getCourseById(Long id) {
+    // Get course by UUID
+    public Optional<Course> getCourseById(UUID id) {
         return courseRepository.findById(id);
     }
 
@@ -40,7 +64,7 @@ public class CourseService {
     }
 
     // Get courses by status
-    public List<Course> getCoursesByStatus(String status) {
+    public List<Course> getCoursesByStatus(CourseStatus status) {
         return courseRepository.findByStatus(status);
     }
 }
