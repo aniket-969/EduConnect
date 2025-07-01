@@ -18,10 +18,25 @@ export default function AddNewCourse() {
   const [thumbnail, setThumbnail] = useState(null);
   const [chapters, setChapters] = useState([]);
 
-  const handleThumbnailChange = (e) => {
-    const file = e.target.files[0];
-    if (file) setThumbnail(URL.createObjectURL(file));
-  };
+const handleThumbnailChange = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+  if (!allowedTypes.includes(file.type)) {
+    toast.error("Thumbnail must be a JPEG, PNG, or GIF image.");
+    return;
+  }
+
+  const maxSizeMB = 2;
+  if (file.size / 1024 / 1024 > maxSizeMB) {
+    toast.error(`Thumbnail size must be less than ${maxSizeMB} MB.`);
+    return;
+  }
+
+  setThumbnail(file);
+};
+
 
   const addChapter = () => {
     setChapters((prev) => [
@@ -84,19 +99,41 @@ export default function AddNewCourse() {
         chapter.id === chapterId
           ? {
               ...chapter,
-              lessons: chapter.lessons.filter((lesson) => lesson.id !== lessonId),
+              lessons: chapter.lessons.filter(
+                (lesson) => lesson.id !== lessonId
+              ),
             }
           : chapter
       )
     );
   };
 
-  const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
-    const file = e.target.files[0];
-    if (file) {
-      updateLessonField(chapterId, lessonId, "attachment", file);
-    }
-  };
+const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const allowedTypes = [
+    "application/pdf",
+    "image/png",
+    "image/jpeg",
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+
+  if (!allowedTypes.includes(file.type)) {
+    toast.error("Attachment must be PDF, Word, or image file.");
+    return;
+  }
+
+  const maxSizeMB = 5; // Example max size, adjust as needed
+  if (file.size / 1024 / 1024 > maxSizeMB) {
+    toast.error(`Attachment size must be less than ${maxSizeMB} MB.`);
+    return;
+  }
+
+  updateLessonField(chapterId, lessonId, "attachment", file);
+};
+
 
   // Handle reorder of lessons inside a chapter
   const reorderLessons = (chapterId, oldIndex, newIndex) => {
@@ -113,31 +150,72 @@ export default function AddNewCourse() {
 
   // Validate form fields before publishing
   const validateForm = () => {
-    if (title.trim().length < 5)
-      return toast.error("Title must be at least 5 characters.");
-    if (subtitle.trim().length < 5)
-      return toast.error("Subtitle must be at least 5 characters.");
-    if (!description || description.trim().length < 20)
-      return toast.error("Description too short.");
-    if (!level) return toast.error("Please select a level.");
-    if (!category) return toast.error("Please select a category.");
-    if (!price || isNaN(price) || Number(price) <= 0)
-      return toast.error("Enter valid price.");
-    if (chapters.length === 0) return toast.error("Add at least one chapter.");
-    for (const chapter of chapters) {
-      if (!chapter.title.trim())
-        return toast.error("Chapter title can't be empty.");
-      for (const lesson of chapter.lessons) {
-        if (!lesson.title.trim())
-          return toast.error("Lesson title can't be empty.");
+  if (title.trim().length < 5)
+    return toast.error("Title must be at least 5 characters.");
+  if (subtitle.trim().length < 5)
+    return toast.error("Subtitle must be at least 5 characters.");
+  
+  const maxLength = 100;
+  if (title.length > maxLength)
+    return toast.error(`Title can't be longer than ${maxLength} characters.`);
+  if (subtitle.length > maxLength)
+    return toast.error(`Subtitle can't be longer than ${maxLength} characters.`);
+
+  if (!description || description.trim().length < 20)
+    return toast.error("Description too short.");
+  if (!level) return toast.error("Please select a level.");
+  if (!category) return toast.error("Please select a category.");
+  if (!price || isNaN(price) || Number(price) <= 0)
+    return toast.error("Enter valid price.");
+  
+  if (!thumbnail) {
+    return toast.error("Please upload a course thumbnail.");
+  } 
+
+  if (chapters.length === 0) return toast.error("Add at least one chapter.");
+
+  // Check duplicate chapter titles once here
+  const chapterTitles = chapters.map((c) => c.title.trim().toLowerCase());
+  const uniqueChapterTitles = new Set(chapterTitles);
+  if (uniqueChapterTitles.size !== chapterTitles.length) {
+    return toast.error("Duplicate chapter titles detected.");
+  }
+
+  for (const chapter of chapters) {
+    if (!chapter.title.trim())
+      return toast.error("Chapter title can't be empty.");
+    if (chapter.lessons.length === 0)
+      return toast.error("Each chapter must have at least one lesson.");
+
+    // Duplicate lesson titles inside this chapter
+    const lessonTitles = chapter.lessons.map((l) => l.title.trim().toLowerCase());
+    const uniqueLessonTitles = new Set(lessonTitles);
+    if (uniqueLessonTitles.size !== lessonTitles.length) {
+      return toast.error(`Duplicate lesson titles detected in chapter "${chapter.title}".`);
+    }
+
+    for (const lesson of chapter.lessons) {
+      if (!lesson.title.trim())
+        return toast.error("Lesson title can't be empty.");
+      if (!lesson.videoUrl.trim())
+        return toast.error("Lesson video URL can't be empty.");
+
+      const urlPattern = /^(http|https):\/\/[^ "]+$/;
+      if (!urlPattern.test(lesson.videoUrl.trim()))
+        return toast.error("Enter a valid video URL (must start with http or https).");
+
+      
       }
     }
-    return true;
-  };
+  
+
+  return true;
+};
+
 
   const handlePublish = () => {
     if (validateForm()) {
-      toast.success("Course is valid. Ready to submit!");
+      toast.success("Course published");
       // Here you can implement actual submit logic
     }
   };
@@ -170,7 +248,10 @@ export default function AddNewCourse() {
           </div>
           <div className="flex flex-wrap gap-4">
             {levels.map((lvl) => (
-              <label key={lvl} className="flex items-center gap-2 cursor-pointer">
+              <label
+                key={lvl}
+                className="flex items-center gap-2 cursor-pointer"
+              >
                 <input
                   type="radio"
                   name="level"
@@ -188,7 +269,9 @@ export default function AddNewCourse() {
             onChange={(e) => setCategory(e.target.value)}
             className="w-full p-2 border rounded"
           >
-            <option value="" className="bg-primary">Select Category</option>
+            <option value="" className="bg-primary">
+              Select Category
+            </option>
             {categories.map((cat) => (
               <option key={cat} value={cat} className="bg-background">
                 {cat}
@@ -203,12 +286,15 @@ export default function AddNewCourse() {
             min={0}
           />
           <div className="flex items-center gap-4">
-            <Input type="file" accept="image/*" onChange={handleThumbnailChange}
-            className="file:mr-4 file:font-normal file:text-gray-500 "
-             />
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={handleThumbnailChange}
+              className="file:mr-4 file:font-normal file:text-gray-500 "
+            />
             {thumbnail && (
               <img
-                src={thumbnail}
+                src={URL.createObjectURL(thumbnail)}
                 alt="Preview"
                 className="w-32 h-20 object-cover rounded"
               />
