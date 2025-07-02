@@ -5,7 +5,8 @@ const addCourse = () => {
   return (
     <div className="p-2">
       <AddNewCourse />
-    </div>
+      </div>
+   
   );
 };
 

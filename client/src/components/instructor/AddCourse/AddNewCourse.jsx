@@ -4,9 +4,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import RichTextEditor from "../common/RichTextEditor";
 import ChapterList from "./ChapterList";
-import { saveDraftCourse } from "@/api/queries/courses";
 
-const levels = ["Beginner", "Intermediate", "Expert"];
+const levels = ["Beginner", "Intermediate", "Advanced"];
 const categories = ["Web Development", "Data Science", "AI", "Cloud", "Others"];
 
 export default function AddNewCourse() {
@@ -303,10 +302,12 @@ export default function AddNewCourse() {
     if (!title.trim()) {
       draftErrors.title = "Course title is required to save draft.";
     }
+    if (!thumbnail) draftErrors.thumbnail = "Course thumbnail is required to save draft.";
+
 
     if (Object.keys(draftErrors).length > 0) {
-      setErrors(draftErrors); // Highlight error in UI
-      scrollToErrorField(draftErrors); // optional helper
+      setErrors(draftErrors);
+      scrollToErrorField(draftErrors);
       return;
     }
 
@@ -323,24 +324,30 @@ export default function AddNewCourse() {
         status: "draft",
       };
 
-      await saveDraftCourse(payload);
-      toast.success("Draft saved!");
+      console.log("Mock Draft Saved:", payload);
+      toast.success("Draft saved (locally)!");
     } catch (error) {
       console.error("Save draft error:", error);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 space-y-6 shadow rounded-md">
-      <h2 className="text-3xl font-bold mb-4 flex justify-between items-center">
-        Add New Course
-        <Button variant="outline" onClick={handleSaveDraft}>
-          Save as Draft
-        </Button>
-        <Button onClick={handlePublish} size="sm">
-          Publish
-        </Button>
-      </h2>
+    <div className="max-w-7xl mx-auto space-y-6 shadow rounded-md">
+<h2 className="text-2xl font-semibold mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+  Add New Course
+
+  {/* Buttons block */}
+  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+    <Button variant="outline" onClick={handleSaveDraft}>
+      Save as Draft
+    </Button>
+    <Button onClick={handlePublish} size="sm">
+      Publish
+    </Button>
+  </div>
+</h2>
+
+
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left Column */}
