@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import RichTextEditor from "../common/RichTextEditor";
 import ChapterList from "./ChapterList";
+import { saveDraftCourse } from "@/api/queries/courses";
 
 const levels = ["Beginner", "Intermediate", "Expert"];
 const categories = ["Web Development", "Data Science", "AI", "Cloud", "Others"];
@@ -251,7 +252,17 @@ export default function AddNewCourse() {
       thumbnailInputRef.current.value = "";
     }
   };
+  const scrollToErrorField = (errorsObj) => {
+    const keys = Object.keys(errorsObj);
+    if (keys.length === 0) return;
 
+    const selector = `[data-error-key="${keys[0]}"]`;
+    const el = document.querySelector(selector);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.focus();
+    }
+  };
   const handlePublish = () => {
     const newErrors = validateForm(); // capture the new error object
     const isValid = Object.keys(newErrors).length === 0;
@@ -281,15 +292,41 @@ export default function AddNewCourse() {
       });
     } else {
       setTimeout(() => {
-        const firstErrorKey = Object.keys(newErrors)[0];
-        const el = document.querySelector(
-          `[data-error-key="${firstErrorKey}"]`
-        );
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth", block: "center" });
-          el.focus();
-        }
+        scrollToErrorField(newErrors);
       }, 0);
+    }
+  };
+
+  const handleSaveDraft = async () => {
+    const draftErrors = {};
+
+    if (!title.trim()) {
+      draftErrors.title = "Course title is required to save draft.";
+    }
+
+    if (Object.keys(draftErrors).length > 0) {
+      setErrors(draftErrors); // Highlight error in UI
+      scrollToErrorField(draftErrors); // optional helper
+      return;
+    }
+
+    try {
+      const payload = {
+        title,
+        subtitle,
+        description,
+        level,
+        category,
+        price,
+        thumbnail,
+        chapters,
+        status: "draft",
+      };
+
+      await saveDraftCourse(payload);
+      toast.success("Draft saved!");
+    } catch (error) {
+      console.error("Save draft error:", error);
     }
   };
 
@@ -297,6 +334,9 @@ export default function AddNewCourse() {
     <div className="max-w-7xl mx-auto p-6 space-y-6 shadow rounded-md">
       <h2 className="text-3xl font-bold mb-4 flex justify-between items-center">
         Add New Course
+        <Button variant="outline" onClick={handleSaveDraft}>
+          Save as Draft
+        </Button>
         <Button onClick={handlePublish} size="sm">
           Publish
         </Button>
@@ -401,26 +441,22 @@ export default function AddNewCourse() {
               data-error-key="thumbnail"
             />
             {thumbnail && (
-              
-                <img
-                  src={URL.createObjectURL(thumbnail)}
-                  alt="Preview"
-                  className="w-32 h-20 object-cover"
-                />
-              
+              <img
+                src={URL.createObjectURL(thumbnail)}
+                alt="Preview"
+                className="w-32 h-20 object-cover"
+              />
             )}
           </div>
-          {thumbnail&& (
+          {thumbnail && (
             <div className="flex items-center space-x-2 -mt-10 ">
-              <p className="text-xs text-muted-foreground">
-                {thumbnail.name}
-              </p>
+              <p className="text-xs text-muted-foreground">{thumbnail.name}</p>
               <button
                 type="button"
                 onClick={() => {
-                    setThumbnail(null);
-                    thumbnailInputRef.current.value = null; // resets file input
-                  }}
+                  setThumbnail(null);
+                  thumbnailInputRef.current.value = null; // resets file input
+                }}
                 className="text-red-500 hover:text-red-700 font-bold"
                 aria-label="Remove attachment"
                 title="Remove attachment"
