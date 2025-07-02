@@ -17,6 +17,7 @@ export default function ChapterList({
   removeLesson,
   handleLessonAttachmentChange,
   reorderLessons,
+  errors = {},
 }) {
   const handleChapterDragEnd = (event) => {
     const { active, over } = event;
@@ -27,9 +28,33 @@ export default function ChapterList({
 
     setChapters(arrayMove(chapters, oldIndex, newIndex));
   };
+  function getLessonErrors(errors, chapterIndex, chapter) {
+    const lessonErrors = {};
+
+    for (const [key, message] of Object.entries(errors)) {
+      const regex = new RegExp(
+        `^chapters\\.${chapterIndex}\\.lessons\\.(\\d+)\\.(\\w+)$`
+      );
+      const match = key.match(regex);
+      if (match) {
+        const [, lessonIndexStr, field] = match;
+        const lessonIndex = parseInt(lessonIndexStr);
+        const lessonId = chapter.lessons?.[lessonIndex]?.id;
+        if (lessonId) {
+          if (!lessonErrors[lessonId]) lessonErrors[lessonId] = {};
+          lessonErrors[lessonId][field] = message;
+        }
+      }
+    }
+
+    return lessonErrors;
+  }
 
   return (
-    <DndContext collisionDetection={closestCenter} onDragEnd={handleChapterDragEnd}>
+    <DndContext
+      collisionDetection={closestCenter}
+      onDragEnd={handleChapterDragEnd}
+    >
       <SortableContext
         items={chapters.map((c) => c.id)}
         strategy={verticalListSortingStrategy}
@@ -47,6 +72,12 @@ export default function ChapterList({
             removeLesson={removeLesson}
             handleLessonAttachmentChange={handleLessonAttachmentChange}
             reorderLessons={reorderLessons}
+            chapterError={
+              errors[`chapters.${index}.title`] ||
+              errors[`chapters.${index}.lessons`] ||
+              errors[`chapters.${index}.duplicateLessons`]
+            }
+            lessonErrors={getLessonErrors(errors, index, chapter)}
           />
         ))}
       </SortableContext>

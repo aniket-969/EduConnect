@@ -31,6 +31,7 @@
     "@tiptap/extension-list-item": "^2.23.0",
     "@tiptap/extension-ordered-list": "^2.23.0",
     "@tiptap/extension-paragraph": "^2.23.0",
+    "@tiptap/extension-placeholder": "^2.23.1",
     "@tiptap/extension-underline": "^2.23.0",
     "@tiptap/react": "^2.23.0",
     "@tiptap/starter-kit": "^2.23.0",

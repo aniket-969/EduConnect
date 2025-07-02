@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
@@ -17,26 +17,34 @@ export default function AddNewCourse() {
   const [price, setPrice] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
   const [chapters, setChapters] = useState([]);
+  const [errors, setErrors] = useState({});
+  const thumbnailInputRef = useRef(null);
 
-const handleThumbnailChange = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleThumbnailChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
-  if (!allowedTypes.includes(file.type)) {
-    toast.error("Thumbnail must be a JPEG, PNG, or GIF image.");
-    return;
-  }
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        thumbnail: "Thumbnail must be a JPEG, PNG, or GIF image.",
+      }));
+      return;
+    }
 
-  const maxSizeMB = 2;
-  if (file.size / 1024 / 1024 > maxSizeMB) {
-    toast.error(`Thumbnail size must be less than ${maxSizeMB} MB.`);
-    return;
-  }
+    const maxSizeMB = 2;
+    if (file.size / 1024 / 1024 > maxSizeMB) {
+      setErrors((prev) => ({
+        ...prev,
+        thumbnail: `Thumbnail size must be less than ${maxSizeMB} MB.`,
+      }));
+      return;
+    }
 
-  setThumbnail(file);
-};
-
+    setThumbnail(file);
+    setErrors((prev) => ({ ...prev, thumbnail: null }));
+  };
 
   const addChapter = () => {
     setChapters((prev) => [
@@ -108,32 +116,43 @@ const handleThumbnailChange = (e) => {
     );
   };
 
-const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
-  const file = e.target.files[0];
-  if (!file) return;
+  const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const allowedTypes = [
-    "application/pdf",
-    "image/png",
-    "image/jpeg",
-    "application/msword",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-  ];
+    const allowedTypes = [
+      "application/pdf",
+      "image/png",
+      "image/jpeg",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
 
-  if (!allowedTypes.includes(file.type)) {
-    toast.error("Attachment must be PDF, Word, or image file.");
-    return;
-  }
+    if (!allowedTypes.includes(file.type)) {
+      setErrors((prev) => ({
+        ...prev,
+        [`chapters.${chapterId}.lessons.${lessonId}.attachment`]:
+          "Attachment must be PDF, Word, or image.",
+      }));
+      return;
+    }
 
-  const maxSizeMB = 5; // Example max size, adjust as needed
-  if (file.size / 1024 / 1024 > maxSizeMB) {
-    toast.error(`Attachment size must be less than ${maxSizeMB} MB.`);
-    return;
-  }
+    const maxSizeMB = 5;
+    if (file.size / 1024 / 1024 > maxSizeMB) {
+      setErrors((prev) => ({
+        ...prev,
+        [`chapters.${chapterId}.lessons.${lessonId}.attachment`]: `Attachment must be < ${maxSizeMB}MB.`,
+      }));
+      return;
+    }
 
-  updateLessonField(chapterId, lessonId, "attachment", file);
-};
-
+    updateLessonField(chapterId, lessonId, "attachment", file);
+    setErrors((prev) => {
+      const newErr = { ...prev };
+      delete newErr[`chapters.${chapterId}.lessons.${lessonId}.attachment`];
+      return newErr;
+    });
+  };
 
   // Handle reorder of lessons inside a chapter
   const reorderLessons = (chapterId, oldIndex, newIndex) => {
@@ -150,73 +169,127 @@ const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
 
   // Validate form fields before publishing
   const validateForm = () => {
-  if (title.trim().length < 5)
-    return toast.error("Title must be at least 5 characters.");
-  if (subtitle.trim().length < 5)
-    return toast.error("Subtitle must be at least 5 characters.");
-  
-  const maxLength = 100;
-  if (title.length > maxLength)
-    return toast.error(`Title can't be longer than ${maxLength} characters.`);
-  if (subtitle.length > maxLength)
-    return toast.error(`Subtitle can't be longer than ${maxLength} characters.`);
+    let newErrors = {};
 
-  if (!description || description.trim().length < 20)
-    return toast.error("Description too short.");
-  if (!level) return toast.error("Please select a level.");
-  if (!category) return toast.error("Please select a category.");
-  if (!price || isNaN(price) || Number(price) <= 0)
-    return toast.error("Enter valid price.");
-  
-  if (!thumbnail) {
-    return toast.error("Please upload a course thumbnail.");
-  } 
+    if (title.trim().length < 5)
+      newErrors.title = "Title must be at least 5 characters.";
+    if (subtitle.trim().length < 5)
+      newErrors.subtitle = "Subtitle must be at least 5 characters.";
 
-  if (chapters.length === 0) return toast.error("Add at least one chapter.");
+    const maxLength = 100;
+    if (title.length > maxLength)
+      newErrors.title = `Title can't be longer than ${maxLength} characters.`;
+    if (subtitle.length > maxLength)
+      newErrors.subtitle = `Subtitle can't be longer than ${maxLength} characters.`;
 
-  // Check duplicate chapter titles once here
-  const chapterTitles = chapters.map((c) => c.title.trim().toLowerCase());
-  const uniqueChapterTitles = new Set(chapterTitles);
-  if (uniqueChapterTitles.size !== chapterTitles.length) {
-    return toast.error("Duplicate chapter titles detected.");
-  }
+    if (!description || description.trim().length < 20)
+      newErrors.description = "Title must be at least 20 characters.";
+    if (!level) newErrors.level = "Please select a level.";
+    if (!category) newErrors.category = "Please select a category.";
+    if (!price || isNaN(price) || Number(price) < 0)
+      newErrors.price = "Enter valid price.";
+    if (!thumbnail) newErrors.thumbnail = "Please upload a course thumbnail.";
 
-  for (const chapter of chapters) {
-    if (!chapter.title.trim())
-      return toast.error("Chapter title can't be empty.");
-    if (chapter.lessons.length === 0)
-      return toast.error("Each chapter must have at least one lesson.");
+    if (chapters.length === 0) newErrors.chapters = "Add at least one chapter.";
 
-    // Duplicate lesson titles inside this chapter
-    const lessonTitles = chapter.lessons.map((l) => l.title.trim().toLowerCase());
-    const uniqueLessonTitles = new Set(lessonTitles);
-    if (uniqueLessonTitles.size !== lessonTitles.length) {
-      return toast.error(`Duplicate lesson titles detected in chapter "${chapter.title}".`);
+    // Check duplicate chapter titles once here
+    const chapterTitles = chapters.map((c) => c.title.trim().toLowerCase());
+    const uniqueChapterTitles = new Set(chapterTitles);
+    if (uniqueChapterTitles.size !== chapterTitles.length) {
+      newErrors.duplicateChapters = "Duplicate chapter titles detected.";
     }
 
-    for (const lesson of chapter.lessons) {
-      if (!lesson.title.trim())
-        return toast.error("Lesson title can't be empty.");
-      if (!lesson.videoUrl.trim())
-        return toast.error("Lesson video URL can't be empty.");
+    chapters.forEach((chapter, chapterIndex) => {
+      if (!chapter.title.trim())
+        newErrors[`chapters.${chapterIndex}.title`] =
+          "Chapter title can't be empty.";
+      if (chapter.lessons.length === 0)
+        newErrors[`chapters.${chapterIndex}.lessons`] =
+          "Each chapter must have at least one lesson.";
 
-      const urlPattern = /^(http|https):\/\/[^ "]+$/;
-      if (!urlPattern.test(lesson.videoUrl.trim()))
-        return toast.error("Enter a valid video URL (must start with http or https).");
-
-      
+      // Duplicate lesson titles inside this chapter
+      const lessonTitles = chapter.lessons.map((l) =>
+        l.title.trim().toLowerCase()
+      );
+      const uniqueLessonTitles = new Set(lessonTitles);
+      if (uniqueLessonTitles.size !== lessonTitles.length) {
+        newErrors[`chapters.${chapterIndex}.duplicateLessons`] =
+          `Duplicate lesson titles detected in chapter "${chapter.title}".`;
       }
+
+      chapter.lessons.forEach((lesson, lessonIndex) => {
+        if (!lesson.title.trim())
+          newErrors[`chapters.${chapterIndex}.lessons.${lessonIndex}.title`] =
+            "Lesson title can't be empty.";
+        if (!lesson.videoUrl.trim())
+          newErrors[
+            `chapters.${chapterIndex}.lessons.${lessonIndex}.videoUrl`
+          ] = "Lesson video URL can't be empty.";
+
+        const urlPattern = /^(http|https):\/\/[^ "]+$/;
+        if (!urlPattern.test(lesson.videoUrl.trim()))
+          newErrors[
+            `chapters.${chapterIndex}.lessons.${lessonIndex}.videoUrl`
+          ] = "Enter a valid video URL (must start with http or https).";
+      });
+    });
+
+    setErrors(newErrors);
+    return newErrors;
+  };
+  const resetForm = () => {
+    setTitle("");
+    setSubtitle("");
+    setDescription("");
+    setLevel("");
+    setCategory("");
+    setPrice("");
+    setThumbnail(null);
+    setChapters([]);
+    setErrors({});
+    if (thumbnailInputRef.current) {
+      thumbnailInputRef.current.value = "";
     }
-  
-
-  return true;
-};
-
+  };
 
   const handlePublish = () => {
-    if (validateForm()) {
+    const newErrors = validateForm(); // capture the new error object
+    const isValid = Object.keys(newErrors).length === 0;
+
+    if (isValid) {
       toast.success("Course published");
-      // Here you can implement actual submit logic
+      resetForm();
+      // Log basic fields
+      console.log("Course Title:", title);
+      console.log("Subtitle:", subtitle);
+      console.log("Description:", description);
+      console.log("Level:", level);
+      console.log("Category:", category);
+      console.log("Price:", price);
+      console.log("Thumbnail File:", thumbnail?.name || "None");
+
+      // Log chapters and lessons
+      console.log("Chapters:");
+      chapters.forEach((chapter, cIdx) => {
+        console.log(`  Chapter ${cIdx + 1}: ${chapter.title}`);
+        chapter.lessons.forEach((lesson, lIdx) => {
+          console.log(`    Lesson ${lIdx + 1}:`);
+          console.log(`      Title: ${lesson.title}`);
+          console.log(`      Video URL: ${lesson.videoUrl}`);
+          console.log(`      Attachment: ${lesson.attachment?.name || "None"}`);
+        });
+      });
+    } else {
+      setTimeout(() => {
+        const firstErrorKey = Object.keys(newErrors)[0];
+        const el = document.querySelector(
+          `[data-error-key="${firstErrorKey}"]`
+        );
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+          el.focus();
+        }
+      }, 0);
     }
   };
 
@@ -236,16 +309,34 @@ const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
             placeholder="Course Title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
+            data-error-key="title"
           />
+          {errors.title && (
+            <p className="text-red-600 text-sm -mt-4">{errors.title}</p>
+          )}
+
           <Input
             placeholder="Subtitle"
             value={subtitle}
             onChange={(e) => setSubtitle(e.target.value)}
+            data-error-key="subtitle"
           />
+          {errors.subtitle && (
+            <p className="text-red-600 text-sm -mt-4">{errors.subtitle}</p>
+          )}
+
           <div>
             <label className="block font-medium mb-2">Course Description</label>
-            <RichTextEditor value={description} onChange={setDescription} />
+            <RichTextEditor
+              value={description}
+              onChange={setDescription}
+              data-error-key="description"
+            />
           </div>
+          {errors.description && (
+            <p className="text-red-600 text-sm -mt-4">{errors.description}</p>
+          )}
+
           <div className="flex flex-wrap gap-4">
             {levels.map((lvl) => (
               <label
@@ -259,15 +350,21 @@ const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
                   checked={level === lvl}
                   onChange={(e) => setLevel(e.target.value)}
                   className="cursor-pointer"
+                  data-error-key="level"
                 />
                 {lvl}
               </label>
             ))}
           </div>
+          {errors.level && (
+            <p className="text-red-600 text-sm -mt-4">{errors.level}</p>
+          )}
+
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
             className="w-full p-2 border rounded"
+            data-error-key="category"
           >
             <option value="" className="bg-primary">
               Select Category
@@ -278,42 +375,90 @@ const handleLessonAttachmentChange = (chapterId, lessonId, e) => {
               </option>
             ))}
           </select>
+          {errors.category && (
+            <p className="text-red-600 text-sm -mt-4">{errors.category}</p>
+          )}
+
           <Input
             type="number"
             placeholder="Course Price (₹)"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             min={0}
+            data-error-key="price"
           />
+          {errors.price && (
+            <p className="text-red-600 text-sm -mt-4">{errors.price}</p>
+          )}
+
           <div className="flex items-center gap-4">
             <Input
               type="file"
               accept="image/*"
+              ref={thumbnailInputRef}
               onChange={handleThumbnailChange}
               className="file:mr-4 file:font-normal file:text-gray-500 "
+              data-error-key="thumbnail"
             />
             {thumbnail && (
-              <img
-                src={URL.createObjectURL(thumbnail)}
-                alt="Preview"
-                className="w-32 h-20 object-cover rounded"
-              />
+              
+                <img
+                  src={URL.createObjectURL(thumbnail)}
+                  alt="Preview"
+                  className="w-32 h-20 object-cover"
+                />
+              
             )}
           </div>
+          {thumbnail&& (
+            <div className="flex items-center space-x-2 -mt-10 ">
+              <p className="text-xs text-muted-foreground">
+                {thumbnail.name}
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                    setThumbnail(null);
+                    thumbnailInputRef.current.value = null; // resets file input
+                  }}
+                className="text-red-500 hover:text-red-700 font-bold"
+                aria-label="Remove attachment"
+                title="Remove attachment"
+              >
+                ✕
+              </button>
+            </div>
+          )}
+
+          {errors.thumbnail && (
+            <p className="text-red-600 text-sm -mt-4">{errors.thumbnail}</p>
+          )}
         </div>
 
         {/* Right Column */}
         <div>
           <div className="flex justify-between items-end mb-4">
             <h3 className="font-semibold">Chapters & Lessons</h3>
-            <Button onClick={addChapter} size="sm">
+            <Button onClick={addChapter} size="sm" data-error-key="chapters">
               + Add Chapter
             </Button>
           </div>
+          {errors.chapters && (
+            <p className="text-sm text-red-600 -mt-4">{errors.chapters}</p>
+          )}
+          {errors.duplicateChapters && (
+            <p
+              className="text-sm text-red-600 -mt-4"
+              data-error-key="duplicateChapters"
+            >
+              {errors.duplicateChapters}
+            </p>
+          )}
 
           <ChapterList
             chapters={chapters}
             setChapters={setChapters}
+            errors={errors}
             updateChapterTitle={updateChapterTitle}
             removeChapter={removeChapter}
             addLesson={addLesson}

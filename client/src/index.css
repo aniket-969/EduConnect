@@ -182,3 +182,11 @@
 .editor-content a {
   @apply text-blue-600 underline cursor-pointer hover:text-blue-800;
 }
+.ProseMirror p.is-editor-empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  float: left;
+  height: 0;
+  pointer-events: none;
+  user-select: none;
+}

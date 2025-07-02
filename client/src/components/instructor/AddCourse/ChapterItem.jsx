@@ -1,4 +1,4 @@
-// 📁 src/app/routes/pages/ChapterItem.jsx
+//ChapterItem.jsx
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -23,6 +23,8 @@ export default function ChapterItem({
   removeLesson,
   handleLessonAttachmentChange,
   reorderLessons,
+  chapterError, 
+  lessonErrors = {}, 
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id,
@@ -45,7 +47,7 @@ export default function ChapterItem({
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="mb-6 p-4 border rounded shadow bg-card">
+    <div ref={setNodeRef} style={style} className="mb-6 p-4 border rounded shadow bg-card" data-error-key={`chapters.${index}.duplicateLessons`}>
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2 w-full">
           <span {...attributes} {...listeners} className="cursor-grab text-muted-foreground">
@@ -56,12 +58,19 @@ export default function ChapterItem({
             onChange={(e) => updateTitle(e.target.value)}
             placeholder={`Chapter ${index + 1} Title`}
             className="flex-grow"
+            data-error-key={`chapters.${index}.title`}
           />
+          
         </div>
+        
         <Button size="icon" variant="none"  className="text-white hover:text-red-500 transition-colors duration-200" onClick={remove} title="Remove Chapter">
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
+      {chapterError && (
+  <p className="text-sm text-red-600 -mt-3 pl-6">{chapterError}</p>
+)}
+
 
       <DndContext collisionDetection={closestCenter} onDragEnd={onLessonDragEnd}>
         <SortableContext
@@ -72,17 +81,19 @@ export default function ChapterItem({
             <LessonItem
               key={lesson.id}
               chapterId={chapter.id}
+              chapterIndex={index}
               lesson={lesson}
-              index={idx}
+              lessonIndex={idx}
               updateLessonField={updateLessonField}
               handleLessonAttachmentChange={handleLessonAttachmentChange}
               removeLesson={removeLesson}
+              error={lessonErrors?.[lesson.id]}
             />
           ))}
         </SortableContext>
       </DndContext>
 
-      <Button size="sm" onClick={addLesson} className="mt-2">
+      <Button size="sm" onClick={addLesson} className="mt-2" data-error-key={`chapters.${index}.lessons`}>
         + Add Lesson
       </Button>
     </div>

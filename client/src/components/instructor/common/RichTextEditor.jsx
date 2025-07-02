@@ -3,6 +3,7 @@ import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Underline from "@tiptap/extension-underline";
 import Link from "@tiptap/extension-link";
+import Placeholder from '@tiptap/extension-placeholder';
 
 import { FaBold, FaItalic, FaUnderline, FaLink,FaUnlink, FaHeading, FaListUl, FaListOl, FaUndo, FaRedo, FaParagraph } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,16 @@ const RichTextEditor = ({ value, onChange }) => {
   extensions: [
     StarterKit.configure({
       heading: {
-        levels: [1, 2, 3], // instead of importing Heading separately
+        levels: [1, 2, 3], 
       },
     }),
     Underline,
     Link,
+     Placeholder.configure({
+      placeholder: 'Write your course description here...',
+    }),
   ],
-  content: value || "<p>Write your course description here...</p>",
+  content: value || "",
   onUpdate: ({ editor }) => {
     onChange?.(editor.getHTML());
   },
