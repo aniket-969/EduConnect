@@ -30,6 +30,9 @@ public class CourseService {
             existing.setStatus(updatedCourse.getStatus());
             existing.setThumbnailUrl(updatedCourse.getThumbnailUrl());
             existing.setImageUrls(updatedCourse.getImageUrls());
+            existing.setPrice(updatedCourse.getPrice());
+            existing.setLevel(updatedCourse.getLevel());
+            existing.setLearningObjectives(updatedCourse.getLearningObjectives());
             return courseRepository.save(existing);
         });
     }
