@@ -1,7 +1,10 @@
 import React, { useRef } from "react";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CourseDraftSchema, CoursePublishedSchema } from "@/schema/courseSchema";
+import {
+  CourseDraftSchema,
+  CoursePublishedSchema,
+} from "@/schema/courseSchema";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,7 +28,7 @@ export default function AddNewCourse() {
       price: "",
       thumbnail: null,
       chapters: [],
-      status:"draft",
+      status: "draft",
     },
   });
   const {
@@ -53,40 +56,52 @@ export default function AddNewCourse() {
     },
   });
 
-const submitAction = useRef("draft"); // default
-const setFormErrors = (zodErrors) => {
-  const flatErrors = zodErrors.flatten();
-  Object.entries(flatErrors.fieldErrors).forEach(([field, messages]) => {
-    if (messages && messages.length > 0) {
-      setError(field, {
-        type: "manual",
-        message: messages[0],
-      });
+  const submitAction = useRef("draft"); // default
+
+  const setFormErrors = (zodErrors) => {
+    const flatErrors = zodErrors.flatten();
+    let firstErrorKey = null;
+
+    Object.entries(flatErrors.fieldErrors).forEach(([field, messages]) => {
+      if (messages && messages.length > 0) {
+        setError(field, {
+          type: "manual",
+          message: messages[0],
+        });
+        if (!firstErrorKey) {
+          firstErrorKey = field;
+        }
+      }
+    });
+
+    // Scroll to the first invalid field
+    if (firstErrorKey) {
+      const el = document.querySelector(`[data-error-key="${firstErrorKey}"]`);
+      if (el && typeof el.scrollIntoView === "function") {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+        el.focus?.();
+      }
     }
-  });
-};
+  };
 
+  const onSubmit = async (formData) => {
+    formData.status = submitAction.current; // ensure status is correct
 
-const onSubmit = async (formData) => {
-  formData.status = submitAction.current; // ensure status is correct
+    if (submitAction.current === "published") {
+      const result = CoursePublishedSchema.safeParse(formData);
 
-  if (submitAction.current === "published") {
-    const result = CoursePublishedSchema.safeParse(formData);
+      if (!result.success) {
+        toast.error("Please fix errors before publishing.");
+        setFormErrors(result.error);
+        console.log(result.error.format());
+        return;
+      }
 
-    if (!result.success) {
-      toast.error("Please fix errors before publishing.");
-      setFormErrors(result.error);
-      console.log(result.error.format());
-      return;
+      submitCourse(result.data);
+    } else {
+      submitCourse(formData);
     }
-
-    submitCourse(result.data);
-  } else {
-    submitCourse(formData);
-  }
-};
-
-
+  };
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
@@ -103,37 +118,35 @@ const onSubmit = async (formData) => {
         <h2 className="text-2xl font-semibold mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           Add New Course
           <div className="flex gap-4 justify-end ">
-<Button
-  type="submit"
-  variant="outline"
-  disabled={isLoading}
-  onClick={() => (submitAction.current = "draft")}
->
-  Save as Draft
-</Button>
+            <Button
+              type="submit"
+              variant="outline"
+              disabled={isLoading}
+              onClick={() => (submitAction.current = "draft")}
+            >
+              Save as Draft
+            </Button>
 
-<Button
-  type="submit"
-  disabled={isLoading}
-  onClick={() => (submitAction.current = "published")}
->
-  Publish
-</Button>
-
-
-  </div>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              onClick={() => (submitAction.current = "published")}
+            >
+              Publish
+            </Button>
+          </div>
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <Input placeholder="Course Title" {...register("title")} />
+            <Input placeholder="Course Title" {...register("title")} data-error-key="title" />
             {errors.title && (
               <p className="text-red-600 text-sm -mt-4">
                 {errors.title.message}
               </p>
             )}
 
-            <Input placeholder="Subtitle" {...register("subtitle")} />
+            <Input placeholder="Subtitle" {...register("subtitle")} data-error-key="subtitle" />
             {errors.subtitle && (
               <p className="text-red-600 text-sm -mt-4">
                 {errors.subtitle.message}
@@ -147,6 +160,7 @@ const onSubmit = async (formData) => {
               <RichTextEditor
                 value={watch("description")}
                 onChange={(value) => setValue("description", value)}
+                data-error-key="description"
               />
               {errors.description && (
                 <p className="text-red-600 text-sm ">
@@ -172,7 +186,7 @@ const onSubmit = async (formData) => {
               ))}
             </div>
             {errors.level && (
-              <p className="text-red-600 text-sm -mt-4">
+              <p className="text-red-600 text-sm -mt-4" data-error-key="level">
                 {errors.level.message}
               </p>
             )}
@@ -180,6 +194,7 @@ const onSubmit = async (formData) => {
             <select
               {...register("category")}
               className="w-full p-2 border rounded"
+              data-error-key="category"
             >
               <option value="">Select Category</option>
               {["Web Development", "Data Science", "AI", "Cloud", "Others"].map(
@@ -201,6 +216,7 @@ const onSubmit = async (formData) => {
               placeholder="Course Price (₹)"
               {...register("price")}
               min={0}
+              data-error-key="price"
             />
             {errors.price && (
               <p className="text-red-600 text-sm -mt-4">
@@ -214,6 +230,8 @@ const onSubmit = async (formData) => {
               ref={thumbnailInputRef}
               onChange={handleThumbnailChange}
               className="file:mr-4 file:font-normal file:text-gray-500"
+              data-error-key="thumbnail"
+              
             />
             {watch("thumbnail") && (
               <div className="flex items-center space-x-2">
@@ -235,7 +253,7 @@ const onSubmit = async (formData) => {
               </div>
             )}
             {errors.thumbnail && (
-              <p className="text-red-600 text-sm -mt-4">
+              <p className="text-red-600 text-sm -mt-4" >
                 {errors.thumbnail.message}
               </p>
             )}

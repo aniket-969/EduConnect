@@ -39,13 +39,13 @@ export default function ChapterList() {
         <div>
       <div className="flex justify-between items-end mb-4">
         <h3 className="font-semibold">Chapters & Lessons</h3>
-        <Button type="button" onClick={() => appendChapter({ title: "", lessons: [] })}>
+        <Button type="button" onClick={() => appendChapter({ title: "", lessons: [] })} data-error-key="chapters">
           + Add Chapter
         </Button>
       </div>
 
       {errors.chapters && typeof errors.chapters.message === "string" && (
-        <p className="text-sm text-red-600 -mt-4">{errors.chapters.message}</p>
+        <p className="text-sm text-green-600 -mt-4">{errors.chapters.message}</p>
       )}
     <DndContext collisionDetection={closestCenter} onDragEnd={handleChapterDragEnd}>
       <SortableContext

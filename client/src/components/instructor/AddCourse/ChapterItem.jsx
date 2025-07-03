@@ -97,7 +97,7 @@ console.log("Errors:", errors);
       </div>
       
       {chapterErrors?.title && (
-        <p className="text-sm text-red-600 -mt-2 pl-6">{chapterErrors.title.message}</p>
+        <p className="text-sm text-yellow-600 -mt-2 pl-6">{chapterErrors.title.message}</p>
       )}
       {chapterErrors?.lessons?.message && (
         <p className="text-sm text-red-600 -mt-1 pl-6">{chapterErrors.lessons.message}</p>
