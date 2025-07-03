@@ -5,7 +5,6 @@ import {
   CourseDraftSchema,
   CoursePublishedSchema,
 } from "@/schema/courseSchema";
-import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import RichTextEditor from "../common/RichTextEditor";
@@ -58,31 +57,44 @@ export default function AddNewCourse() {
 
   const submitAction = useRef("draft"); // default
 
-  const setFormErrors = (zodErrors) => {
-    const flatErrors = zodErrors.flatten();
-    let firstErrorKey = null;
 
-    Object.entries(flatErrors.fieldErrors).forEach(([field, messages]) => {
-      if (messages && messages.length > 0) {
-        setError(field, {
+
+
+const setFormErrors = (zodError) => {
+  let firstErrorField = null;
+
+  const recurseErrors = (errorObject, path = []) => {
+    for (const key in errorObject) {
+      if (key === "_errors" && errorObject[key].length > 0) {
+        const fieldPath = path.join(".");
+        setError(fieldPath, {
           type: "manual",
-          message: messages[0],
+          message: errorObject[key][0],
         });
-        if (!firstErrorKey) {
-          firstErrorKey = field;
-        }
-      }
-    });
 
-    // Scroll to the first invalid field
-    if (firstErrorKey) {
-      const el = document.querySelector(`[data-error-key="${firstErrorKey}"]`);
-      if (el && typeof el.scrollIntoView === "function") {
-        el.scrollIntoView({ behavior: "smooth", block: "center" });
-        el.focus?.();
+        if (!firstErrorField) {
+          firstErrorField = fieldPath;
+        }
+      } else if (typeof errorObject[key] === "object" && errorObject[key] !== null) {
+        recurseErrors(errorObject[key], [...path, key]);
       }
     }
   };
+
+  recurseErrors(zodError.format());
+
+  // Scroll after errors are set
+  if (firstErrorField) {
+    const errorElement = document.querySelector(`[data-error-key="${firstErrorField}"]`);
+    if (errorElement) {
+      errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      errorElement.focus?.(); // optional focus
+    }
+  }
+};
+
+ 
+
 
   const onSubmit = async (formData) => {
     formData.status = submitAction.current; // ensure status is correct
@@ -196,10 +208,10 @@ export default function AddNewCourse() {
               className="w-full p-2 border rounded"
               data-error-key="category"
             >
-              <option value="">Select Category</option>
+              <option value="" className="bg-primary">Select Category</option>
               {["Web Development", "Data Science", "AI", "Cloud", "Others"].map(
                 (cat) => (
-                  <option key={cat} value={cat}>
+                  <option key={cat} value={cat} className="bg-accent-foreground">
                     {cat}
                   </option>
                 )

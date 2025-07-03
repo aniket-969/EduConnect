@@ -32,9 +32,10 @@ export default function ChapterItem({ id, chapterIndex, removeChapter }) {
     name: `chapters.${chapterIndex}.lessons`,
   });
 
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({
+      id,
+    });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -44,11 +45,17 @@ export default function ChapterItem({ id, chapterIndex, removeChapter }) {
   const handleLessonAttachmentChange = (lessonIndex, e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setValue(`chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`, file);
+    setValue(
+      `chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`,
+      file
+    );
   };
 
   const clearAttachment = (lessonIndex) => {
-    setValue(`chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`, null);
+    setValue(
+      `chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`,
+      null
+    );
   };
 
   const onLessonDragEnd = (event) => {
@@ -63,19 +70,24 @@ export default function ChapterItem({ id, chapterIndex, removeChapter }) {
   };
 
   const chapterErrors = errors?.chapters?.[chapterIndex] || {};
-console.log("Errors:", errors);
+  console.log("Errors:", errors);
+  console.log("ChapterErrors for index", chapterIndex, chapterErrors);
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="mb-6 p-4 border rounded shadow bg-card"
+      className="mb-6 p-4 border rounded shadow bg-card "
       data-error-key={`chapters.${chapterIndex}.title`}
     >
       {/* Chapter Header */}
-      <div className="flex justify-between items-center mb-3">
+      <div className="flex justify-between items-center mb-3 ">
         <div className="flex items-center gap-2 w-full">
-          <span {...attributes} {...listeners} className="cursor-grab text-muted-foreground">
+          <span
+            {...attributes}
+            {...listeners}
+            className="cursor-grab text-muted-foreground"
+          >
             <GripVertical className="w-4 h-4" />
           </span>
           <Input
@@ -95,16 +107,26 @@ console.log("Errors:", errors);
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-      
-      {chapterErrors?.title && (
-        <p className="text-sm text-yellow-600 -mt-2 pl-6">{chapterErrors.title.message}</p>
-      )}
-      {chapterErrors?.lessons?.message && (
-        <p className="text-sm text-red-600 -mt-1 pl-6">{chapterErrors.lessons.message}</p>
+
+      {typeof chapterErrors.title?.message === "string" && (
+        <p className="text-sm text-red-600 -mt-2 pl-6 mb-1">
+          {chapterErrors.title.message}
+        </p>
       )}
 
+      {typeof chapterErrors.lessons === "object" &&
+        !Array.isArray(chapterErrors.lessons) &&
+        chapterErrors.lessons?.message && (
+          <p className="text-sm text-red-600 -mt-2 pl-6">
+            {chapterErrors.lessons.message}
+          </p>
+        )}
+
       {/* Lessons List */}
-      <DndContext collisionDetection={closestCenter} onDragEnd={onLessonDragEnd}>
+      <DndContext
+        collisionDetection={closestCenter}
+        onDragEnd={onLessonDragEnd}
+      >
         <SortableContext
           items={lessonFields.map((l) => l.id)}
           strategy={verticalListSortingStrategy}
@@ -116,7 +138,9 @@ console.log("Errors:", errors);
               chapterIndex={chapterIndex}
               lessonIndex={lessonIndex}
               removeLesson={() => removeLesson(lessonIndex)}
-              onAttachmentChange={(e) => handleLessonAttachmentChange(lessonIndex, e)}
+              onAttachmentChange={(e) =>
+                handleLessonAttachmentChange(lessonIndex, e)
+              }
               onClearAttachment={() => clearAttachment(lessonIndex)}
             />
           ))}
@@ -127,7 +151,9 @@ console.log("Errors:", errors);
       <Button
         size="sm"
         type="button"
-        onClick={() => appendLesson({ title: "", videoUrl: "", attachment: null })}
+        onClick={() =>
+          appendLesson({ title: "", videoUrl: "", attachment: null })
+        }
         className="mt-2"
       >
         + Add Lesson

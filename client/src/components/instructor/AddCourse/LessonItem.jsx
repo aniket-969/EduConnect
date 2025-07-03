@@ -50,6 +50,7 @@ export default function LessonItem({
           {...register(`${lessonPath}.title`)}
           placeholder={`Lesson ${lessonIndex + 1} Title`}
           className="flex-grow"
+          data-error-key={`${lessonPath}.title`}
         />
 
         <button
@@ -70,6 +71,8 @@ export default function LessonItem({
         <Input
           {...register(`${lessonPath}.videoUrl`)}
           placeholder="Video URL"
+          data-error-key={`${lessonPath}.videoUrl`}
+
         />
         {lessonErrors?.videoUrl && (
           <p className="text-sm text-red-600 -mt-2">{lessonErrors.videoUrl.message}</p>
