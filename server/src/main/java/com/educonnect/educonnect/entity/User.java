@@ -29,6 +29,8 @@ public class User {
 
     private String avatarUrl;
 
+    private String bio;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -50,7 +52,7 @@ public class User {
     public User() {}
 
     public User(UUID id, String name, String email, String password, Role role,
-                String avatarUrl, LocalDateTime createdAt, LocalDateTime updatedAt,
+                String avatarUrl,String bio, LocalDateTime createdAt, LocalDateTime updatedAt,
                 List<Course> createdCourses, List<Course> enrolledCourses) {
         this.id = id;
         this.name = name;
@@ -58,6 +60,7 @@ public class User {
         this.password = password;
         this.role = role;
         this.avatarUrl = avatarUrl;
+        this.bio=bio;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.createdCourses = createdCourses;
@@ -126,6 +129,10 @@ public class User {
     public void setAvatarUrl(String avatarUrl) {
         this.avatarUrl = avatarUrl;
     }
+
+    public String getBio() { return bio; }
+
+    public void setBio() { this.bio=bio; }
 
     public LocalDateTime getCreatedAt() {
         return createdAt;
