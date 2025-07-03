@@ -6,11 +6,13 @@ import com.educonnect.educonnect.entity.User;
 import com.educonnect.educonnect.dao.CourseRepository;
 import com.educonnect.educonnect.dao.RatingRepository;
 import com.educonnect.educonnect.dao.UserRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class RatingService {
@@ -24,7 +26,7 @@ public class RatingService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public String submitRating(Long studentId, Long courseId, int rating, String comment) {
+    public String submitRating(UUID studentId, UUID courseId, int rating, String comment) {
         Optional<User> studentOpt = userRepository.findById(studentId);
         Optional<Course> courseOpt = courseRepository.findById(courseId);
 
@@ -37,31 +39,26 @@ public class RatingService {
 
         Optional<Rating> existingRating = ratingRepository.findByStudentAndCourse(student, course);
 
-        if (existingRating.isPresent()) {
-            Rating r = existingRating.get();
-            r.setRating(rating);
-            r.setComment(comment);
-            ratingRepository.save(r);
-            return "Rating updated";
-        }
+        Rating ratingEntity = existingRating.orElse(new Rating());
+        ratingEntity.setStudent(student);
+        ratingEntity.setCourse(course);
+        ratingEntity.setRating(rating);
+        ratingEntity.setComment(comment);
 
-        Rating newRating = new Rating();
-        newRating.setStudent(student);
-        newRating.setCourse(course);
-        newRating.setRating(rating);
-        newRating.setComment(comment);
-        ratingRepository.save(newRating);
+        ratingRepository.save(ratingEntity);
 
-        return "Rating submitted";
+        return existingRating.isPresent() ? "Rating updated" : "Rating submitted";
     }
 
-    public List<Rating> getRatingsByCourse(Long courseId) {
-        Course course = courseRepository.findById(courseId).orElse(null);
-        return ratingRepository.findByCourse(course);
+    public List<Rating> getRatingsByCourse(UUID courseId) {
+        return courseRepository.findById(courseId)
+                .map(ratingRepository::findByCourse)
+                .orElse(List.of());
     }
 
-    public List<Rating> getRatingsByStudent(Long studentId) {
-        User student = userRepository.findById(studentId).orElse(null);
-        return ratingRepository.findByStudent(student);
+    public List<Rating> getRatingsByStudent(UUID studentId) {
+        return userRepository.findById(studentId)
+                .map(ratingRepository::findByStudent)
+                .orElse(List.of());
     }
 }

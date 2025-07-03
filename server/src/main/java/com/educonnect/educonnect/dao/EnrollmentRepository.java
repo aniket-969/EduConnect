@@ -4,11 +4,14 @@ import com.educonnect.educonnect.entity.Enrollment;
 import com.educonnect.educonnect.entity.User;
 import com.educonnect.educonnect.entity.Course;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
-public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
+@Repository
+public interface EnrollmentRepository extends JpaRepository<Enrollment, UUID> {
 
     List<Enrollment> findByStudent(User student);
 
