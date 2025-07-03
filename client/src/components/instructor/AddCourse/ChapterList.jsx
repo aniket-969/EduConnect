@@ -1,86 +1,67 @@
 import React from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
-  arrayMove,
   SortableContext,
+  arrayMove,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { Button } from "@/components/ui/button";
 import ChapterItem from "./ChapterItem";
 
-export default function ChapterList({
-  chapters,
-  setChapters,
-  updateChapterTitle,
-  removeChapter,
-  addLesson,
-  updateLessonField,
-  removeLesson,
-  handleLessonAttachmentChange,
-  reorderLessons,
-  errors = {},
-}) {
+export default function ChapterList() {
+  const {
+    control,
+    formState: { errors },
+  } = useFormContext();
+
+  const {
+    fields: chapterFields,
+    append: appendChapter,
+    remove: removeChapter,
+    move: moveChapter,
+  } = useFieldArray({
+    control,
+    name: "chapters",
+  });
+
   const handleChapterDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = chapters.findIndex((c) => c.id === active.id);
-    const newIndex = chapters.findIndex((c) => c.id === over.id);
+    const oldIndex = chapterFields.findIndex((c) => c.id === active.id);
+    const newIndex = chapterFields.findIndex((c) => c.id === over.id);
 
-    setChapters(arrayMove(chapters, oldIndex, newIndex));
+    moveChapter(oldIndex, newIndex);
   };
-  function getLessonErrors(errors, chapterIndex, chapter) {
-    const lessonErrors = {};
-
-    for (const [key, message] of Object.entries(errors)) {
-      const regex = new RegExp(
-        `^chapters\\.${chapterIndex}\\.lessons\\.(\\d+)\\.(\\w+)$`
-      );
-      const match = key.match(regex);
-      if (match) {
-        const [, lessonIndexStr, field] = match;
-        const lessonIndex = parseInt(lessonIndexStr);
-        const lessonId = chapter.lessons?.[lessonIndex]?.id;
-        if (lessonId) {
-          if (!lessonErrors[lessonId]) lessonErrors[lessonId] = {};
-          lessonErrors[lessonId][field] = message;
-        }
-      }
-    }
-
-    return lessonErrors;
-  }
 
   return (
-    <DndContext
-      collisionDetection={closestCenter}
-      onDragEnd={handleChapterDragEnd}
-    >
+        <div>
+      <div className="flex justify-between items-end mb-4">
+        <h3 className="font-semibold">Chapters & Lessons</h3>
+        <Button type="button" onClick={() => appendChapter({ title: "", lessons: [] })}>
+          + Add Chapter
+        </Button>
+      </div>
+
+      {errors.chapters && typeof errors.chapters.message === "string" && (
+        <p className="text-sm text-red-600 -mt-4">{errors.chapters.message}</p>
+      )}
+    <DndContext collisionDetection={closestCenter} onDragEnd={handleChapterDragEnd}>
       <SortableContext
-        items={chapters.map((c) => c.id)}
+        items={chapterFields.map((chapter) => chapter.id)}
         strategy={verticalListSortingStrategy}
       >
-        {chapters.map((chapter, index) => (
+        {chapterFields.map((chapter, index) => (
           <ChapterItem
             key={chapter.id}
             id={chapter.id}
-            index={index}
-            chapter={chapter}
-            updateTitle={(title) => updateChapterTitle(chapter.id, title)}
-            remove={() => removeChapter(chapter.id)}
-            addLesson={() => addLesson(chapter.id)}
-            updateLessonField={updateLessonField}
-            removeLesson={removeLesson}
-            handleLessonAttachmentChange={handleLessonAttachmentChange}
-            reorderLessons={reorderLessons}
-            chapterError={
-              errors[`chapters.${index}.title`] ||
-              errors[`chapters.${index}.lessons`] ||
-              errors[`chapters.${index}.duplicateLessons`]
-            }
-            lessonErrors={getLessonErrors(errors, index, chapter)}
+            chapterIndex={index}
+            removeChapter={() => removeChapter(index)}
           />
         ))}
       </SortableContext>
     </DndContext>
+      </div>
   );
 }

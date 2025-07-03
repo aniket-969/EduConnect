@@ -1,5 +1,4 @@
-//ChapterItem.jsx
-import React from "react";
+import React, { useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
@@ -10,22 +9,29 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { useFormContext, useFieldArray } from "react-hook-form";
 import LessonItem from "./LessonItem";
 
-export default function ChapterItem({
-  id,
-  index,
-  chapter,
-  updateTitle,
-  remove,
-  addLesson,
-  updateLessonField,
-  removeLesson,
-  handleLessonAttachmentChange,
-  reorderLessons,
-  chapterError, 
-  lessonErrors = {}, 
-}) {
+export default function ChapterItem({ id, chapterIndex, removeChapter }) {
+  const {
+    register,
+    control,
+    setValue,
+    getValues,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
+  const {
+    fields: lessonFields,
+    append: appendLesson,
+    remove: removeLesson,
+    move: moveLesson,
+  } = useFieldArray({
+    control,
+    name: `chapters.${chapterIndex}.lessons`,
+  });
+
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id,
   });
@@ -35,65 +41,95 @@ export default function ChapterItem({
     transition,
   };
 
+  const handleLessonAttachmentChange = (lessonIndex, e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setValue(`chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`, file);
+  };
+
+  const clearAttachment = (lessonIndex) => {
+    setValue(`chapters.${chapterIndex}.lessons.${lessonIndex}.attachment`, null);
+  };
+
   const onLessonDragEnd = (event) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = chapter.lessons.findIndex((l) => l.id === active.id);
-    const newIndex = chapter.lessons.findIndex((l) => l.id === over.id);
+    const oldIndex = lessonFields.findIndex((l) => l.id === active.id);
+    const newIndex = lessonFields.findIndex((l) => l.id === over.id);
     if (oldIndex === -1 || newIndex === -1) return;
 
-    reorderLessons(chapter.id, oldIndex, newIndex);
+    moveLesson(oldIndex, newIndex);
   };
 
+  const chapterErrors = errors?.chapters?.[chapterIndex] || {};
+console.log("Errors:", errors);
+
   return (
-    <div ref={setNodeRef} style={style} className="mb-6 p-4 border rounded shadow bg-card" data-error-key={`chapters.${index}.duplicateLessons`}>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="mb-6 p-4 border rounded shadow bg-card"
+      data-error-key={`chapters.${chapterIndex}.title`}
+    >
+      {/* Chapter Header */}
       <div className="flex justify-between items-center mb-3">
         <div className="flex items-center gap-2 w-full">
           <span {...attributes} {...listeners} className="cursor-grab text-muted-foreground">
             <GripVertical className="w-4 h-4" />
           </span>
           <Input
-            value={chapter.title}
-            onChange={(e) => updateTitle(e.target.value)}
-            placeholder={`Chapter ${index + 1} Title`}
+            {...register(`chapters.${chapterIndex}.title`)}
+            placeholder={`Chapter ${chapterIndex + 1} Title`}
             className="flex-grow"
-            data-error-key={`chapters.${index}.title`}
           />
-          
         </div>
-        
-        <Button size="icon" variant="none"  className="text-white hover:text-red-500 transition-colors duration-200" onClick={remove} title="Remove Chapter">
+
+        <Button
+          size="icon"
+          variant="ghost"
+          className="text-white hover:text-red-500 transition-colors"
+          onClick={removeChapter}
+          title="Remove Chapter"
+        >
           <Trash2 className="w-4 h-4" />
         </Button>
       </div>
-      {chapterError && (
-  <p className="text-sm text-red-600 -mt-3 pl-6">{chapterError}</p>
-)}
+      
+      {chapterErrors?.title && (
+        <p className="text-sm text-red-600 -mt-2 pl-6">{chapterErrors.title.message}</p>
+      )}
+      {chapterErrors?.lessons?.message && (
+        <p className="text-sm text-red-600 -mt-1 pl-6">{chapterErrors.lessons.message}</p>
+      )}
 
-
+      {/* Lessons List */}
       <DndContext collisionDetection={closestCenter} onDragEnd={onLessonDragEnd}>
         <SortableContext
-          items={chapter.lessons.map((l) => l.id)}
+          items={lessonFields.map((l) => l.id)}
           strategy={verticalListSortingStrategy}
         >
-          {chapter.lessons.map((lesson, idx) => (
+          {lessonFields.map((lesson, lessonIndex) => (
             <LessonItem
               key={lesson.id}
-              chapterId={chapter.id}
-              chapterIndex={index}
-              lesson={lesson}
-              lessonIndex={idx}
-              updateLessonField={updateLessonField}
-              handleLessonAttachmentChange={handleLessonAttachmentChange}
-              removeLesson={removeLesson}
-              error={lessonErrors?.[lesson.id]}
+              lessonId={lesson.id}
+              chapterIndex={chapterIndex}
+              lessonIndex={lessonIndex}
+              removeLesson={() => removeLesson(lessonIndex)}
+              onAttachmentChange={(e) => handleLessonAttachmentChange(lessonIndex, e)}
+              onClearAttachment={() => clearAttachment(lessonIndex)}
             />
           ))}
         </SortableContext>
       </DndContext>
 
-      <Button size="sm" onClick={addLesson} className="mt-2" data-error-key={`chapters.${index}.lessons`}>
+      {/* Add Lesson */}
+      <Button
+        size="sm"
+        type="button"
+        onClick={() => appendLesson({ title: "", videoUrl: "", attachment: null })}
+        className="mt-2"
+      >
         + Add Lesson
       </Button>
     </div>
