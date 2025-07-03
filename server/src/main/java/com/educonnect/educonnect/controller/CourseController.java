@@ -95,4 +95,27 @@ public class CourseController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PutMapping("/publish/{id}")
+    public ResponseEntity<?> publishCourse(@PathVariable UUID id) {
+        Optional<Course> optionalCourse = courseService.getCourseById(id);
+
+        if (optionalCourse.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        Course course = optionalCourse.get();
+
+        if (course.getStatus() == CourseStatus.PUBLISHED) {
+            return ResponseEntity.badRequest().body("Course is already published.");
+        }
+
+        course.setStatus(CourseStatus.PUBLISHED);
+        course.setPublishedOn(java.time.LocalDateTime.now());
+
+        courseService.saveCourse(course);
+        return ResponseEntity.ok("Course published successfully.");
+    }
+
 }
