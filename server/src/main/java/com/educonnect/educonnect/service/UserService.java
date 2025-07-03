@@ -48,6 +48,7 @@ public class UserService {
             existingUser.setEmail(updatedUser.getEmail());
             existingUser.setAvatarUrl(updatedUser.getAvatarUrl());
             existingUser.setPassword(updatedUser.getPassword());
+            existingUser.setBio(updatedUser.getBio());
             // Optionally: Don't allow role change directly here
             return userRepository.save(existingUser);
         }).orElseThrow(() -> new RuntimeException("User not found with ID: " + id));
