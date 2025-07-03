@@ -29,7 +29,7 @@ const chapterSchema = z
     });
   });
 
-export const CourseFormSchema = z
+export const CoursePublishedSchema = z
   .object({
     title: z.string().min(5).max(100),
     subtitle: z.string().min(5).max(100),
@@ -44,6 +44,7 @@ export const CourseFormSchema = z
     thumbnail: z.custom((file) => file instanceof File && file.size > 0, {
       message: "Please upload a course thumbnail",
     }),
+    status: z.literal("published"),
     chapters: z.array(chapterSchema).min(1, "Add at least one chapter"),
   })
   .superRefine((data, ctx) => {
@@ -64,5 +65,26 @@ export const CourseFormSchema = z
       seen.add(title);
     }
   });
+});
+
+
+// CourseDraftSchema.ts
+export const CourseDraftSchema = z.object({
+  title: z.string().min(5, "Title must be at least 5 characters"),
+  thumbnail: z.custom((file) => file instanceof File && file.size > 0, {
+    message: "Please upload a course thumbnail",
+  }),
+  status: z.literal("draft"),
+  subtitle: z.string().optional(),
+  description: z.string().optional(),
+  level: z.string().optional(),
+  category: z.string().optional(),
+  price: z
+    .string()
+    .optional()
+    .refine((val) => val === undefined || !isNaN(+val), {
+      message: "Enter a valid price",
+    }),
+  chapters: z.array(z.any()).optional(),
 });
 

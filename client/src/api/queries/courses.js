@@ -11,6 +11,8 @@ export const createCourse = async (courseData) => {
   formData.append("category", courseData.category);
   formData.append("price", courseData.price);
   formData.append("thumbnail", courseData.thumbnail);
+  formData.append("status", courseData.status);
+
 
   courseData.chapters.forEach((chapter, chapterIndex) => {
     formData.append(`chapters[${chapterIndex}][title]`, chapter.title);

@@ -1,7 +1,8 @@
 import React, { useRef } from "react";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CourseFormSchema } from "@/schema/CourseFormSchema";
+import { CourseDraftSchema, CoursePublishedSchema } from "@/schema/courseSchema";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import RichTextEditor from "../common/RichTextEditor";
@@ -14,7 +15,7 @@ export default function AddNewCourse() {
   const thumbnailInputRef = useRef(null);
 
   const methods = useForm({
-    resolver: zodResolver(CourseFormSchema),
+    resolver: zodResolver(CourseDraftSchema),
     defaultValues: {
       title: "",
       subtitle: "",
@@ -24,6 +25,7 @@ export default function AddNewCourse() {
       price: "",
       thumbnail: null,
       chapters: [],
+      status:"draft",
     },
   });
   const {
@@ -33,13 +35,16 @@ export default function AddNewCourse() {
     watch,
     setValue,
     getValues,
+    reset,
+    setError,
     formState: { errors },
   } = methods;
-  
+
   const { mutate: submitCourse, isLoading } = useMutation({
     mutationFn: createCourse,
     onSuccess: () => {
       toast.success("Course created successfully!");
+      reset();
       // optionally reset form or redirect
     },
     onError: (err) => {
@@ -48,9 +53,40 @@ export default function AddNewCourse() {
     },
   });
 
-  const onSubmit = (formData) => {
-    submitCourse(formData); // this will call your backend
-  };
+const submitAction = useRef("draft"); // default
+const setFormErrors = (zodErrors) => {
+  const flatErrors = zodErrors.flatten();
+  Object.entries(flatErrors.fieldErrors).forEach(([field, messages]) => {
+    if (messages && messages.length > 0) {
+      setError(field, {
+        type: "manual",
+        message: messages[0],
+      });
+    }
+  });
+};
+
+
+const onSubmit = async (formData) => {
+  formData.status = submitAction.current; // ensure status is correct
+
+  if (submitAction.current === "published") {
+    const result = CoursePublishedSchema.safeParse(formData);
+
+    if (!result.success) {
+      toast.error("Please fix errors before publishing.");
+      setFormErrors(result.error);
+      console.log(result.error.format());
+      return;
+    }
+
+    submitCourse(result.data);
+  } else {
+    submitCourse(formData);
+  }
+};
+
+
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
@@ -66,9 +102,26 @@ export default function AddNewCourse() {
       >
         <h2 className="text-2xl font-semibold mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           Add New Course
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <Button type="submit">Publish</Button>
-          </div>
+          <div className="flex gap-4 justify-end ">
+<Button
+  type="submit"
+  variant="outline"
+  disabled={isLoading}
+  onClick={() => (submitAction.current = "draft")}
+>
+  Save as Draft
+</Button>
+
+<Button
+  type="submit"
+  disabled={isLoading}
+  onClick={() => (submitAction.current = "published")}
+>
+  Publish
+</Button>
+
+
+  </div>
         </h2>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
