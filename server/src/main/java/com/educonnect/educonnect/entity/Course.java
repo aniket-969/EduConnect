@@ -37,8 +37,8 @@ public class Course {
     private List<User> students;
 
     private String thumbnailUrl;
-   
-    
+
+
     @ElementCollection
     @CollectionTable(
         name = "course_image_urls",
@@ -46,6 +46,14 @@ public class Course {
     )
     @Column(name = "image_url")
     private List<String> imageUrls;
+
+    @ElementCollection
+    @CollectionTable(
+            name = "course_learning_objectives",
+            joinColumns = @JoinColumn(name = "course_id", referencedColumnName = "id")
+    )
+    @Column(name = "objective")
+    private List<String> learningObjectives;
 
     @Column(unique = true, nullable = false)
     private String slug;
@@ -60,7 +68,7 @@ public class Course {
 
     public Course(UUID id, String title, String description, String category, CourseStatus status,
                   User instructor, List<Lesson> lessons, List<User> students,
-                  String thumbnailUrl, List<String> imageUrls, String slug,
+                  String thumbnailUrl, List<String> imageUrls,List<String> learningObjectives, String slug,
                   LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.title = title;
@@ -72,6 +80,7 @@ public class Course {
         this.students = students;
         this.thumbnailUrl = thumbnailUrl;
         this.imageUrls = imageUrls;
+        this.learningObjectives=learningObjectives;
         this.slug = slug;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -170,6 +179,14 @@ public class Course {
 
     public void setImageUrls(List<String> imageUrls) {
         this.imageUrls = imageUrls;
+    }
+
+    public List<String> getLearningObjectives() {
+        return learningObjectives;
+    }
+
+    public void setLearningObjectives(List<String> learningObjectives){
+        this.learningObjectives=learningObjectives;
     }
 
     public String getSlug() {
