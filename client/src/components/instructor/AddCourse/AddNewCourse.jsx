@@ -20,7 +20,6 @@ export default function AddNewCourse() {
     resolver: zodResolver(CourseDraftSchema),
     defaultValues: {
       title: "",
-      subtitle: "",
       description: "",
       level: "",
       category: "",
@@ -155,13 +154,6 @@ const setFormErrors = (zodError) => {
             {errors.title && (
               <p className="text-red-600 text-sm -mt-4">
                 {errors.title.message}
-              </p>
-            )}
-
-            <Input placeholder="Subtitle" {...register("subtitle")} data-error-key="subtitle" />
-            {errors.subtitle && (
-              <p className="text-red-600 text-sm -mt-4">
-                {errors.subtitle.message}
               </p>
             )}
 

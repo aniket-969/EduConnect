@@ -70,8 +70,7 @@ export default function ChapterItem({ id, chapterIndex, removeChapter }) {
   };
 
   const chapterErrors = errors?.chapters?.[chapterIndex] || {};
-  console.log("Errors:", errors);
-  console.log("ChapterErrors for index", chapterIndex, chapterErrors);
+  
 
   return (
     <div

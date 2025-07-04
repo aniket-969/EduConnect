@@ -5,7 +5,6 @@ export const createCourse = async (courseData) => {
   const formData = new FormData();
 
   formData.append("title", courseData.title);
-  formData.append("subtitle", courseData.subtitle);
   formData.append("description", courseData.description);
   formData.append("level", courseData.level);
   formData.append("category", courseData.category);

@@ -32,7 +32,6 @@ const chapterSchema = z
 export const CoursePublishedSchema = z
   .object({
     title: z.string().min(5).max(100),
-    subtitle: z.string().min(5).max(100),
     description: z.string().min(20),
     level: z.string().min(1, "Please select a level"),
     category: z.string().min(1, "Please select a category"),
@@ -75,7 +74,6 @@ export const CourseDraftSchema = z.object({
     message: "Please upload a course thumbnail",
   }),
   status: z.literal("draft"),
-  subtitle: z.string().optional(),
   description: z.string().optional(),
   level: z.string().optional(),
   category: z.string().optional(),
