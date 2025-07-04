@@ -1,88 +1,71 @@
 import { z } from "zod";
 
-const lessonSchema = z.object({
-  title: z.string().min(1, "Lesson title is required"),
-  videoUrl: z.string().url("Must be a valid URL starting with http or https"),
-  attachment: z.any().optional(),
+export const courseDraftSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  thumbnailUrl: z.string().url("Thumbnail must be a valid image URL"),
+  status: z.literal("DRAFT"),
+  // Other fields are optional or minimal validation
+  description: z.string().optional(),
+  category: z.string().optional(),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  price: z.number().min(0).optional(),
+  learningObjectives: z.array(z.string()).optional(),
+  lessons: z.array(
+    z.object({
+      title: z.string().optional(),
+      contentType: z.enum(["VIDEO", "TEXT"]).optional(),
+      content: z.string().optional(),
+      sequence: z.number().optional(),
+      thumbnailUrl: z.string().url().optional(),
+    })
+  ).optional(),
 });
 
-const chapterSchema = z
-  .object({
-    title: z.string().min(1, "Chapter title is required"),
-    lessons: z
-      .array(lessonSchema)
-      .min(1, "Each chapter must have at least one lesson"),
-  })
-  .superRefine((chapter, ctx) => {
-    const seen = new Set();
-    chapter.lessons.forEach((lesson, index) => {
-      const key = lesson.title.trim().toLowerCase();
-      if (seen.has(key)) {
-        ctx.addIssue({
-          path: ["lessons", index, "title"],
-          code: z.ZodIssueCode.custom,
-          message: "Duplicate lesson title in this chapter",
-        });
-      } else {
-        seen.add(key);
+
+export const coursePublishSchema = z.object({
+  title: z.string().min(3, "Title must be at least 3 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  category: z.string().min(2, "Category is required"),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"], "Select a valid level"),
+  status: z.literal("PUBLISHED"),
+  price: z.number().min(0, "Price cannot be negative"),
+  thumbnailUrl: z.string().url("Thumbnail must be a valid image URL"),
+  learningObjectives: z.array(z.string().min(5, "Objective must be at least 5 characters"))
+    .min(1, "At least one learning objective is required"),
+  lessons: z.array(
+    z.object({
+      title: z.string().min(3, "Lesson title is required"),
+      contentType: z.enum(["VIDEO", "TEXT"]),
+      content: z.string().min(1, "Content is required"),
+      sequence: z.number().min(1),
+      thumbnailUrl: z.string().url("Lesson thumbnail must be a valid URL").optional(),
+    })
+  )
+  .min(1, "At least one lesson is required")
+  .superRefine((lessons, ctx) => {
+    lessons.forEach((lesson, index) => {
+      if (lesson.contentType === "VIDEO") {
+        try {
+          new URL(lesson.content);
+        } catch {
+          ctx.addIssue({
+            path: [index, "content"],
+            code: z.ZodIssueCode.custom,
+            message: "Video URL must be a valid URL",
+          });
+        }
+      } else if (lesson.contentType === "TEXT") {
+        if (lesson.content.trim().length < 5) {
+          ctx.addIssue({
+            path: [index, "content"],
+            code: z.ZodIssueCode.too_small,
+            minimum: 5,
+            type: "string",
+            inclusive: true,
+            message: "Text content must be at least 5 characters",
+          });
+        }
       }
     });
-  });
-
-export const CoursePublishedSchema = z
-  .object({
-    title: z.string().min(5).max(100),
-    description: z.string().min(20),
-    level: z.string().min(1, "Please select a level"),
-    category: z.string().min(1, "Please select a category"),
-    price: z
-      .string()
-      .refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, {
-        message: "Enter a valid price",
-      }),
-    thumbnail: z.custom((file) => file instanceof File && file.size > 0, {
-      message: "Please upload a course thumbnail",
-    }),
-    status: z.literal("published"),
-    chapters: z.array(chapterSchema).min(1, "Add at least one chapter"),
-  })
-  .superRefine((data, ctx) => {
-  const seen = new Set();
-  data.chapters.forEach((chapter, index) => {
-    const title = chapter.title?.trim().toLowerCase();
-
-    // Skip empty titles – let min(1) handle them
-    if (!title) return;
-
-    if (seen.has(title)) {
-      ctx.addIssue({
-        path: ["chapters", index, "title"],
-        code: z.ZodIssueCode.custom,
-        message: "Duplicate chapter title",
-      });
-    } else {
-      seen.add(title);
-    }
-  });
-});
-
-
-// CourseDraftSchema.ts
-export const CourseDraftSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
-  thumbnail: z.custom((file) => file instanceof File && file.size > 0, {
-    message: "Please upload a course thumbnail",
   }),
-  status: z.literal("draft"),
-  description: z.string().optional(),
-  level: z.string().optional(),
-  category: z.string().optional(),
-  price: z
-    .string()
-    .optional()
-    .refine((val) => val === undefined || !isNaN(+val), {
-      message: "Enter a valid price",
-    }),
-  chapters: z.array(z.any()).optional(),
 });
-
