@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { FormProvider, useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -10,10 +10,18 @@ import { Input } from "@/components/ui/input";
 import RichTextEditor from "../common/RichTextEditor";
 import ChapterList from "./ChapterList";
 import { toast } from "react-toastify";
-import { useMutation } from "@tanstack/react-query";
-import { createCourse } from "@/api/queries/courses";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  createCourse,
+  updateCourse,
+  getCourseById,
+} from "@/api/queries/courses";
+import { useParams } from "react-router-dom";
 
-export default function AddNewCourse() {
+export default function CourseForm() {
+  const { courseId } = useParams();
+  const isEditMode = !!courseId;
+
   const thumbnailInputRef = useRef(null);
 
   const methods = useForm({
@@ -41,78 +49,88 @@ export default function AddNewCourse() {
     formState: { errors },
   } = methods;
 
-  const { mutate: submitCourse, isLoading } = useMutation({
-    mutationFn: createCourse,
+// Fetch course if editing (mock this part for now)
+  const { data: courseData, isLoading: loadingCourse } = useQuery({
+    queryKey: ["course", courseId],
+    queryFn: () => getCourseById(courseId), // mock/fake for now
+    enabled: isEditMode,
+    onSuccess: (data) => {
+      reset({
+        ...data,
+        thumbnail: null, // user has to re-upload if needed
+        status: "draft",
+      });
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: isEditMode ? updateCourse : createCourse,
     onSuccess: () => {
-      toast.success("Course created successfully!");
-      reset();
-      // optionally reset form or redirect
+      toast.success(`Course ${isEditMode ? "updated" : "created"} successfully!`);
+      if (!isEditMode) reset();
     },
     onError: (err) => {
-      console.error("Course creation failed:", err);
-      toast.error(err.response?.data?.message || "Failed to create course");
+      console.error(err);
+      toast.error("Something went wrong");
     },
   });
 
   const submitAction = useRef("draft"); // default
 
+  const setFormErrors = (zodError) => {
+    let firstErrorField = null;
 
+    const recurseErrors = (errorObject, path = []) => {
+      for (const key in errorObject) {
+        if (key === "_errors" && errorObject[key].length > 0) {
+          const fieldPath = path.join(".");
+          setError(fieldPath, {
+            type: "manual",
+            message: errorObject[key][0],
+          });
 
-
-const setFormErrors = (zodError) => {
-  let firstErrorField = null;
-
-  const recurseErrors = (errorObject, path = []) => {
-    for (const key in errorObject) {
-      if (key === "_errors" && errorObject[key].length > 0) {
-        const fieldPath = path.join(".");
-        setError(fieldPath, {
-          type: "manual",
-          message: errorObject[key][0],
-        });
-
-        if (!firstErrorField) {
-          firstErrorField = fieldPath;
+          if (!firstErrorField) {
+            firstErrorField = fieldPath;
+          }
+        } else if (
+          typeof errorObject[key] === "object" &&
+          errorObject[key] !== null
+        ) {
+          recurseErrors(errorObject[key], [...path, key]);
         }
-      } else if (typeof errorObject[key] === "object" && errorObject[key] !== null) {
-        recurseErrors(errorObject[key], [...path, key]);
+      }
+    };
+
+    recurseErrors(zodError.format());
+
+    // Scroll after errors are set
+    if (firstErrorField) {
+      const errorElement = document.querySelector(
+        `[data-error-key="${firstErrorField}"]`
+      );
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        errorElement.focus?.(); // optional focus
       }
     }
   };
 
-  recurseErrors(zodError.format());
-
-  // Scroll after errors are set
-  if (firstErrorField) {
-    const errorElement = document.querySelector(`[data-error-key="${firstErrorField}"]`);
-    if (errorElement) {
-      errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-      errorElement.focus?.(); // optional focus
-    }
-  }
-};
-
- 
-
-
-  const onSubmit = async (formData) => {
-    formData.status = submitAction.current; // ensure status is correct
+const onSubmit = async (formData) => {
+    formData.status = submitAction.current;
 
     if (submitAction.current === "published") {
       const result = CoursePublishedSchema.safeParse(formData);
-
       if (!result.success) {
-        toast.error("Please fix errors before publishing.");
+        toast.error("Fix errors before publishing.");
         setFormErrors(result.error);
-        console.log(result.error.format());
         return;
       }
-
-      submitCourse(result.data);
+      mutation.mutate({ id: courseId, ...result.data });
     } else {
-      submitCourse(formData);
+      mutation.mutate({ id: courseId, ...formData });
     }
   };
+
 
   const handleThumbnailChange = (e) => {
     const file = e.target.files[0];
@@ -127,12 +145,12 @@ const setFormErrors = (zodError) => {
         className="max-w-7xl mx-auto space-y-6 shadow rounded-md"
       >
         <h2 className="text-2xl font-semibold mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          Add New Course
+          {isEditMode ? "Edit Course" : "Add New Course"}
           <div className="flex gap-4 justify-end ">
             <Button
               type="submit"
               variant="outline"
-              disabled={isLoading}
+              disabled={mutation.isLoading}
               onClick={() => (submitAction.current = "draft")}
             >
               Save as Draft
@@ -140,7 +158,7 @@ const setFormErrors = (zodError) => {
 
             <Button
               type="submit"
-              disabled={isLoading}
+              disabled={mutation.isLoading}
               onClick={() => (submitAction.current = "published")}
             >
               Publish
@@ -150,7 +168,11 @@ const setFormErrors = (zodError) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="space-y-4">
-            <Input placeholder="Course Title" {...register("title")} data-error-key="title" />
+            <Input
+              placeholder="Course Title"
+              {...register("title")}
+              data-error-key="title"
+            />
             {errors.title && (
               <p className="text-red-600 text-sm -mt-4">
                 {errors.title.message}
@@ -200,10 +222,16 @@ const setFormErrors = (zodError) => {
               className="w-full p-2 border rounded"
               data-error-key="category"
             >
-              <option value="" className="bg-primary">Select Category</option>
+              <option value="" className="bg-primary">
+                Select Category
+              </option>
               {["Web Development", "Data Science", "AI", "Cloud", "Others"].map(
                 (cat) => (
-                  <option key={cat} value={cat} className="bg-accent-foreground">
+                  <option
+                    key={cat}
+                    value={cat}
+                    className="bg-accent-foreground"
+                  >
                     {cat}
                   </option>
                 )
@@ -235,7 +263,6 @@ const setFormErrors = (zodError) => {
               onChange={handleThumbnailChange}
               className="file:mr-4 file:font-normal file:text-gray-500"
               data-error-key="thumbnail"
-              
             />
             {watch("thumbnail") && (
               <div className="flex items-center space-x-2">
@@ -257,7 +284,7 @@ const setFormErrors = (zodError) => {
               </div>
             )}
             {errors.thumbnail && (
-              <p className="text-red-600 text-sm -mt-4" >
+              <p className="text-red-600 text-sm -mt-4">
                 {errors.thumbnail.message}
               </p>
             )}

@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { GripVertical, Trash2 } from "lucide-react";
