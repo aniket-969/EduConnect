@@ -1,10 +1,3 @@
-// Updated CourseForm.jsx with:
-// - Heading ("Add Course" or "Edit Course")
-// - Responsive layout
-// - Remove icon from shadcn instead of text
-// - Lesson/objective errors shown when array is empty
-// - Preserved inline errors and placeholders
-
 import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +8,7 @@ import {
   publishCourse,
   getCourseById,
 } from "@/api/queries/mockCourse";
+import LessonFields from "./LessonFields";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -47,34 +41,29 @@ const CourseForm = ({ courseId }) => {
     reset,
     watch,
     setValue,
-    getValues, 
+    getValues,
     trigger,
     formState: { errors },
   } = methods;
 
-  const {
-    fields: lessonFields,
-    append: appendLesson,
-    remove: removeLesson,
-  } = useFieldArray({ control, name: "lessons" });
-
+  
   const {
     fields: objectiveFields,
     append: appendObjective,
     remove: removeObjective,
   } = useFieldArray({ control, name: "learningObjectives" });
   const onRemoveObjective = async (idx) => {
-  removeObjective(idx);
-    console.log("ll",getValues("learningObjectives"))
-  const remaining = getValues("learningObjectives");
-  if (remaining.length <= 1) {
-    // Delay slightly to allow removal before validation
-    setTimeout(() => {
-      trigger("learningObjectives");
-    }, 10);
-  }
-};
-console.log("e",errors)
+    removeObjective(idx);
+    console.log("ll", getValues("learningObjectives"));
+    const remaining = getValues("learningObjectives");
+    if (remaining.length <= 1) {
+      // Delay slightly to allow removal before validation
+      setTimeout(() => {
+        trigger("learningObjectives");
+      }, 10);
+    }
+  };
+  console.log("e", errors);
 
   useEffect(() => {
     if (isEditMode) {
@@ -95,24 +84,21 @@ console.log("e",errors)
     }
   }, [courseId, isEditMode, reset]);
 
-
   const applyValidationSchema = (schema) => {
     methods.control._options.resolver = zodResolver(schema);
   };
 
+  const scrollToFirstError = (errors) => {
+    const flatKeys = Object.keys(errors);
 
-const scrollToFirstError = (errors) => {
-  const flatKeys = Object.keys(errors);
+    const firstErrorKey = flatKeys[0];
 
-  const firstErrorKey = flatKeys[0];
-
-  const el = document.querySelector(`[data-error-key="${firstErrorKey}"]`);
-  if (el) {
-    el.scrollIntoView({ behavior: "smooth", block: "center" });
-    el.focus?.();
-  }
-};
-
+    const el = document.querySelector(`[data-error-key="${firstErrorKey}"]`);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "center" });
+      el.focus?.();
+    }
+  };
 
   const onSaveDraft = async (data) => {
     try {
@@ -175,7 +161,9 @@ const scrollToFirstError = (errors) => {
                 <Button onClick={handleSubmit(onSaveDraft)}>
                   Save as Draft
                 </Button>
-                <Button variant="outline" onClick={handleSubmit(onPublish)}>Publish Course</Button>
+                <Button variant="outline" onClick={handleSubmit(onPublish)}>
+                  Publish Course
+                </Button>
               </>
             ) : (
               <Button onClick={handleSubmit(onPublish)}>Update Course</Button>
@@ -192,7 +180,6 @@ const scrollToFirstError = (errors) => {
                 {...register("title")}
                 className={errors.title ? "border-red-500" : ""}
                 data-error-key="title"
-
               />
               {errors.title && (
                 <p className="text-red-600 text-sm mt-1">
@@ -255,8 +242,7 @@ const scrollToFirstError = (errors) => {
                 min={0}
                 placeholder="Eg: 499"
                 {...register("price", { valueAsNumber: true })}
-                className={errors.price ? "border-red-500" : ""  
-                }
+                className={errors.price ? "border-red-500" : ""}
                 data-error-key="price"
               />
               {errors.price && (
@@ -296,7 +282,7 @@ const scrollToFirstError = (errors) => {
                     onClick={() => onRemoveObjective(idx)}
                     className="text-white hover:text-red-500 transition-colors"
                   >
-                    <Trash2 className="w-4 h-4 "/>
+                    <Trash2 className="w-4 h-4 " />
                   </Button>
                 </div>
               ))}
@@ -308,16 +294,10 @@ const scrollToFirstError = (errors) => {
               >
                 Add Objective
               </Button>
-              {typeof errors.learningObjectives?.message === "string" && (
-  <p className="text-red-600 text-sm mt-1" data-error-key="learningObjectives">
-    {errors.learningObjectives.message}
-  </p>
-)}
 
-{/* OR if it's inside .root (when empty array) */}
-{typeof errors.learningObjectives?.root?.message === "string" && (
-  <p className="text-red-600 text-sm mt-1" data-error-key="learningObjectives">
-    {errors.learningObjectives.root.message}
+              {(errors.learningObjectives?.message ?? errors.learningObjectives?.root?.message) && (
+  <p className="text-red-600 text-sm mt-1" data-error-key="lessons">
+    {errors.learningObjectives.message || errors.learningObjectives.root.message}
   </p>
 )}
 
@@ -331,9 +311,8 @@ const scrollToFirstError = (errors) => {
                 onChange={(e) =>
                   setValue("thumbnail", e.target.files?.[0] || null)
                 }
-className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
-data-error-key="thumbnail"
-                 
+                className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
+                data-error-key="thumbnail"
               />
               {errors.thumbnail && (
                 <p className="text-red-600 text-sm mt-1">
@@ -349,123 +328,8 @@ data-error-key="thumbnail"
               )}
             </div>
           </div>
+<LessonFields />
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Lessons</h2>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() =>
-                  appendLesson({
-                    title: "",
-                    type: "VIDEO",
-                    videoUrl: "",
-                    content: "",
-                  })
-                }
-              >
-                Add Lesson
-              </Button>
-            </div>
-            {lessonFields.length === 0 && (
-              <p className="text-gray-600">No lessons added yet.</p>
-            )}
-
-            {lessonFields.map((lesson, idx) => {
-              const type = watch(`lessons.${idx}.type`);
-              const lErr = errors.lessons?.[idx] || {};
-              return (
-                <div
-                  key={lesson.id}
-                  className="p-4 border rounded space-y-2 relative"
-                >
-                  <div>
-                    <label className="block font-semibold mb-1">
-                      Lesson Title
-                    </label>
-                    <Input
-                      placeholder="Eg: Introduction"
-                      {...register(`lessons.${idx}.title`)}
-                      className={lErr.title ? "border-red-500" : ""}
-                      data-error-key={`lessons.${idx}.title`}
-                    />
-                    {lErr.title && (
-                      <p className="text-red-600 text-sm mt-1">
-                        {lErr.title.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="flex gap-4">
-                    {["VIDEO", "TEXT"].map((t) => (
-                      <label key={t}>
-                        <input
-                          type="radio"
-                          value={t}
-                          {...register(`lessons.${idx}.type`)}
-                        />{" "}
-                        {t}
-                      </label>
-                    ))}
-                  </div>
-
-                  {type === "VIDEO" ? (
-                    <div>
-                      <label className="block font-semibold mb-1">
-                        Video URL
-                      </label>
-                      <Input
-                        placeholder="https:// or http://"
-                        {...register(`lessons.${idx}.videoUrl`)}
-                        className={lErr.videoUrl ? "border-red-500" : ""}
-                        data-error-key={`lessons.${idx}.videoUrl`}
-                      />
-                      {lErr.videoUrl && (
-                        <p className="text-red-600 text-sm mt-1">
-                          {lErr.videoUrl.message}
-                        </p>
-                      )}
-                    </div>
-                  ) : (
-                    <div>
-                      <label className="block font-semibold mb-1">
-                        Content
-                      </label>
-                      <Textarea
-                        placeholder="Write text content here"
-                        rows={3}
-                        {...register(`lessons.${idx}.content`)}
-                        className={lErr.content ? "border-red-500" : ""}
-                        data-error-key={`lessons.${idx}.content`}
-                      />
-                      {lErr.content && (
-                        <p className="text-red-600 text-sm mt-1">
-                          {lErr.content.message}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  <Button
-                    type="button"
-                    size="icon"
-                    variant="none"
-                    className="absolute top-2 right-2 text-white hover:text-red-500 transition-colors"
-                    onClick={() => removeLesson(idx)}
-
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              );
-            })}
-            {typeof errors.lessons?.message === "string" && (
-              <p className="text-red-600 text-sm mt-1" data-error-key="lessons">
-                {errors.lessons.message}
-              </p>
-            )}
-          </div>
         </div>
       </form>
     </FormProvider>
