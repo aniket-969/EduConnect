@@ -38,7 +38,7 @@ export const paths = {
       },
       editcourses:{
         path:"courses/:courseId/edit",
-        getHref:(id)=>`/app/instructor/courses/${id}/edit`
+        getHref:(id)=>`/app/instructor/courses/edit/${id}`
 
       },
       enrolledStudents: {

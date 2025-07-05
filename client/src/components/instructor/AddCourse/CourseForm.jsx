@@ -1,296 +1,215 @@
-import React, { useEffect, useRef } from "react";
-import { FormProvider, useForm, useFieldArray } from "react-hook-form";
+import React from "react";
+import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  CourseDraftSchema,
-  CoursePublishedSchema,
-} from "@/schema/courseSchema";
+import { courseDraftSchema, coursePublishSchema } from "@/schema/courseSchema";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import RichTextEditor from "../common/RichTextEditor";
-import ChapterList from "./ChapterList";
+import { Textarea } from "@/components/ui/textarea"; // If you have one
 import { toast } from "react-toastify";
-import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  createCourse,
-  updateCourse,
-  getCourseById,
-} from "@/api/queries/courses";
-import { useParams } from "react-router-dom";
+
+const levels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
+
+const defaultValues = {
+  title: "",
+  description: "",
+  category: "",
+  level: "",
+  price: "",
+  thumbnailUrl: "",
+  learningObjectives: [""],
+  lessons: [
+    { title: "", contentType: "TEXT", content: "" },
+  ],
+  status: "DRAFT",
+};
 
 export default function CourseForm() {
-  const { courseId } = useParams();
-  const isEditMode = !!courseId;
-
-  const thumbnailInputRef = useRef(null);
-
+  // We'll start with draft schema by default
   const methods = useForm({
-    resolver: zodResolver(CourseDraftSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      level: "",
-      category: "",
-      price: "",
-      thumbnail: null,
-      chapters: [],
-      status: "draft",
-    },
+    resolver: zodResolver(courseDraftSchema),
+    defaultValues,
+    mode: "onBlur",
   });
-  const {
-    register,
-    handleSubmit,
+
+  const { register, control, handleSubmit, watch, setValue, formState: { errors } } = methods;
+
+  const { fields: learningObjectives, append: appendObjective, remove: removeObjective } = useFieldArray({
     control,
-    watch,
-    setValue,
-    getValues,
-    reset,
-    setError,
-    formState: { errors },
-  } = methods;
-
-// Fetch course if editing (mock this part for now)
-  const { data: courseData, isLoading: loadingCourse } = useQuery({
-    queryKey: ["course", courseId],
-    queryFn: () => getCourseById(courseId), // mock/fake for now
-    enabled: isEditMode,
-    onSuccess: (data) => {
-      reset({
-        ...data,
-        thumbnail: null, // user has to re-upload if needed
-        status: "draft",
-      });
-    },
+    name: "learningObjectives",
   });
 
-  const mutation = useMutation({
-    mutationFn: isEditMode ? updateCourse : createCourse,
-    onSuccess: () => {
-      toast.success(`Course ${isEditMode ? "updated" : "created"} successfully!`);
-      if (!isEditMode) reset();
-    },
-    onError: (err) => {
-      console.error(err);
-      toast.error("Something went wrong");
-    },
+  const { fields: lessons, append: appendLesson, remove: removeLesson } = useFieldArray({
+    control,
+    name: "lessons",
   });
 
-  const submitAction = useRef("draft"); // default
+  const status = watch("status");
 
-  const setFormErrors = (zodError) => {
-    let firstErrorField = null;
+  // Dynamically switch schema resolver when status changes
+  React.useEffect(() => {
+    methods.reset(methods.getValues()); // reset form with current values
+    methods.control._options.resolver = zodResolver(
+      status === "PUBLISHED" ? coursePublishSchema : courseDraftSchema
+    );
+  }, [status]);
 
-    const recurseErrors = (errorObject, path = []) => {
-      for (const key in errorObject) {
-        if (key === "_errors" && errorObject[key].length > 0) {
-          const fieldPath = path.join(".");
-          setError(fieldPath, {
-            type: "manual",
-            message: errorObject[key][0],
-          });
-
-          if (!firstErrorField) {
-            firstErrorField = fieldPath;
-          }
-        } else if (
-          typeof errorObject[key] === "object" &&
-          errorObject[key] !== null
-        ) {
-          recurseErrors(errorObject[key], [...path, key]);
-        }
-      }
-    };
-
-    recurseErrors(zodError.format());
-
-    // Scroll after errors are set
-    if (firstErrorField) {
-      const errorElement = document.querySelector(
-        `[data-error-key="${firstErrorField}"]`
-      );
-      if (errorElement) {
-        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
-        errorElement.focus?.(); // optional focus
-      }
-    }
-  };
-
-const onSubmit = async (formData) => {
-    formData.status = submitAction.current;
-
-    if (submitAction.current === "published") {
-      const result = CoursePublishedSchema.safeParse(formData);
-      if (!result.success) {
-        toast.error("Fix errors before publishing.");
-        setFormErrors(result.error);
-        return;
-      }
-      mutation.mutate({ id: courseId, ...result.data });
-    } else {
-      mutation.mutate({ id: courseId, ...formData });
-    }
-  };
-
-
-  const handleThumbnailChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    setValue("thumbnail", file);
-  };
+  function onSubmit(data) {
+    console.log("Form data to save:", data);
+    toast.success(`Course ${data.status.toLowerCase()} successfully!`);
+    // Later: API call here
+  }
 
   return (
     <FormProvider {...methods}>
       <form
         onSubmit={handleSubmit(onSubmit)}
-        className="max-w-7xl mx-auto space-y-6 shadow rounded-md"
+        className="flex flex-col md:flex-row gap-8 p-4"
       >
-        <h2 className="text-2xl font-semibold mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          {isEditMode ? "Edit Course" : "Add New Course"}
-          <div className="flex gap-4 justify-end ">
-            <Button
-              type="submit"
-              variant="outline"
-              disabled={mutation.isLoading}
-              onClick={() => (submitAction.current = "draft")}
-            >
-              Save as Draft
-            </Button>
-
-            <Button
-              type="submit"
-              disabled={mutation.isLoading}
-              onClick={() => (submitAction.current = "published")}
-            >
-              Publish
-            </Button>
+        {/* Left Column: Basic Details */}
+        <div className="flex-1 flex flex-col gap-4 border border-border rounded p-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-xl font-semibold">Basic Details</h2>
+            <div className="flex gap-2">
+              <Button type="button" variant="outline" onClick={() => setValue("status", "DRAFT")}>
+                Save Draft
+              </Button>
+              <Button type="submit" variant="primary" onClick={() => setValue("status", "PUBLISHED")}>
+                Publish
+              </Button>
+            </div>
           </div>
-        </h2>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <Input
-              placeholder="Course Title"
-              {...register("title")}
-              data-error-key="title"
-            />
-            {errors.title && (
-              <p className="text-red-600 text-sm -mt-4">
-                {errors.title.message}
-              </p>
-            )}
+          <div>
+            <label className="block mb-1 font-medium">Title</label>
+            <Input {...register("title")} placeholder="Course title" />
+            {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
+          </div>
 
-            <div>
-              <label className="block font-medium mb-2">
-                Course Description
-              </label>
-              <RichTextEditor
-                value={watch("description")}
-                onChange={(value) => setValue("description", value)}
-                data-error-key="description"
-              />
-              {errors.description && (
-                <p className="text-red-600 text-sm ">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
+          <div>
+            <label className="block mb-1 font-medium">Description</label>
+            <Textarea {...register("description")} placeholder="Course description" rows={4} />
+            {errors.description && <p className="text-destructive mt-1">{errors.description.message}</p>}
+          </div>
 
-            <div className="flex flex-wrap gap-4">
-              {["Easy", "Intermediate", "Hard"].map((lvl) => (
-                <label
-                  key={lvl}
-                  className="flex items-center gap-2 cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    value={lvl}
-                    {...register("level")}
-                    checked={watch("level") === lvl}
-                  />
-                  {lvl}
-                </label>
-              ))}
-            </div>
-            {errors.level && (
-              <p className="text-red-600 text-sm -mt-4" data-error-key="level">
-                {errors.level.message}
-              </p>
-            )}
+          <div>
+            <label className="block mb-1 font-medium">Category</label>
+            <Input {...register("category")} placeholder="Category" />
+            {errors.category && <p className="text-destructive mt-1">{errors.category.message}</p>}
+          </div>
 
-            <select
-              {...register("category")}
-              className="w-full p-2 border rounded"
-              data-error-key="category"
-            >
-              <option value="" className="bg-primary">
-                Select Category
-              </option>
-              {["Web Development", "Data Science", "AI", "Cloud", "Others"].map(
-                (cat) => (
-                  <option
-                    key={cat}
-                    value={cat}
-                    className="bg-accent-foreground"
-                  >
-                    {cat}
-                  </option>
-                )
-              )}
-            </select>
-            {errors.category && (
-              <p className="text-red-600 text-sm -mt-4">
-                {errors.category.message}
-              </p>
-            )}
+          <div>
+  <label className="block mb-1 font-medium">Level</label>
+  <div className="flex gap-4 mt-1">
+    {levels.map((lvl) => (
+      <label key={lvl} className="flex items-center gap-2 cursor-pointer">
+        <input
+          type="radio"
+          value={lvl}
+          {...register("level")}
+          className="accent-primary"
+        />
+        <span className="capitalize">{lvl.toLowerCase()}</span>
+      </label>
+    ))}
+  </div>
+  {errors.level && <p className="text-destructive mt-1">{errors.level.message}</p>}
+</div>
 
-            <Input
-              type="number"
-              placeholder="Course Price (₹)"
-              {...register("price")}
-              min={0}
-              data-error-key="price"
-            />
-            {errors.price && (
-              <p className="text-red-600 text-sm -mt-4">
-                {errors.price.message}
-              </p>
-            )}
+          <div>
+            <label className="block mb-1 font-medium">Price</label>
+            <Input type="number" step="0.01" {...register("price")} placeholder="Price in USD" />
+            {errors.price && <p className="text-destructive mt-1">{errors.price.message}</p>}
+          </div>
 
-            <Input
-              type="file"
-              accept="image/*"
-              ref={thumbnailInputRef}
-              onChange={handleThumbnailChange}
-              className="file:mr-4 file:font-normal file:text-gray-500"
-              data-error-key="thumbnail"
-            />
-            {watch("thumbnail") && (
-              <div className="flex items-center space-x-2">
-                <img
-                  src={URL.createObjectURL(watch("thumbnail"))}
-                  alt="Preview"
-                  className="w-32 h-20 object-cover"
+          <div>
+            <label className="block mb-1 font-medium">Thumbnail URL</label>
+            <Input {...register("thumbnailUrl")} placeholder="Image URL" />
+            {errors.thumbnailUrl && <p className="text-destructive mt-1">{errors.thumbnailUrl.message}</p>}
+          </div>
+
+          {/* Learning Objectives */}
+          <div>
+            <label className="block mb-1 font-medium">Learning Objectives</label>
+            {learningObjectives.map((item, index) => (
+              <div key={item.id} className="flex gap-2 mb-2">
+                <Input
+                  {...register(`learningObjectives.${index}`)}
+                  placeholder={`Objective #${index + 1}`}
                 />
-                <button
-                  type="button"
-                  onClick={() => {
-                    setValue("thumbnail", null);
-                    thumbnailInputRef.current.value = null;
-                  }}
-                  className="text-red-500 hover:text-red-700 font-bold"
-                >
-                  ✕
-                </button>
+                <Button type="button" variant="destructive" onClick={() => removeObjective(index)}>
+                  Remove
+                </Button>
               </div>
-            )}
-            {errors.thumbnail && (
-              <p className="text-red-600 text-sm -mt-4">
-                {errors.thumbnail.message}
-              </p>
-            )}
+            ))}
+            <Button type="button" onClick={() => appendObjective("")}>
+              Add Objective
+            </Button>
+            {errors.learningObjectives && <p className="text-destructive mt-1">{errors.learningObjectives.message}</p>}
           </div>
+        </div>
 
-          <ChapterList />
+        {/* Right Column: Lessons */}
+        <div className="flex-1 flex flex-col gap-4 border border-border rounded p-4">
+          <h2 className="text-xl font-semibold mb-4">Lessons</h2>
+
+          {lessons.map((lesson, index) => (
+            <div key={lesson.id} className="border border-muted rounded p-4 mb-3">
+              <div>
+                <label className="block mb-1 font-medium">Lesson Title</label>
+                <Input {...register(`lessons.${index}.title`)} placeholder="Lesson title" />
+                {errors.lessons?.[index]?.title && (
+                  <p className="text-destructive mt-1">{errors.lessons[index].title.message}</p>
+                )}
+              </div>
+
+              <div>
+                <label className="block mb-1 font-medium">Content Type</label>
+                <select
+                  {...register(`lessons.${index}.contentType`)}
+                  className="w-full border border-border rounded p-2"
+                >
+                  <option value="TEXT">Text</option>
+                  <option value="VIDEO">Video</option>
+                </select>
+                {errors.lessons?.[index]?.contentType && (
+                  <p className="text-destructive mt-1">{errors.lessons[index].contentType.message}</p>
+                )}
+              </div>
+
+              <div>
+                {watch(`lessons.${index}.contentType`) === "VIDEO" ? (
+                  <>
+                    <label className="block mb-1 font-medium">Video URL</label>
+                    <Input {...register(`lessons.${index}.content`)} placeholder="Video URL" />
+                    {errors.lessons?.[index]?.content && (
+                      <p className="text-destructive mt-1">{errors.lessons[index].content.message}</p>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <label className="block mb-1 font-medium">Text Content</label>
+                    <Textarea {...register(`lessons.${index}.content`)} rows={3} />
+                    {errors.lessons?.[index]?.content && (
+                      <p className="text-destructive mt-1">{errors.lessons[index].content.message}</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={() => removeLesson(index)}
+                className="mt-2"
+              >
+                Remove Lesson
+              </Button>
+            </div>
+          ))}
+
+          <Button type="button" onClick={() => appendLesson({ title: "", contentType: "TEXT", content: "" })}>
+            Add Lesson
+          </Button>
         </div>
       </form>
     </FormProvider>

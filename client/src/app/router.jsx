@@ -130,6 +130,7 @@ export function createAppRouter(queryClient) {
                     path: paths.app.instructorDashboard.addcourses.path, // "addcourses"
                     lazy: () =>
                       import("./routes/app/instructor/CourseFormPage.jsx").then(c),
+                    
                   },
                   {
                     path: paths.app.instructorDashboard.editcourses.path, // "editcourses"
