@@ -1,217 +1,475 @@
-import React from "react";
+// Updated CourseForm.jsx with:
+// - Heading ("Add Course" or "Edit Course")
+// - Responsive layout
+// - Remove icon from shadcn instead of text
+// - Lesson/objective errors shown when array is empty
+// - Preserved inline errors and placeholders
+
+import React, { useEffect, useState } from "react";
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { courseDraftSchema, coursePublishSchema } from "@/schema/courseSchema";
+import {
+  createCourse,
+  updateCourse,
+  publishCourse,
+  getCourseById,
+} from "@/api/queries/mockCourse";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea"; // If you have one
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "react-toastify";
+import { Trash2 } from "lucide-react";
 
-const levels = ["BEGINNER", "INTERMEDIATE", "ADVANCED"];
+const CourseForm = ({ courseId }) => {
+  const isEditMode = Boolean(courseId);
+  const [status, setStatus] = useState("draft");
+  const [loading, setLoading] = useState(false);
 
-const defaultValues = {
-  title: "",
-  description: "",
-  category: "",
-  level: "",
-  price: "",
-  thumbnailUrl: "",
-  learningObjectives: [""],
-  lessons: [
-    { title: "", contentType: "TEXT", content: "" },
-  ],
-  status: "DRAFT",
-};
-
-export default function CourseForm() {
-  // We'll start with draft schema by default
   const methods = useForm({
     resolver: zodResolver(courseDraftSchema),
-    defaultValues,
-    mode: "onBlur",
+    defaultValues: {
+      title: "",
+      description: "",
+      category: "",
+      level: "easy",
+      price: 0,
+      thumbnail: null,
+      learningObjectives: [],
+      lessons: [],
+    },
   });
 
-  const { register, control, handleSubmit, watch, setValue, formState: { errors } } = methods;
-
-  const { fields: learningObjectives, append: appendObjective, remove: removeObjective } = useFieldArray({
+  const {
+    register,
     control,
-    name: "learningObjectives",
-  });
+    handleSubmit,
+    reset,
+    watch,
+    setValue,
+    getValues, 
+    trigger,
+    formState: { errors },
+  } = methods;
 
-  const { fields: lessons, append: appendLesson, remove: removeLesson } = useFieldArray({
-    control,
-    name: "lessons",
-  });
+  const {
+    fields: lessonFields,
+    append: appendLesson,
+    remove: removeLesson,
+  } = useFieldArray({ control, name: "lessons" });
 
-  const status = watch("status");
-
-  // Dynamically switch schema resolver when status changes
-  React.useEffect(() => {
-    methods.reset(methods.getValues()); // reset form with current values
-    methods.control._options.resolver = zodResolver(
-      status === "PUBLISHED" ? coursePublishSchema : courseDraftSchema
-    );
-  }, [status]);
-
-  function onSubmit(data) {
-    console.log("Form data to save:", data);
-    toast.success(`Course ${data.status.toLowerCase()} successfully!`);
-    // Later: API call here
+  const {
+    fields: objectiveFields,
+    append: appendObjective,
+    remove: removeObjective,
+  } = useFieldArray({ control, name: "learningObjectives" });
+  const onRemoveObjective = async (idx) => {
+  removeObjective(idx);
+    console.log("ll",getValues("learningObjectives"))
+  const remaining = getValues("learningObjectives");
+  if (remaining.length <= 1) {
+    // Delay slightly to allow removal before validation
+    setTimeout(() => {
+      trigger("learningObjectives");
+    }, 10);
   }
+};
+console.log("e",errors)
+
+  useEffect(() => {
+    if (isEditMode) {
+      setLoading(true);
+      getCourseById(courseId)
+        .then((course) => {
+          reset({
+            ...course,
+            thumbnail: null,
+            learningObjectives: course.learningObjectives?.length
+              ? course.learningObjectives
+              : [""],
+          });
+          setStatus(course.status);
+        })
+        .catch(() => toast.error("Failed to load course"))
+        .finally(() => setLoading(false));
+    }
+  }, [courseId, isEditMode, reset]);
+
+
+  const applyValidationSchema = (schema) => {
+    methods.control._options.resolver = zodResolver(schema);
+  };
+
+
+const scrollToFirstError = (errors) => {
+  const flatKeys = Object.keys(errors);
+
+  const firstErrorKey = flatKeys[0];
+
+  const el = document.querySelector(`[data-error-key="${firstErrorKey}"]`);
+  if (el) {
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.focus?.();
+  }
+};
+
+
+  const onSaveDraft = async (data) => {
+    try {
+      applyValidationSchema(courseDraftSchema);
+      const valid = await methods.trigger();
+      if (!valid) return toast.error("Fix errors before saving draft");
+
+      if (isEditMode) {
+        await updateCourse(courseId, data);
+        toast.success("Draft updated");
+      } else {
+        const created = await createCourse(data);
+        toast.success("Draft saved");
+        window.location.href = `/app/instructor/courses/edit/${created.id}`;
+      }
+    } catch {
+      toast.error("Failed to save draft");
+    }
+  };
+
+  const onPublish = async (data) => {
+    try {
+      applyValidationSchema(coursePublishSchema);
+      const valid = await methods.trigger();
+      if (!valid) {
+        scrollToFirstError(methods.formState.errors);
+        return toast.error("Fix errors before publishing");
+      }
+
+      let id = courseId;
+      if (!isEditMode) {
+        const created = await createCourse(data);
+        id = created.id;
+      } else {
+        await updateCourse(id, data);
+      }
+
+      await publishCourse(id);
+      setStatus("published");
+      toast.success("Course published");
+    } catch (err) {
+      toast.error(err.message || "Publish failed");
+    }
+  };
+
+  const thumbnailFile = watch("thumbnail");
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <FormProvider {...methods}>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="flex flex-col md:flex-row gap-8 p-4"
-      >
-        {/* Left Column: Basic Details */}
-        <div className="flex-1 flex flex-col gap-4 border border-border rounded p-4">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold">Basic Details</h2>
-            <div className="flex gap-2">
-              <Button type="button" variant="outline" onClick={() => setValue("status", "DRAFT")}>
-                Save Draft
-              </Button>
-              <Button type="submit" variant="primary" onClick={() => setValue("status", "PUBLISHED")}>
-                Publish
-              </Button>
-            </div>
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Title</label>
-            <Input {...register("title")} placeholder="Course title" />
-            {errors.title && <p className="text-destructive mt-1">{errors.title.message}</p>}
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Description</label>
-            <Textarea {...register("description")} placeholder="Course description" rows={4} />
-            {errors.description && <p className="text-destructive mt-1">{errors.description.message}</p>}
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Category</label>
-            <Input {...register("category")} placeholder="Category" />
-            {errors.category && <p className="text-destructive mt-1">{errors.category.message}</p>}
-          </div>
-
-          <div>
-  <label className="block mb-1 font-medium">Level</label>
-  <div className="flex gap-4 mt-1">
-    {levels.map((lvl) => (
-      <label key={lvl} className="flex items-center gap-2 cursor-pointer">
-        <input
-          type="radio"
-          value={lvl}
-          {...register("level")}
-          className="accent-primary"
-        />
-        <span className="capitalize">{lvl.toLowerCase()}</span>
-      </label>
-    ))}
-  </div>
-  {errors.level && <p className="text-destructive mt-1">{errors.level.message}</p>}
-</div>
-
-          <div>
-            <label className="block mb-1 font-medium">Price</label>
-            <Input type="number" step="0.01" {...register("price")} placeholder="Price in USD" />
-            {errors.price && <p className="text-destructive mt-1">{errors.price.message}</p>}
-          </div>
-
-          <div>
-            <label className="block mb-1 font-medium">Thumbnail URL</label>
-            <Input {...register("thumbnailUrl")} placeholder="Image URL" />
-            {errors.thumbnailUrl && <p className="text-destructive mt-1">{errors.thumbnailUrl.message}</p>}
-          </div>
-
-          {/* Learning Objectives */}
-          <div>
-            <label className="block mb-1 font-medium">Learning Objectives</label>
-            {learningObjectives.map((item, index) => (
-              <div key={item.id} className="flex gap-2 mb-2">
-                <Input
-                  {...register(`learningObjectives.${index}`)}
-                  placeholder={`Objective #${index + 1}`}
-                />
-                <Button type="button" variant="destructive" onClick={() => removeObjective(index)}>
-                  Remove
+      <form className="space-y-6 px-4 " noValidate>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <h1 className="text-2xl font-bold">
+            {isEditMode ? "Edit Course" : "Add Course"}
+          </h1>
+          <div className="flex gap-2">
+            {status !== "published" ? (
+              <>
+                <Button onClick={handleSubmit(onSaveDraft)}>
+                  Save as Draft
                 </Button>
-              </div>
-            ))}
-            <Button type="button" onClick={() => appendObjective("")}>
-              Add Objective
-            </Button>
-            {errors.learningObjectives && <p className="text-destructive mt-1">{errors.learningObjectives.message}</p>}
+                <Button variant="outline" onClick={handleSubmit(onPublish)}>Publish Course</Button>
+              </>
+            ) : (
+              <Button onClick={handleSubmit(onPublish)}>Update Course</Button>
+            )}
           </div>
         </div>
 
-        {/* Right Column: Lessons */}
-        <div className="flex-1 flex flex-col gap-4 border border-border rounded p-4">
-          <h2 className="text-xl font-semibold mb-4">Lessons</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="space-y-4">
+            <div>
+              <label className="block font-semibold mb-1">Title</label>
+              <Input
+                placeholder="Enter course title"
+                {...register("title")}
+                className={errors.title ? "border-red-500" : ""}
+                data-error-key="title"
 
-          {lessons.map((lesson, index) => (
-            <div key={lesson.id} className="border border-muted rounded p-4 mb-3">
-              <div>
-                <label className="block mb-1 font-medium">Lesson Title</label>
-                <Input {...register(`lessons.${index}.title`)} placeholder="Lesson title" />
-                {errors.lessons?.[index]?.title && (
-                  <p className="text-destructive mt-1">{errors.lessons[index].title.message}</p>
-                )}
+              />
+              {errors.title && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.title.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Description</label>
+              <Textarea
+                placeholder="Write a short description"
+                {...register("description")}
+                className={errors.description ? "border-red-500" : ""}
+                data-error-key="description"
+              />
+              {errors.description && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.description.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Category</label>
+              <Input
+                placeholder="Eg: Web Development"
+                {...register("category")}
+                className={errors.category ? "border-red-500" : ""}
+                data-error-key="category"
+              />
+              {errors.category && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.category.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Level</label>
+              <div className="flex gap-4">
+                {["easy", "intermediate", "hard"].map((lvl) => (
+                  <label key={lvl} className="capitalize">
+                    <input type="radio" value={lvl} {...register("level")} />{" "}
+                    {lvl}
+                  </label>
+                ))}
               </div>
+              {errors.level && (
+                <p className="text-red-600 text-sm mt-1" data-error-key="level">
+                  {errors.level.message}
+                </p>
+              )}
+            </div>
 
-              <div>
-                <label className="block mb-1 font-medium">Content Type</label>
-                <select
-                  {...register(`lessons.${index}.contentType`)}
-                  className="w-full border border-border rounded p-2"
-                >
-                  <option value="TEXT">Text</option>
-                  <option value="VIDEO">Video</option>
-                </select>
-                {errors.lessons?.[index]?.contentType && (
-                  <p className="text-destructive mt-1">{errors.lessons[index].contentType.message}</p>
-                )}
-              </div>
+            <div>
+              <label className="block font-semibold mb-1">Price (₹)</label>
+              <Input
+                type="number"
+                min={0}
+                placeholder="Eg: 499"
+                {...register("price", { valueAsNumber: true })}
+                className={errors.price ? "border-red-500" : ""  
+                }
+                data-error-key="price"
+              />
+              {errors.price && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.price.message}
+                </p>
+              )}
+            </div>
 
-              <div>
-                {watch(`lessons.${index}.contentType`) === "VIDEO" ? (
-                  <>
-                    <label className="block mb-1 font-medium">Video URL</label>
-                    <Input {...register(`lessons.${index}.content`)} placeholder="Video URL" />
-                    {errors.lessons?.[index]?.content && (
-                      <p className="text-destructive mt-1">{errors.lessons[index].content.message}</p>
+            <div>
+              <label className="block font-semibold mb-1">
+                Learning Objectives
+              </label>
+
+              {objectiveFields.map((obj, idx) => (
+                <div key={obj.id} className="flex items-center gap-2 mb-2">
+                  <div className="w-full">
+                    <Input
+                      placeholder="Eg: Understand JSX"
+                      {...register(`learningObjectives.${idx}`)}
+                      className={
+                        errors.learningObjectives?.[idx] ? "border-red-500" : ""
+                      }
+                      data-error-key={`learningObjectives.${idx}`}
+                    />
+                    {/* 👇 individual error for that objective */}
+                    {errors.learningObjectives?.[idx] && (
+                      <p className="text-red-600 text-sm mt-1">
+                        {errors.learningObjectives[idx]?.message}
+                      </p>
                     )}
-                  </>
-                ) : (
-                  <>
-                    <label className="block mb-1 font-medium">Text Content</label>
-                    <Textarea {...register(`lessons.${index}.content`)} rows={3} />
-                    {errors.lessons?.[index]?.content && (
-                      <p className="text-destructive mt-1">{errors.lessons[index].content.message}</p>
-                    )}
-                  </>
-                )}
-              </div>
+                  </div>
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="none"
+                    onClick={() => onRemoveObjective(idx)}
+                    className="text-white hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4 "/>
+                  </Button>
+                </div>
+              ))}
 
               <Button
                 type="button"
-                variant="destructive"
-                onClick={() => removeLesson(index)}
-                className="mt-2"
+                variant="secondary"
+                onClick={() => appendObjective("")}
               >
-                Remove Lesson
+                Add Objective
+              </Button>
+              {typeof errors.learningObjectives?.message === "string" && (
+  <p className="text-red-600 text-sm mt-1" data-error-key="learningObjectives">
+    {errors.learningObjectives.message}
+  </p>
+)}
+
+{/* OR if it's inside .root (when empty array) */}
+{typeof errors.learningObjectives?.root?.message === "string" && (
+  <p className="text-red-600 text-sm mt-1" data-error-key="learningObjectives">
+    {errors.learningObjectives.root.message}
+  </p>
+)}
+
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-1">Thumbnail *</label>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={(e) =>
+                  setValue("thumbnail", e.target.files?.[0] || null)
+                }
+className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
+data-error-key="thumbnail"
+                 
+              />
+              {errors.thumbnail && (
+                <p className="text-red-600 text-sm mt-1">
+                  {errors.thumbnail.message}
+                </p>
+              )}
+              {thumbnailFile && thumbnailFile instanceof File && (
+                <img
+                  src={URL.createObjectURL(thumbnailFile)}
+                  alt="Preview"
+                  className="mt-2 max-h-40 rounded"
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Lessons</h2>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() =>
+                  appendLesson({
+                    title: "",
+                    type: "VIDEO",
+                    videoUrl: "",
+                    content: "",
+                  })
+                }
+              >
+                Add Lesson
               </Button>
             </div>
-          ))}
+            {lessonFields.length === 0 && (
+              <p className="text-gray-600">No lessons added yet.</p>
+            )}
 
-          <Button type="button" onClick={() => appendLesson({ title: "", contentType: "TEXT", content: "" })}>
-            Add Lesson
-          </Button>
+            {lessonFields.map((lesson, idx) => {
+              const type = watch(`lessons.${idx}.type`);
+              const lErr = errors.lessons?.[idx] || {};
+              return (
+                <div
+                  key={lesson.id}
+                  className="p-4 border rounded space-y-2 relative"
+                >
+                  <div>
+                    <label className="block font-semibold mb-1">
+                      Lesson Title
+                    </label>
+                    <Input
+                      placeholder="Eg: Introduction"
+                      {...register(`lessons.${idx}.title`)}
+                      className={lErr.title ? "border-red-500" : ""}
+                      data-error-key={`lessons.${idx}.title`}
+                    />
+                    {lErr.title && (
+                      <p className="text-red-600 text-sm mt-1">
+                        {lErr.title.message}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="flex gap-4">
+                    {["VIDEO", "TEXT"].map((t) => (
+                      <label key={t}>
+                        <input
+                          type="radio"
+                          value={t}
+                          {...register(`lessons.${idx}.type`)}
+                        />{" "}
+                        {t}
+                      </label>
+                    ))}
+                  </div>
+
+                  {type === "VIDEO" ? (
+                    <div>
+                      <label className="block font-semibold mb-1">
+                        Video URL
+                      </label>
+                      <Input
+                        placeholder="https:// or http://"
+                        {...register(`lessons.${idx}.videoUrl`)}
+                        className={lErr.videoUrl ? "border-red-500" : ""}
+                        data-error-key={`lessons.${idx}.videoUrl`}
+                      />
+                      {lErr.videoUrl && (
+                        <p className="text-red-600 text-sm mt-1">
+                          {lErr.videoUrl.message}
+                        </p>
+                      )}
+                    </div>
+                  ) : (
+                    <div>
+                      <label className="block font-semibold mb-1">
+                        Content
+                      </label>
+                      <Textarea
+                        placeholder="Write text content here"
+                        rows={3}
+                        {...register(`lessons.${idx}.content`)}
+                        className={lErr.content ? "border-red-500" : ""}
+                        data-error-key={`lessons.${idx}.content`}
+                      />
+                      {lErr.content && (
+                        <p className="text-red-600 text-sm mt-1">
+                          {lErr.content.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <Button
+                    type="button"
+                    size="icon"
+                    variant="none"
+                    className="absolute top-2 right-2 text-white hover:text-red-500 transition-colors"
+                    onClick={() => removeLesson(idx)}
+
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              );
+            })}
+            {typeof errors.lessons?.message === "string" && (
+              <p className="text-red-600 text-sm mt-1" data-error-key="lessons">
+                {errors.lessons.message}
+              </p>
+            )}
+          </div>
         </div>
       </form>
     </FormProvider>
   );
-}
+};
+
+export default CourseForm;
