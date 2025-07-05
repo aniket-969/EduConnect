@@ -8,7 +8,7 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
-  arrayMove,
+ 
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -19,7 +19,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Trash2, GripVertical } from "lucide-react";
 
-const SortableLessonCard = ({ lesson, idx, remove, register, watch, error }) => {
+const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, error }) => {
   const {
     attributes,
     listeners,
@@ -27,8 +27,14 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch, error }) => 
     transform,
     transition,
   } = useSortable({ id: lesson.id });
+  console.log("lesson err",error)
 
   const type = watch(`lessons.${idx}.type`);
+
+
+
+
+
 
   return (
     <div
@@ -55,10 +61,25 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch, error }) => 
 
       <div className="pl-6 flex gap-4">
         {["VIDEO", "TEXT"].map((t) => (
-          <label key={t}>
-            <input type="radio" value={t} {...register(`lessons.${idx}.type`)} /> {t}
-          </label>
-        ))}
+  <label key={t}>
+    <input
+      type="radio"
+      value={t}
+      checked={type === t}
+      onChange={() => {
+        // Set type manually so change is immediate
+        setValue(`lessons.${idx}.type`, t);
+        if (t === "VIDEO") {
+          setValue(`lessons.${idx}.content`, "");
+        } else {
+          setValue(`lessons.${idx}.videoUrl`, "");
+        }
+      }}
+    />
+    {t}
+  </label>
+))}
+
       </div>
 
       <div className="pl-6">
@@ -187,6 +208,7 @@ const LessonFields = () => {
               remove={remove}
               register={register}
               watch={watch}
+              setValue={setValue}
               error={errors.lessons?.[idx] || {}}
             />
           ))}

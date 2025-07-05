@@ -1,19 +1,65 @@
 // src/schema/courseSchema.js
 import { z } from "zod";
 
+
+
 export const lessonSchema = z.object({
   title: z.string().min(1, "Lesson title is required"),
   type: z.enum(["VIDEO", "TEXT"]),
-  videoUrl: z.string().url("Must be a valid URL").optional(),
-  content: z.string().min(10, "Content must be at least 10 characters").optional(),
-}).refine((lesson) => {
-  if (lesson.type === "VIDEO") return !!lesson.videoUrl;
-  if (lesson.type === "TEXT") return !!lesson.content && lesson.content.trim().length > 0;
-  return false;
-}, {
-  message: "Video URL or Text content is required based on lesson type",
-  path: ["videoUrl", "content"],
+  videoUrl: z.string().trim().optional(),
+  content: z.string().trim().optional(),
+}).superRefine((lesson, ctx) => {
+  if (lesson.type === "VIDEO") {
+    if (!lesson.videoUrl || lesson.videoUrl.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Video URL is required for VIDEO lessons",
+        path: ["videoUrl"],
+      });
+    } else {
+      // Validate if it's a valid URL
+      try {
+        new URL(lesson.videoUrl);
+      } catch {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: "Video URL must be a valid URL",
+          path: ["videoUrl"],
+        });
+      }
+    }
+
+    // Content must be blank
+    if (lesson.content && lesson.content.trim().length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Content must be empty for VIDEO lessons",
+        path: ["content"],
+      });
+    }
+  }
+
+  if (lesson.type === "TEXT") {
+    if (!lesson.content || lesson.content.trim().length < 10) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Content is required and must be at least 10 characters for TEXT lessons",
+        path: ["content"],
+      });
+    }
+
+    // Video URL must be blank
+    if (lesson.videoUrl && lesson.videoUrl.trim().length > 0) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Video URL must be empty for TEXT lessons",
+        path: ["videoUrl"],
+      });
+    }
+  }
 });
+
+
 
 export const courseDraftSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),

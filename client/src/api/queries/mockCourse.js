@@ -1,4 +1,8 @@
-let mockCourses = [];
+let mockCourses = [{
+    idCounter:2,
+    title:"abcde",
+    description:"zzzz"
+}];
 let idCounter = 1;
 
 // ✅ Create Course (Draft)
