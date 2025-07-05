@@ -98,10 +98,12 @@ const navigate = useNavigate();
         await updateCourse(courseId, data);
         toast.success("Draft updated");
       } else {
-        const created = await createCourse(data);
+        //const created = await createCourse(data);
+        await createCourse(data);
         toast.success("Draft saved");
-      navigate(paths.app.instructorDashboard.editcourses.getHref(created.id));
+      
       }
+      navigate(paths.app.instructorDashboard.courses.getHref());
     } catch {
       toast.error("Failed to save draft");
     }
@@ -130,6 +132,9 @@ const navigate = useNavigate();
       await publishCourse(id);
       setStatus("published");
       toast.success("Course published");
+      navigate(paths.app.instructorDashboard.courses.getHref());
+
+      
     } catch (err) {
       toast.error(err.message || "Publish failed");
     }
