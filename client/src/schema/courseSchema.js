@@ -66,8 +66,8 @@ export const courseDraftSchema = z.object({
   thumbnail: z
     .any()
     .refine((file) => file instanceof File, "Thumbnail image is required"),
-});
-
+})
+ .passthrough();
 export const coursePublishSchema = courseDraftSchema.extend({
   description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.string().min(2, "Category must be at least 2 characters"),

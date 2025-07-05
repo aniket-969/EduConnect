@@ -64,8 +64,17 @@ const CourseForm = ({ courseId }) => {
   }, [courseId, isEditMode, reset]);
 
   const applyValidationSchema = (schema) => {
-    methods.control._options.resolver = zodResolver(schema);
-  };
+  methods.reset(methods.getValues(), {
+    keepDirty: true,
+    keepTouched: true,
+    keepErrors: true,
+    keepIsValid: true,
+    keepSubmitCount: true,
+  });
+  methods.control._options.resolver = zodResolver(schema);
+};
+
+
 const navigate = useNavigate();
   const scrollToFirstError = (errors) => {
     const flatKeys = Object.keys(errors);
@@ -104,10 +113,8 @@ const navigate = useNavigate();
       const valid = await methods.trigger();
       if (!valid) {
         scrollToFirstError(methods.formState.errors);
-        console.log("errrrrrrrrrrr",methods.formState.errors)
         return toast.error("Fix errors before publishing");
       }
-      console.log("ci",courseId)
 
       let id = courseId;
       if (!isEditMode) {
@@ -115,7 +122,6 @@ const navigate = useNavigate();
         const created = await createCourse(data);
         console.log("data",created)
         id = created.id;
-        console.log("iner ci",id)
 
       } else {
         await updateCourse(id, data);

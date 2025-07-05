@@ -1,36 +1,52 @@
-let mockCourses = [{
-    idCounter:2,
-    title:"abcde",
-    description:"zzzz"
-}];
-let idCounter = 1;
+let mockCourses = JSON.parse(localStorage.getItem("mockCourses") || "[]");
+let idCounter = Number(localStorage.getItem("mockCourseIdCounter") || "1");
 
-// ✅ Create Course (Draft)
+const saveMockData = () => {
+  localStorage.setItem("mockCourses", JSON.stringify(mockCourses));
+  localStorage.setItem("mockCourseIdCounter", String(idCounter));
+};
+const sanitizeCourseData = (data) => {
+  const { thumbnail, ...rest } = data;
+
+  return {
+    ...rest,
+    thumbnail: thumbnail instanceof File ? { name: thumbnail.name, type: thumbnail.type } : thumbnail,
+  };
+};
+
+
 export const createCourse = async (data) => {
+  const sanitized = sanitizeCourseData(data);
+
   const newCourse = {
     id: idCounter++,
-    ...data,
+    ...sanitized,
     status: "draft",
     publishedAt: null,
     createdAt: new Date().toISOString(),
   };
   mockCourses.push(newCourse);
+  saveMockData();
   return newCourse;
 };
 
-// ✅ Update Course (Draft or Published)
+
 export const updateCourse = async (id, updatedData) => {
   const index = mockCourses.findIndex((c) => c.id === Number(id));
   if (index === -1) throw new Error("Course not found");
 
+  const sanitized = sanitizeCourseData(updatedData);
+
   mockCourses[index] = {
     ...mockCourses[index],
-    ...updatedData,
+    ...sanitized,
   };
+  saveMockData();
   return mockCourses[index];
 };
 
-// ✅ Publish Course
+
+// ✅ Publish
 export const publishCourse = async (id) => {
   const course = mockCourses.find((c) => c.id === Number(id));
   if (!course) throw new Error("Course not found");
@@ -39,10 +55,11 @@ export const publishCourse = async (id) => {
 
   course.status = "published";
   course.publishedAt = new Date().toISOString();
+  saveMockData();
   return course;
 };
 
-// ✅ Get Course By ID
+// ✅ Get
 export const getCourseById = async (id) => {
   const course = mockCourses.find((c) => c.id === Number(id));
   if (!course) throw new Error("Course not found");
