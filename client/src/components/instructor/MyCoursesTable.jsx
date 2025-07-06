@@ -10,10 +10,9 @@ import {
 import TablePagination from "./common/TablePagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Pencil, ArrowUp, ArrowDown, ArrowUpDown,Trash2 } from "lucide-react";
+import { Pencil, ArrowUp, ArrowDown, ArrowUpDown, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-
 
 import defaultThumbnail from "@/assets/defaultThumbnail.png";
 
@@ -26,28 +25,31 @@ export default function MyCoursesTable({ InstructorCourses }) {
 
   const navigate = useNavigate();
 
-const handleEdit = (course) => {
-if (!course.id) return toast.error("Course ID missing");
-navigate(`/app/instructor/courses/${course.id}/edit`);
+  const handleEdit = (course) => {
+    if (!course.id) return toast.error("Course ID missing");
+    navigate(`/app/instructor/courses/${course.id}/edit`);
+  };
 
-};
+  const handleDelete = (courseId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+    if (!confirmed) return;
 
-const handleDelete = (courseId) => {
-  const confirmed = window.confirm("Are you sure you want to delete this course?");
-  if (!confirmed) return;
+    try {
+      // Delete from localStorage
+      const storedCourses = JSON.parse(
+        localStorage.getItem("mockCourses") || "[]"
+      );
+      const updatedCourses = storedCourses.filter((c) => c.id !== courseId);
+      localStorage.setItem("mockCourses", JSON.stringify(updatedCourses));
 
-  try {
-    // Delete from localStorage
-    const storedCourses = JSON.parse(localStorage.getItem("mockCourses") || "[]");
-    const updatedCourses = storedCourses.filter((c) => c.id !== courseId);
-    localStorage.setItem("mockCourses", JSON.stringify(updatedCourses));
-
-    toast.success("Course deleted successfully");
-    window.location.reload(); // or trigger a re-render using state
-  } catch (err) {
-    toast.error("Failed to delete course");
-  }
-};
+      toast.success("Course deleted successfully");
+      window.location.reload(); // or trigger a re-render using state
+    } catch (err) {
+      toast.error("Failed to delete course");
+    }
+  };
 
   const filteredData = useMemo(() => {
     return InstructorCourses.filter((course) =>
@@ -186,15 +188,15 @@ const handleDelete = (courseId) => {
                     : new Date(course.publishedAt).toLocaleDateString()}
                 </TableCell>
                 <TableCell className="px-4 py-4 flex gap-4 justify-center">
-  <Pencil
-    className="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-700"
-    onClick={() => handleEdit(course)}
-  />
-  <Trash2
-    className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
-    onClick={() => handleDelete(course.id)}
-  />
-</TableCell>
+                  <Pencil
+                    className="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-700"
+                    onClick={() => handleEdit(course)}
+                  />
+                  <Trash2
+                    className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
+                    onClick={() => handleDelete(course.id)}
+                  />
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

@@ -20,6 +20,9 @@ import { paths } from "@/config/paths";
 const CourseForm = ({ courseId }) => {
   const isEditMode = Boolean(courseId);
   const [status, setStatus] = useState("Draft");
+const [savingDraft, setSavingDraft] = useState(false);
+const [publishing, setPublishing] = useState(false);
+
 
   const methods = useForm({
     resolver: zodResolver(courseDraftSchema),
@@ -62,6 +65,7 @@ const CourseForm = ({ courseId }) => {
 
   const onSaveDraft = async (data) => {
     try {
+      setSavingDraft(true);
       applyValidationSchema(courseDraftSchema);
       const valid = await methods.trigger();
       if (!valid) return toast.error("Fix errors before saving draft");
@@ -76,7 +80,9 @@ const CourseForm = ({ courseId }) => {
       navigate(paths.app.instructorDashboard.courses.getHref());
     } catch {
       toast.error("Failed to save draft");
-    }
+    }finally {
+    setSavingDraft(false); // stop loading
+  }
   };
 
   //uncomment this for real api and comment below
@@ -118,6 +124,7 @@ const CourseForm = ({ courseId }) => {
 
   const onPublish = async (data) => {
     try {
+      setPublishing(true);
       applyValidationSchema(coursePublishSchema);
       const valid = await methods.trigger();
       if (!valid) {
@@ -134,7 +141,7 @@ const CourseForm = ({ courseId }) => {
         const valid = await methods.trigger();
         if (!valid) {
           scrollToFirstError(methods.formState.errors);
-          return toast.error("Fix errors before publishing");
+          return toast.error("Fix errors before republishing");
         }
         await updateCourseMutation.mutateAsync({ id: courseId, data });
       }
@@ -157,6 +164,9 @@ const CourseForm = ({ courseId }) => {
     } catch (err) {
       toast.error(err.message || "Publish failed");
     }
+    finally {
+    setPublishing(false);
+  }
   };
 
   const applyValidationSchema = (schema) => {
@@ -192,15 +202,17 @@ const CourseForm = ({ courseId }) => {
           <div className="flex gap-2">
             {status !== "Published" ? (
               <>
-                <Button onClick={handleSubmit(onSaveDraft)}>
-                  Save as Draft
+                <Button onClick={handleSubmit(onSaveDraft)} className="cursor-pointer" disabled={savingDraft}>
+                  {savingDraft ? "Saving..." : "Save as Draft"}
                 </Button>
-                <Button variant="outline" onClick={handleSubmit(onPublish)}>
-                  Publish Course
+                <Button variant="outline" onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing}>
+                  {publishing ? "Publishing..." : "Publish Course"}
+                  
                 </Button>
               </>
             ) : (
-              <Button onClick={handleSubmit(onPublish)}>Update Course</Button>
+              <Button onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing}>
+                {publishing ? "Updating..." : "Update Course"}</Button>
             )}
           </div>
         </div>
