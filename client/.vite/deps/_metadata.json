@@ -1,0 +1,52 @@
+{
+  "hash": "4395e3c1",
+  "configHash": "819fabcf",
+  "lockfileHash": "66790501",
+  "browserHash": "5af9a4ae",
+  "optimized": {
+    "react": {
+      "src": "../../node_modules/react/index.js",
+      "file": "react.js",
+      "fileHash": "e6dddc1d",
+      "needsInterop": true
+    },
+    "react-dom/client": {
+      "src": "../../node_modules/react-dom/client.js",
+      "file": "react-dom_client.js",
+      "fileHash": "22883332",
+      "needsInterop": true
+    },
+    "react-toastify": {
+      "src": "../../node_modules/react-toastify/dist/index.mjs",
+      "file": "react-toastify.js",
+      "fileHash": "6a3947cb",
+      "needsInterop": false
+    },
+    "@tanstack/react-query": {
+      "src": "../../node_modules/@tanstack/react-query/build/modern/index.js",
+      "file": "@tanstack_react-query.js",
+      "fileHash": "b2306fce",
+      "needsInterop": false
+    },
+    "react-error-boundary": {
+      "src": "../../node_modules/react-error-boundary/dist/react-error-boundary.development.js",
+      "file": "react-error-boundary.js",
+      "fileHash": "3dd89509",
+      "needsInterop": false
+    },
+    "react-router-dom": {
+      "src": "../../node_modules/react-router-dom/dist/index.mjs",
+      "file": "react-router-dom.js",
+      "fileHash": "9cf09544",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-36O2HYMA": {
+      "file": "chunk-36O2HYMA.js"
+    },
+    "chunk-JZJZL4XW": {
+      "file": "chunk-JZJZL4XW.js"
+    }
+  }
+}
