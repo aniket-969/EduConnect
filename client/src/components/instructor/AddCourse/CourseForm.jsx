@@ -16,7 +16,6 @@ import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { paths } from "@/config/paths";
 
-
 const CourseForm = ({ courseId }) => {
   const isEditMode = Boolean(courseId);
   const [status, setStatus] = useState("Draft");
@@ -36,13 +35,7 @@ const CourseForm = ({ courseId }) => {
     },
   });
 
-  const {
-
-    handleSubmit,
-    reset,
-  
-  } = methods;
-
+  const { handleSubmit, reset } = methods;
 
   useEffect(() => {
     if (isEditMode) {
@@ -64,18 +57,17 @@ const CourseForm = ({ courseId }) => {
   }, [courseId, isEditMode, reset]);
 
   const applyValidationSchema = (schema) => {
-  methods.reset(methods.getValues(), {
-    keepDirty: true,
-    keepTouched: true,
-    keepErrors: true,
-    keepIsValid: true,
-    keepSubmitCount: true,
-  });
-  methods.control._options.resolver = zodResolver(schema);
-};
+    methods.reset(methods.getValues(), {
+      keepDirty: true,
+      keepTouched: true,
+      keepErrors: true,
+      keepIsValid: true,
+      keepSubmitCount: true,
+    });
+    methods.control._options.resolver = zodResolver(schema);
+  };
 
-
-const navigate = useNavigate();
+  const navigate = useNavigate();
   const scrollToFirstError = (errors) => {
     const flatKeys = Object.keys(errors);
 
@@ -101,7 +93,6 @@ const navigate = useNavigate();
         //const created = await createCourse(data);
         await createCourse(data);
         toast.success("Draft saved");
-      
       }
       navigate(paths.app.instructorDashboard.courses.getHref());
     } catch {
@@ -120,26 +111,30 @@ const navigate = useNavigate();
 
       let id = courseId;
       if (!isEditMode) {
-        
         const created = await createCourse(data);
-        console.log("data",created)
+        console.log("data", created);
         id = created.id;
-
+        await publishCourse(id);
       } else {
+        const valid = await methods.trigger();
+  if (!valid) {
+    scrollToFirstError(methods.formState.errors);
+    return toast.error("Fix errors before updating");
+  }
+
         await updateCourse(id, data);
+        if (status !== "Published") {
+          await publishCourse(id);
+        }
       }
 
-      await publishCourse(id);
       setStatus("Published");
       toast.success("Course published");
       navigate(paths.app.instructorDashboard.courses.getHref());
-
-      
     } catch (err) {
       toast.error(err.message || "Publish failed");
     }
   };
-
 
   if (loading) return <p>Loading...</p>;
 

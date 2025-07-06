@@ -162,10 +162,10 @@ const BasicFields = () => {
             setValue("thumbnail", e.target.files?.[0] || null)
           }
           className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
-          data-error-key="thumbnail"
+          
         />
         {errors.thumbnail && (
-          <p className="text-red-600 text-sm mt-1">{errors.thumbnail.message}</p>
+          <p className="text-red-600 text-sm mt-1" data-error-key="thumbnail">{errors.thumbnail.message}</p>
         )}
         {thumbnailFile && thumbnailFile instanceof File && (
           <img
