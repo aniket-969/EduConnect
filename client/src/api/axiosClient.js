@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 // Basic API client
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  withCredentials: true,
+  //withCredentials: true,    //uncommented it for real api
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',

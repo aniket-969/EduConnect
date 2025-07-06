@@ -23,6 +23,7 @@ const BasicFields = () => {
   } = useFieldArray({ control, name: "learningObjectives" });
 
   const thumbnailFile = watch("thumbnail");
+  
 
   const onRemoveObjective = (idx) => {
     removeObjective(idx);
@@ -153,13 +154,14 @@ const BasicFields = () => {
       </div>
 
       {/* Thumbnail */}
-      <div>
+      <div data-error-key="thumbnail">
         <label className="block font-semibold mb-1">Thumbnail *</label>
         <Input
           type="file"
           accept="image/*"
           onChange={(e) =>
             setValue("thumbnail", e.target.files?.[0] || null)
+            
           }
           className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
           
