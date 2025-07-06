@@ -22,25 +22,43 @@ export const paths = {
       path: "/app",
       getHref: () => "/app",
     },
+
     instructorDashboard: {
       path: "instructor",
       getHref: () => "/app/instructor",
+
+      // Nested instructor routes
+      courses: {
+        path: "courses",
+        getHref: () => "/app/instructor/courses",
+      },
+      addcourses: {
+        path: "courses/new",
+        getHref: () => "/app/instructor/courses/new",
+      },
+      editcourses: {
+        path: "courses/:courseId/edit",
+        getHref: (id) => `/app/instructor/courses/edit/${id}`,
+      },
+      enrolledStudents: {
+        path: "enrolled-students",
+        getHref: () => "/app/instructor/enrolled-students",
+      },
     },
+
     studentDashboard: {
       path: "student",
       getHref: () => "/app/student",
-    },
-    addCourse: {
-      path: "instructor/add-course",
-      getHref: () => "/app/instructor/add-course",
-    },
-    enrolledStudents: {
-      path: "instructor/enrolled-students",
-      getHref: () => "/app/instructor/enrolled-students",
-    },
-    myCourses: {
-      path: "instructor/courses",
-      getHref: () => "/app/instructor/courses",
+
+      // Nested student routes
+      profile: {
+        path: "profile",
+        getHref: () => "/app/student/profile",
+      },
+      courses: {
+        path: "courses",
+        getHref: () => "/app/student/courses",
+      },
     },
   },
 };

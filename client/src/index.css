@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
-@import "react-quill/dist/quill.snow.css";
+
 
 
 /* Defaults for tailwind */
@@ -156,3 +156,5 @@
 .by{
   border:2px solid yellow
 }
+
+

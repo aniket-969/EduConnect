@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Pencil, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import defaultThumbnail from "@/assets/defaultThumbnail.png";
 
-export default function MyCoursesTable({ data }) {
+export default function MyCoursesTable({ InstructorCourses }) {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState(null);
   const [ascending, setAscending] = useState(true);
@@ -21,10 +21,10 @@ export default function MyCoursesTable({ data }) {
   const pageSize = 5;
 
   const filteredData = useMemo(() => {
-    return data.filter((course) =>
+    return InstructorCourses.filter((course) =>
       course.title.toLowerCase().includes(search.toLowerCase())
     );
-  }, [data, search]);
+  }, [InstructorCourses, search]);
 
   const sortedData = useMemo(() => {
     if (!sortField) return filteredData;
@@ -134,7 +134,7 @@ export default function MyCoursesTable({ data }) {
                       src={course.thumbnail || defaultThumbnail}
                       onError={(e) => (e.currentTarget.src = defaultThumbnail)}
                       alt={course.title}
-                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0"
+                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0 rounded-sm"
                     />
                     <div
                       title={course.title}
