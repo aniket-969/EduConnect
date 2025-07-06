@@ -5,7 +5,9 @@ import { z } from "zod";
 
 export const lessonSchema = z.object({
   title: z.string().min(1, "Lesson title is required"),
-  type: z.enum(["VIDEO", "TEXT"]),
+  type: z.enum(["VIDEO", "TEXT"], {
+  errorMap: () => ({ message: "Lesson type is required" }),
+}),
   videoUrl: z.string().trim().optional(),
   content: z.string().trim().optional(),
 }).superRefine((lesson, ctx) => {

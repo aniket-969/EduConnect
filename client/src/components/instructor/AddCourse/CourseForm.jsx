@@ -125,6 +125,7 @@ const [publishing, setPublishing] = useState(false);
   const onPublish = async (data) => {
     try {
       setPublishing(true);
+      
       applyValidationSchema(coursePublishSchema);
       const valid = await methods.trigger();
       if (!valid) {
@@ -202,10 +203,10 @@ const [publishing, setPublishing] = useState(false);
           <div className="flex gap-2">
             {status !== "Published" ? (
               <>
-                <Button onClick={handleSubmit(onSaveDraft)} className="cursor-pointer" disabled={savingDraft}>
+                <Button onClick={handleSubmit(onSaveDraft)} className="cursor-pointer" disabled={savingDraft||publishing} >
                   {savingDraft ? "Saving..." : "Save as Draft"}
                 </Button>
-                <Button variant="outline" onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing}>
+                <Button variant="outline" onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing||savingDraft}>
                   {publishing ? "Publishing..." : "Publish Course"}
                   
                 </Button>
