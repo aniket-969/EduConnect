@@ -1,69 +1,53 @@
 package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.entity.Rating;
-import com.educonnect.educonnect.entity.User;
-import com.educonnect.educonnect.entity.Course;
-import com.educonnect.educonnect.dao.RatingRepository;
-import com.educonnect.educonnect.dao.UserRepository;
-import com.educonnect.educonnect.dao.CourseRepository;
+import com.educonnect.educonnect.service.RatingService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/ratings")
+@CrossOrigin(origins = "*")
 public class RatingController {
 
     @Autowired
-    private RatingRepository ratingRepository;
+    private RatingService ratingService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
+    // Submit or update rating
     @PostMapping("/submit")
-    public String submitRating(@RequestParam Long studentId,
-                                @RequestParam Long courseId,
-                                @RequestParam int rating,
-                                @RequestParam(required = false) String comment) {
-        Optional<User> student = userRepository.findById(studentId);
-        Optional<Course> course = courseRepository.findById(courseId);
-
-        if (student.isEmpty() || course.isEmpty()) {
-            return "Invalid student or course ID";
+    public ResponseEntity<String> submitRating(@RequestParam UUID studentId,
+                                               @RequestParam UUID courseId,
+                                               @RequestParam int rating,
+                                               @RequestParam(required = false) String comment) {
+        String result = ratingService.submitRating(studentId, courseId, rating, comment);
+        if (result.equals("Invalid student or course ID")) {
+            return ResponseEntity.badRequest().body(result);
         }
-
-        Rating existing = ratingRepository.findByStudentAndCourse(student.get(), course.get()).orElse(null);
-        if (existing != null) {
-            existing.setRating(rating);
-            existing.setComment(comment);
-            ratingRepository.save(existing);
-            return "Rating updated";
-        }
-
-        Rating newRating = new Rating();
-        newRating.setStudent(student.get());
-        newRating.setCourse(course.get());
-        newRating.setRating(rating);
-        newRating.setComment(comment);
-
-        ratingRepository.save(newRating);
-        return "Rating submitted";
+        return ResponseEntity.ok(result);
     }
 
+    // Get ratings by course
     @GetMapping("/course/{courseId}")
-    public List<Rating> getRatingsByCourse(@PathVariable Long courseId) {
-        Course course = courseRepository.findById(courseId).orElse(null);
-        return ratingRepository.findByCourse(course);
+    public ResponseEntity<List<Rating>> getRatingsByCourse(@PathVariable UUID courseId) {
+        List<Rating> ratings = ratingService.getRatingsByCourse(courseId);
+        if (ratings.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ratings);
     }
 
+    // Get ratings by student
     @GetMapping("/student/{studentId}")
-    public List<Rating> getRatingsByStudent(@PathVariable Long studentId) {
-        User student = userRepository.findById(studentId).orElse(null);
-        return ratingRepository.findByStudent(student);
+    public ResponseEntity<List<Rating>> getRatingsByStudent(@PathVariable UUID studentId) {
+        List<Rating> ratings = ratingService.getRatingsByStudent(studentId);
+        if (ratings.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(ratings);
     }
 }
