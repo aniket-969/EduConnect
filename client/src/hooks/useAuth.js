@@ -27,6 +27,8 @@ const FAKE_INSTRUCTOR = {
   email: "instructor@example.com",
   role: "instructor",
   avatarUrl: "https://i.pravatar.cc/150?img=18",
+  preferences: { theme: "dark", notifications: true },
+  lastLogin: "2025-06-23T14:32:00.000Z",
 };
 
 

@@ -59,28 +59,39 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
         )}
       </div>
 
-      <div className="pl-6 flex gap-4">
-        {["VIDEO", "TEXT"].map((t) => (
-  <label key={t}>
-    <input
-      type="radio"
-      value={t}
-      checked={type === t}
-      onChange={() => {
-        // Set type manually so change is immediate
-        setValue(`lessons.${idx}.type`, t);
-        if (t === "VIDEO") {
-          setValue(`lessons.${idx}.content`, "");
-        } else {
-          setValue(`lessons.${idx}.videoUrl`, "");
-        }
-      }}
-    />
-    {t}
-  </label>
-))}
+      <div className="pl-6">
+  <label className="block font-semibold mb-1">Lesson Type</label>
+  <div className="flex gap-4">
+    {["VIDEO", "TEXT"].map((t) => (
+      <label key={t} className="capitalize">
+        <input
+          type="radio"
+          value={t}
+          {...register(`lessons.${idx}.type`)}
+          onChange={(e) => {
+            // Also handle conditional resets
+            setValue(`lessons.${idx}.type`, e.target.value);
+            if (e.target.value === "VIDEO") {
+              setValue(`lessons.${idx}.content`, "");
+            } else {
+              setValue(`lessons.${idx}.videoUrl`, "");
+            }
+          }}
+          checked={type === t}
+        />
+        {t}
+      </label>
+    ))}
+  </div>
 
-      </div>
+  {error.type && (
+    <p className="text-red-600 text-sm mt-1" data-error-key={`lessons.${idx}.type`}>
+      {error.type.message}
+    </p>
+  )}
+</div>
+
+  
 
       <div className="pl-6">
         {type === "VIDEO" ? (
