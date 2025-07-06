@@ -22,7 +22,7 @@ public class UserController {
     private UserService userService;
 
     // CREATE: Register user - only INSTRUCTOR
-    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PreAuthorize("hasRole('INSTRUCTOR','STUDENT')")
     @PostMapping("/register")
     public ResponseEntity<User> registerUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
