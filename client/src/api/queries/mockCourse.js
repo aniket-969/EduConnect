@@ -21,7 +21,7 @@ export const createCourse = async (data) => {
   const newCourse = {
     id: idCounter++,
     ...sanitized,
-    status: "draft",
+    status: "Draft",
     publishedAt: null,
     createdAt: new Date().toISOString(),
   };
@@ -51,9 +51,9 @@ export const publishCourse = async (id) => {
   const course = mockCourses.find((c) => c.id === Number(id));
   if (!course) throw new Error("Course not found");
 
-  if (course.status === "published") throw new Error("Already published");
+  if (course.status === "Published") throw new Error("Already published");
 
-  course.status = "published";
+  course.status = "Published";
   course.publishedAt = new Date().toISOString();
   saveMockData();
   return course;

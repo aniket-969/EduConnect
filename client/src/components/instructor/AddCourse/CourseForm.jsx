@@ -19,7 +19,7 @@ import { paths } from "@/config/paths";
 
 const CourseForm = ({ courseId }) => {
   const isEditMode = Boolean(courseId);
-  const [status, setStatus] = useState("draft");
+  const [status, setStatus] = useState("Draft");
   const [loading, setLoading] = useState(false);
 
   const methods = useForm({
@@ -130,7 +130,7 @@ const navigate = useNavigate();
       }
 
       await publishCourse(id);
-      setStatus("published");
+      setStatus("Published");
       toast.success("Course published");
       navigate(paths.app.instructorDashboard.courses.getHref());
 
@@ -151,7 +151,7 @@ const navigate = useNavigate();
             {isEditMode ? "Edit Course" : "Add Course"}
           </h1>
           <div className="flex gap-2">
-            {status !== "published" ? (
+            {status !== "Published" ? (
               <>
                 <Button onClick={handleSubmit(onSaveDraft)}>
                   Save as Draft
