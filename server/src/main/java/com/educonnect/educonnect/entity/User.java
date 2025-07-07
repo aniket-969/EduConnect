@@ -132,9 +132,13 @@ public class User {
 
     public String getBio() { return bio; }
 
+<<<<<<< HEAD
     public void setBio(String bio) { 
     	this.bio=bio; 
     	}
+=======
+    public void setBio(String bio) { this.bio=bio; }
+>>>>>>> ca2fa855a456cc73db8da388d7d438582e2f55f6
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

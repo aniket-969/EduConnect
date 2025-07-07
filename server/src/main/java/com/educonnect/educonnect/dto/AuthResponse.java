@@ -1,18 +1,28 @@
 package com.educonnect.educonnect.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
-@Data
-@AllArgsConstructor
 public class AuthResponse {
-    private String token;
+	private final String token;
+	private String message;
 
+	public AuthResponse(String token) {
+		this.token = token;
+	}
+
+	public AuthResponse(String token, String message) {
+		this.token = token;
+		this.message = message;
+	}
+
+	// getters
 	public String getToken() {
 		return token;
 	}
 
-	public void setToken(String token) {
-		this.token = token;
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }
