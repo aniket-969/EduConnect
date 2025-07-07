@@ -2,13 +2,15 @@ package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.dto.AuthRequest;
 import com.educonnect.educonnect.dto.AuthResponse;
+import com.educonnect.educonnect.dto.RegistrationRequest;
 import com.educonnect.educonnect.entity.User;
 import com.educonnect.educonnect.security.JwtUtil;
 import com.educonnect.educonnect.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,6 +24,7 @@ public class AuthController {
     @Autowired private JwtUtil jwtUtil;
     @Autowired private PasswordEncoder passwordEncoder;
 
+//    Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @RequestBody AuthRequest request) {
@@ -33,30 +36,38 @@ public class AuthController {
                 )
         );
 
-
-        User user = userService.getUserByEmail(request.getEmail())
+        User user = userService
+                .getUserByEmail(request.getEmail())
                 .orElseThrow();
 
         String token = jwtUtil.generateToken(user);
-
         return ResponseEntity.ok(
                 new AuthResponse(token, "Logged in successfully")
         );
     }
 
-    // 2) REGISTER (anonymous)
-    @PostMapping("/register")
+    //    Register
+    @PostMapping(
+            value = "/register",
+            consumes = MediaType.APPLICATION_JSON_VALUE  // or MULTIPART if you add avatar later
+    )
+
+
     public ResponseEntity<AuthResponse> register(
-            @RequestBody User incoming) {
+            @Valid @RequestBody RegistrationRequest incoming) {
 
-        incoming.setPassword(
-                passwordEncoder.encode(incoming.getPassword())
-        );
+        // 1) Map DTO → Entity
+        User u = new User();
+        u.setName(incoming.getName());
+        u.setEmail(incoming.getEmail());
+        u.setPassword(passwordEncoder.encode(incoming.getPassword()));
+        u.setRole(incoming.getRole());
+        u.setBio(incoming.getBio());
+        // avatarUrl will be null for now
 
-        User saved = userService.createUser(incoming);
+        User saved = userService.createUser(u);
 
         String token = jwtUtil.generateToken(saved);
-
         return ResponseEntity.ok(
                 new AuthResponse(token, "Registered successfully")
         );
