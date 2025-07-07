@@ -30,11 +30,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // allow unauthenticated GET on /api/health
+
                         .requestMatchers(HttpMethod.GET, "/api/health").permitAll()
-                        // allow login & register
+
                         .requestMatchers("/api/auth/**").permitAll()
-                        // all other endpoints require a valid JWT
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
