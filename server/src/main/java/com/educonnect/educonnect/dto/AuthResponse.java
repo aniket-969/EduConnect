@@ -1,5 +1,4 @@
 package com.educonnect.educonnect.dto;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

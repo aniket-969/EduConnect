@@ -21,12 +21,6 @@ public class UserController {
     @Autowired
     private UserService userService;
 
-    // CREATE: Register user - only INSTRUCTOR
-    @PreAuthorize("hasRole('INSTRUCTOR','STUDENT')")
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        return ResponseEntity.ok(userService.createUser(user));
-    }
 
     // READ: Get all users - for both roles
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
