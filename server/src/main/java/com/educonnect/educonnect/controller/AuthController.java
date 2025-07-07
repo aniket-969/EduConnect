@@ -5,6 +5,7 @@ import com.educonnect.educonnect.dto.AuthResponse;
 import com.educonnect.educonnect.dto.RegistrationRequest;
 import com.educonnect.educonnect.entity.User;
 import com.educonnect.educonnect.security.JwtUtil;
+import com.educonnect.educonnect.service.CloudinaryService;
 import com.educonnect.educonnect.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -23,7 +27,7 @@ public class AuthController {
     @Autowired private UserService userService;
     @Autowired private JwtUtil jwtUtil;
     @Autowired private PasswordEncoder passwordEncoder;
-
+    @Autowired private CloudinaryService cloudinaryService;
 //    Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
@@ -49,13 +53,12 @@ public class AuthController {
     //    Register
     @PostMapping(
             value = "/register",
-            consumes = MediaType.APPLICATION_JSON_VALUE  // or MULTIPART if you add avatar later
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-
-
     public ResponseEntity<AuthResponse> register(
-            @Valid @RequestBody RegistrationRequest incoming) {
-
+            @RequestPart("user") @Valid RegistrationRequest incoming,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatarFile
+    ) throws IOException {
         // 1) Map DTO → Entity
         User u = new User();
         u.setName(incoming.getName());
@@ -63,10 +66,16 @@ public class AuthController {
         u.setPassword(passwordEncoder.encode(incoming.getPassword()));
         u.setRole(incoming.getRole());
         u.setBio(incoming.getBio());
-        // avatarUrl will be null for now
 
+        // 2) If avatarFile present, upload to Cloudinary and set avatarUrl
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            String url = cloudinaryService.uploadAvatar(avatarFile);
+            u.setAvatarUrl(url);
+            System.out.println("This is imageUrl: " + url);
+        }
+
+        // 3) Persist & issue JWT
         User saved = userService.createUser(u);
-
         String token = jwtUtil.generateToken(saved);
         return ResponseEntity.ok(
                 new AuthResponse(token, "Registered successfully")
