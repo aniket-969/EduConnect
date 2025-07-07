@@ -52,14 +52,14 @@ public class AuthController {
 
     //    Register
     @PostMapping(
-            value = "/register",
+            value    = "/register",
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
     public ResponseEntity<AuthResponse> register(
-            @RequestPart("user") @Valid RegistrationRequest incoming,
-            @RequestPart(value = "avatar", required = false) MultipartFile avatarFile
+            @Valid @ModelAttribute RegistrationRequest incoming,
+            @RequestParam("avatarUrl") MultipartFile avatarFile   // <-- match your key here
     ) throws IOException {
-        // 1) Map DTO → Entity
+        // Build user object
         User u = new User();
         u.setName(incoming.getName());
         u.setEmail(incoming.getEmail());
@@ -67,18 +67,16 @@ public class AuthController {
         u.setRole(incoming.getRole());
         u.setBio(incoming.getBio());
 
-        // 2) If avatarFile present, upload to Cloudinary and set avatarUrl
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            String url = cloudinaryService.uploadAvatar(avatarFile);
-            u.setAvatarUrl(url);
-            System.out.println("This is imageUrl: " + url);
-        }
+        // Upload to Cloudinary and set avatarUrl
+        String url = cloudinaryService.uploadAvatar(avatarFile);
+        u.setAvatarUrl(url);
 
-        // 3) Persist & issue JWT
+        // Persist + JWT
         User saved = userService.createUser(u);
         String token = jwtUtil.generateToken(saved);
         return ResponseEntity.ok(
                 new AuthResponse(token, "Registered successfully")
         );
     }
+
 }

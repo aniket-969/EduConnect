@@ -19,7 +19,7 @@ public class RegistrationRequest {
     private Role role;
 
     private String bio;
-    private String avatarUrl;
+//    private String avatarUrl;
 
     // ==== Getters ====
 
@@ -43,9 +43,9 @@ public class RegistrationRequest {
         return bio;
     }
 
-    public String getAvatarUrl() {
-        return avatarUrl;
-    }
+//    public String getAvatarUrl() {
+//        return avatarUrl;
+//    }
 
     // ==== Setters ====
 
@@ -69,7 +69,7 @@ public class RegistrationRequest {
         this.bio = bio;
     }
 
-    public void setAvatarUrl(String avatarUrl) {
-        this.avatarUrl = avatarUrl;
-    }
+//    public void setAvatarUrl(String avatarUrl) {
+//        this.avatarUrl = avatarUrl;
+//    }
 }
