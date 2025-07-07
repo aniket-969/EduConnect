@@ -1,17 +1,16 @@
 package com.educonnect.educonnect.dto;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
-@Data
-@AllArgsConstructor
 public class AuthResponse {
-    private String token;
+	private final String token;
 
+	// 1-arg constructor for `new AuthResponse(token)`
+	public AuthResponse(String token) {
+		this.token = token;
+	}
+
+	// getter for JSON serialization
 	public String getToken() {
 		return token;
 	}
-
-	public void setToken(String token) {
-		this.token = token;
-	}
 }
+
