@@ -2,7 +2,6 @@ package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.entity.Rating;
 import com.educonnect.educonnect.service.RatingService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,7 @@ public class RatingController {
     @Autowired
     private RatingService ratingService;
 
-    // Submit or update rating
+    // CREATE or UPDATE: Submit or update rating
     @PostMapping("/submit")
     public ResponseEntity<String> submitRating(@RequestParam UUID studentId,
                                                @RequestParam UUID courseId,
@@ -31,23 +30,32 @@ public class RatingController {
         return ResponseEntity.ok(result);
     }
 
-    // Get ratings by course
+    // READ: Get all ratings for a course
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<Rating>> getRatingsByCourse(@PathVariable UUID courseId) {
         List<Rating> ratings = ratingService.getRatingsByCourse(courseId);
-        if (ratings.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(ratings);
+        return ratings.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(ratings);
     }
 
-    // Get ratings by student
+    // READ: Get all ratings by a student
     @GetMapping("/student/{studentId}")
     public ResponseEntity<List<Rating>> getRatingsByStudent(@PathVariable UUID studentId) {
         List<Rating> ratings = ratingService.getRatingsByStudent(studentId);
-        if (ratings.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(ratings);
+        return ratings.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(ratings);
+    }
+
+    // UPDATE: Update rating by ID
+    @PutMapping("/{ratingId}")
+    public ResponseEntity<Rating> updateRating(@PathVariable UUID ratingId,
+                                               @RequestBody Rating updatedRating) {
+        Rating rating = ratingService.updateRating(ratingId, updatedRating);
+        return rating != null ? ResponseEntity.ok(rating) : ResponseEntity.notFound().build();
+    }
+
+    // DELETE: Delete rating by ID
+    @DeleteMapping("/{ratingId}")
+    public ResponseEntity<Void> deleteRating(@PathVariable UUID ratingId) {
+        boolean deleted = ratingService.deleteRating(ratingId);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

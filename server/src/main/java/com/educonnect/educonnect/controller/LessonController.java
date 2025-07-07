@@ -18,7 +18,7 @@ public class LessonController {
     @Autowired
     private LessonService lessonService;
 
-    // READ: Get lessons by course ID (accessible by INSTRUCTOR and STUDENT)
+    // READ: Get all lessons by course ID (INSTRUCTOR, STUDENT)
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping("/course/{courseId}")
     public ResponseEntity<List<Lesson>> getLessonsByCourse(@PathVariable UUID courseId) {
@@ -26,7 +26,7 @@ public class LessonController {
         return ResponseEntity.ok(lessons);
     }
 
-    // READ: Get lesson by lesson ID (accessible by INSTRUCTOR and STUDENT)
+    // READ: Get single lesson by ID (INSTRUCTOR, STUDENT)
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping("/{id}")
     public ResponseEntity<Lesson> getLessonById(@PathVariable UUID id) {
@@ -34,11 +34,27 @@ public class LessonController {
         return lesson != null ? ResponseEntity.ok(lesson) : ResponseEntity.notFound().build();
     }
 
-    // CREATE: Add a lesson (only for INSTRUCTOR)
+    // CREATE: Add a lesson (INSTRUCTOR only)
     @PreAuthorize("hasRole('INSTRUCTOR')")
     @PostMapping("/add")
     public ResponseEntity<Lesson> addLesson(@RequestBody Lesson lesson) {
         Lesson savedLesson = lessonService.addLesson(lesson);
         return ResponseEntity.ok(savedLesson);
+    }
+
+    // UPDATE: Update a lesson by ID (INSTRUCTOR only)
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PutMapping("/{id}")
+    public ResponseEntity<Lesson> updateLesson(@PathVariable UUID id, @RequestBody Lesson lesson) {
+        Lesson updatedLesson = lessonService.updateLesson(id, lesson);
+        return updatedLesson != null ? ResponseEntity.ok(updatedLesson) : ResponseEntity.notFound().build();
+    }
+
+    // DELETE: Delete a lesson by ID (INSTRUCTOR only)
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLesson(@PathVariable UUID id) {
+        boolean deleted = lessonService.deleteLesson(id);
+        return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }
 }

@@ -10,4 +10,5 @@ public class EduconnectApplication {
 		SpringApplication.run(EduconnectApplication.class, args);
 	}
 
+	
 }
