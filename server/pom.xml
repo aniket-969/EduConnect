@@ -48,6 +48,11 @@
 			<artifactId>cloudinary-http5</artifactId>
 			<version>2.3.0</version>
 		</dependency>
+<!--validation-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.mysql</groupId>
