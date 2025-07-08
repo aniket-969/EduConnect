@@ -2,15 +2,21 @@ package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.dto.AuthRequest;
 import com.educonnect.educonnect.dto.AuthResponse;
+import com.educonnect.educonnect.dto.RegistrationRequest;
 import com.educonnect.educonnect.entity.User;
 import com.educonnect.educonnect.security.JwtUtil;
+import com.educonnect.educonnect.service.CloudinaryService;
 import com.educonnect.educonnect.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -21,7 +27,8 @@ public class AuthController {
     @Autowired private UserService userService;
     @Autowired private JwtUtil jwtUtil;
     @Autowired private PasswordEncoder passwordEncoder;
-
+    @Autowired private CloudinaryService cloudinaryService;
+//    Login
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @RequestBody AuthRequest request) {
@@ -33,32 +40,43 @@ public class AuthController {
                 )
         );
 
-
-        User user = userService.getUserByEmail(request.getEmail())
+        User user = userService
+                .getUserByEmail(request.getEmail())
                 .orElseThrow();
 
         String token = jwtUtil.generateToken(user);
-
         return ResponseEntity.ok(
                 new AuthResponse(token, "Logged in successfully")
         );
     }
 
-    // 2) REGISTER (anonymous)
-    @PostMapping("/register")
+    //    Register
+    @PostMapping(
+            value    = "/register",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
     public ResponseEntity<AuthResponse> register(
-            @RequestBody User incoming) {
+            @Valid @ModelAttribute RegistrationRequest incoming,
+            @RequestParam("avatarUrl") MultipartFile avatarFile   // <-- match your key here
+    ) throws IOException {
+        // Build user object
+        User u = new User();
+        u.setName(incoming.getName());
+        u.setEmail(incoming.getEmail());
+        u.setPassword(passwordEncoder.encode(incoming.getPassword()));
+        u.setRole(incoming.getRole());
+        u.setBio(incoming.getBio());
 
-        incoming.setPassword(
-                passwordEncoder.encode(incoming.getPassword())
-        );
+        // Upload to Cloudinary and set avatarUrl
+        String url = cloudinaryService.uploadAvatar(avatarFile);
+        u.setAvatarUrl(url);
 
-        User saved = userService.createUser(incoming);
-
+        // Persist + JWT
+        User saved = userService.createUser(u);
         String token = jwtUtil.generateToken(saved);
-
         return ResponseEntity.ok(
                 new AuthResponse(token, "Registered successfully")
         );
     }
+
 }
