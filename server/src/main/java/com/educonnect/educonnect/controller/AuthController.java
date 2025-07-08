@@ -57,9 +57,8 @@ public class AuthController {
     )
     public ResponseEntity<AuthResponse> register(
             @Valid @ModelAttribute RegistrationRequest incoming,
-            @RequestParam("avatarUrl") MultipartFile avatarFile   // <-- match your key here
+            @RequestParam(value = "avatarUrl", required = false) MultipartFile avatarFile
     ) throws IOException {
-        // Build user object
         User u = new User();
         u.setName(incoming.getName());
         u.setEmail(incoming.getEmail());
@@ -67,16 +66,15 @@ public class AuthController {
         u.setRole(incoming.getRole());
         u.setBio(incoming.getBio());
 
-        // Upload to Cloudinary and set avatarUrl
-        String url = cloudinaryService.uploadAvatar(avatarFile);
-        u.setAvatarUrl(url);
+        // only upload if a file was sent
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            String url = cloudinaryService.uploadAvatar(avatarFile);
+            u.setAvatarUrl(url);
+        }
 
-        // Persist + JWT
         User saved = userService.createUser(u);
         String token = jwtUtil.generateToken(saved);
-        return ResponseEntity.ok(
-                new AuthResponse(token, "Registered successfully")
-        );
+        return ResponseEntity.ok(new AuthResponse(token, "Registered successfully"));
     }
 
 }
