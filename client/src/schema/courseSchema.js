@@ -5,13 +5,13 @@ import { z } from "zod";
 
 export const lessonSchema = z.object({
   title: z.string().min(1, "Lesson title is required"),
-  type: z.enum(["VIDEO", "TEXT"], {
+  contentType: z.enum(["VIDEO", "TEXT"], {
   errorMap: () => ({ message: "Lesson type is required" }),
 }),
   videoUrl: z.string().trim().optional(),
   content: z.string().trim().optional(),
 }).superRefine((lesson, ctx) => {
-  if (lesson.type === "VIDEO") {
+  if (lesson.contentType === "VIDEO") {
     if (!lesson.videoUrl || lesson.videoUrl.trim() === "") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -41,7 +41,7 @@ export const lessonSchema = z.object({
     }
   }
 
-  if (lesson.type === "TEXT") {
+  if (lesson.contentType === "TEXT") {
     if (!lesson.content || lesson.content.trim().length < 10) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
