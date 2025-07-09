@@ -32,8 +32,9 @@ public class UserController {
     // READ: Get user by ID - for both roles
     @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable UUID id) {
+    public ResponseEntity<User> getUserById(@PathVariable("id") UUID id) {
         Optional<User> user = userService.getUserById(id);
+        System.out.println("This is user"+user);
         return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
