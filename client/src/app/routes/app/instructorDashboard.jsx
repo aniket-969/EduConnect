@@ -1,42 +1,38 @@
-
-
+import { useAuth } from "@/hooks/useAuth";
+import ProfileHeader from "@/components/student/dashboard/profileHeader";
+import DraftedCoursesCarousel from "@/components/instructor/dashboard/DraftedCourses";
+import { useCoursesByInstructor } from "@/hooks/useCourse";
+import { Spinner } from "@/components/ui/spinner";
+import CourseSkeleton from "@/components/instructor/common/CourseSkeleton";
 export default function InstructorDashboard() {
-  return (
-    <div>Instructor
-      {/* <div>stats</div>
-      <div>Recently added course/draft
+  const { session } = useAuth();
+  const instructorId = session.data?.id;
 
-      </div>
-      <div>Latest enrollment</div> */}
+  const { data: courses = [], isLoading } =
+    useCoursesByInstructor(instructorId);
+
+  const draftedCourses = courses.filter((course) => course.status === "DRAFT");
+if (session.isLoading )
+  return (
+    <div className="flex items-center justify-center">
+      <Spinner size="lg" />
+    </div>
+  );
+
+  if (!session.data) return <>Not logged in</>;
+
+  return (
+    <div className="w-full flex flex-col gap-6">
+      <ProfileHeader user={session.data} />
+      {isLoading ? (
+      <CourseSkeleton />
+    ) : draftedCourses.length > 0 ? (
+      <DraftedCoursesCarousel courses={draftedCourses} />
+    ) : <p className="text-sm text-muted-foreground px-4">
+    You have no drafted courses yet.
+  </p>}
+      {/* Carousel of drafted courses */}
+      {/* Other sections like published courses, stats etc. (later) */}
     </div>
   );
 }
-
-
-// import { useInstructorStats } from "@/hooks/useInstructorStats";
-// import { Star, BookOpen, Users } from "lucide-react";
-
-// const StatCard = ({ icon: Icon, label, value }) => (
-//   <div className="bg-muted/50 shadow-md hover:shadow-xl transition rounded-2xl  p-4 flex items-center gap-4 ">
-//     <Icon className="text-primary w-8 h-8" />
-//     <div>
-//       <div className="text-xl font-bold">{value}</div>
-//       <div className="text-muted-foreground text-sm">{label}</div>
-//     </div>
-//   </div>
-// );
-
-// export default function InstructorDashboard() {
-//   const { data, isLoading } = useInstructorStats();
-
-//   if (isLoading) return <div>Loading...</div>;
-
-//   return (
-//     <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 ">
-//       <StatCard icon={BookOpen} label="Total Courses" value={data.totalCourses} />
-//       <StatCard icon={Users} label="Total Enrollments" value={data.totalEnrollments} />
-//       <StatCard icon={Star} label="Average Rating" value={data.averageRating.toFixed(1)} />
-//     </div>
-//     <div>Instructor</div>
-//   );
-// }

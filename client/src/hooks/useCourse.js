@@ -1,11 +1,20 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import * as courseApi from '@/api/queries/course';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import * as courseApi from "@/api/queries/course";
 
 export function useCourse(id) {
   return useQuery({
-    queryKey: ['course', id],
+    queryKey: ["course", id],
     queryFn: () => courseApi.getCourseById(id),
     enabled: !!id,
+  });
+}
+
+//get course by instructor id
+export function useCoursesByInstructor(instructorId) {
+  return useQuery({
+    queryKey: ["courses", "instructor", instructorId],
+    queryFn: () => courseApi.getCoursesByInstructor(instructorId),
+    enabled: !!instructorId,
   });
 }
 
@@ -14,7 +23,7 @@ export function useCreateCourse() {
   return useMutation({
     mutationFn: courseApi.createCourse,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 }
@@ -24,7 +33,7 @@ export function useUpdateCourse() {
   return useMutation({
     mutationFn: ({ id, data }) => courseApi.updateCourse(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
     },
   });
 }
@@ -48,8 +57,8 @@ export function usePublishCourse() {
   return useMutation({
     mutationFn: ({ id, data }) => courseApi.publishCourse(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
-      queryClient.invalidateQueries({ queryKey: ['course'] });
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course"] });
     },
   });
 }

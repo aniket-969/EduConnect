@@ -22,9 +22,9 @@ const FAKE_STUDENT = {
 };
 
 const FAKE_INSTRUCTOR = {
-  id: "ins_00123",
-  name: "Instructor Jane",
-  email: "instructor@example.com",
+  id: "d2af7dae-8cd0-448f-8a1a-ddb8e435a5e9",
+  name: "kavana",
+  email: "kavana@gmail.com",
   role: "instructor",
   avatarUrl: "https://i.pravatar.cc/150?img=18",
   preferences: { theme: "dark", notifications: true },
