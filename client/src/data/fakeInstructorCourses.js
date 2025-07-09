@@ -1,0 +1,95 @@
+export const fakeInstructorCourses = [
+  
+  {
+    id: 11111,
+    title: "React for Beginners ",
+    studentCount: 42,
+    status: "Published",
+    publishedAt: "2024-10-05",
+    thumbnail: "https://dummyimage.com/80x60/cccccc/000000&text=React",
+  },
+  {
+    id: 2,
+    title: "Advanced Spring Boot ",
+    studentCount: 28,
+    status: "Draft",
+    thumbnail:
+      "https://img.freepik.com/free-vector/programming-concept-illustration_114360-1351.jpg",
+
+    //publishedAt: "-",
+  },
+  {
+    id: 3,
+    title: "JS for Beginners",
+    studentCount: 2,
+    status: "Published",
+    publishedAt: "2024-8-05",
+    thumbnail:
+      "https://img.freepik.com/free-vector/javascript-programming-language-computer-code_23-2148829146.jpg",
+  },{
+    category: "",
+    createdAt: "2025-07-05T20:36:23.782Z",
+    description: "",
+    id: 5,
+    learningObjectives: [],
+    lessons: [],
+    level: "easy",
+    price: 0,
+    publishedAt: "2025-07-05T20:08:24.494Z",
+    status: "published",
+    thumbnail: { name: "atmospheric-conditions (3).png", type: "image/png" },
+    title: "Ract js",
+    studentCount: 32,
+  },
+  {
+    id: 4,
+    title: "Advanced MERN",
+    studentCount: 8,
+    status: "Draft",
+    //publishedAt: "2025-06-02",
+  },
+  {
+    id: 5,
+    title: "TypeScript for Beginners",
+    studentCount: 4,
+    status: "Published",
+    publishedAt: "2024-10-25",
+    thumbnail:
+      "https://img.freepik.com/free-vector/software-code-testing-concept_114360-1435.jpg",
+  },
+  {
+    id: 6,
+    title: "Beginer Java",
+    studentCount: 28,
+    status: "Draft",
+    //publishedAt: "2025-06-09",
+  },
+  {
+    id: 7,
+    title: "TypeScript for Expert",
+    studentCount: 24,
+    status: "Published",
+    publishedAt: "2024-10-25",
+  },
+  {
+    id: 8,
+    title: "Advanced .NET",
+    studentCount: 58,
+    status: "Published",
+    publishedAt: "2025-06-09",
+  },
+  {
+    id: 9,
+    title: "HTML for Beginners",
+    studentCount: 4,
+    status: "Published",
+    publishedAt: "2024-10-25",
+  },
+  {
+    id: 10,
+    title: "Advanced SAP",
+    studentCount: 22,
+    status: "Draft",
+    //publishedAt: "2025-06-09",
+  },
+];

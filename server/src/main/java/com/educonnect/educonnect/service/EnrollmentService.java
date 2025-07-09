@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EnrollmentService {
@@ -24,7 +25,7 @@ public class EnrollmentService {
     @Autowired
     private CourseRepository courseRepository;
 
-    public String enrollStudent(Long studentId, Long courseId) {
+    public String enrollStudent(UUID studentId, UUID courseId) {
         Optional<User> studentOpt = userRepository.findById(studentId);
         Optional<Course> courseOpt = courseRepository.findById(courseId);
 
@@ -47,11 +48,13 @@ public class EnrollmentService {
         return "Enrollment successful";
     }
 
-    public List<Enrollment> getEnrollmentsByStudent(Long studentId) {
-        return enrollmentRepository.findByStudent(userRepository.findById(studentId).orElse(null));
+    public List<Enrollment> getEnrollmentsByStudent(UUID studentId) {
+        User student = userRepository.findById(studentId).orElse(null);
+        return student != null ? enrollmentRepository.findByStudent(student) : List.of();
     }
 
-    public List<Enrollment> getEnrollmentsByCourse(Long courseId) {
-        return enrollmentRepository.findByCourse(courseRepository.findById(courseId).orElse(null));
+    public List<Enrollment> getEnrollmentsByCourse(UUID courseId) {
+        Course course = courseRepository.findById(courseId).orElse(null);
+        return course != null ? enrollmentRepository.findByCourse(course) : List.of();
     }
 }

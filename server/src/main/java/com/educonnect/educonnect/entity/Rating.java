@@ -2,13 +2,16 @@ package com.educonnect.educonnect.entity;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 @Entity
 @Table(name = "ratings")
 public class Rating {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     @ManyToOne
     @JoinColumn(name = "student_id", nullable = false)
@@ -24,26 +27,43 @@ public class Rating {
     @Column(length = 1000)
     private String comment;
 
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     // === Constructors ===
 
     public Rating() {
     }
 
-    public Rating(Long id, User student, Course course, int rating, String comment) {
+    public Rating(UUID id, User student, Course course, int rating, String comment,
+                  LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.student = student;
         this.course = course;
         this.rating = rating;
         this.comment = comment;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     // === Getters and Setters ===
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -77,5 +97,21 @@ public class Rating {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

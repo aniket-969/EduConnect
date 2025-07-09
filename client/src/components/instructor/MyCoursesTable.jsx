@@ -10,21 +10,52 @@ import {
 import TablePagination from "./common/TablePagination";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Pencil, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Pencil, ArrowUp, ArrowDown, ArrowUpDown, Trash2 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+
 import defaultThumbnail from "@/assets/defaultThumbnail.png";
 
-export default function MyCoursesTable({ data }) {
+export default function MyCoursesTable({ InstructorCourses }) {
   const [search, setSearch] = useState("");
   const [sortField, setSortField] = useState(null);
   const [ascending, setAscending] = useState(true);
   const [page, setPage] = useState(1);
   const pageSize = 5;
 
+  const navigate = useNavigate();
+
+  const handleEdit = (course) => {
+    if (!course.id) return toast.error("Course ID missing");
+    navigate(`/app/instructor/courses/${course.id}/edit`);
+  };
+
+  const handleDelete = (courseId) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this course?"
+    );
+    if (!confirmed) return;
+
+    try {
+      // Delete from localStorage
+      const storedCourses = JSON.parse(
+        localStorage.getItem("mockCourses") || "[]"
+      );
+      const updatedCourses = storedCourses.filter((c) => c.id !== courseId);
+      localStorage.setItem("mockCourses", JSON.stringify(updatedCourses));
+
+      toast.success("Course deleted successfully");
+      window.location.reload(); // or trigger a re-render using state
+    } catch (err) {
+      toast.error("Failed to delete course");
+    }
+  };
+
   const filteredData = useMemo(() => {
-    return data.filter((course) =>
+    return InstructorCourses.filter((course) =>
       course.title.toLowerCase().includes(search.toLowerCase())
     );
-  }, [data, search]);
+  }, [InstructorCourses, search]);
 
   const sortedData = useMemo(() => {
     if (!sortField) return filteredData;
@@ -134,7 +165,7 @@ export default function MyCoursesTable({ data }) {
                       src={course.thumbnail || defaultThumbnail}
                       onError={(e) => (e.currentTarget.src = defaultThumbnail)}
                       alt={course.title}
-                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0"
+                      className="w-14 h-10 sm:w-16 sm:h-10 object-cover shrink-0 rounded-sm"
                     />
                     <div
                       title={course.title}
@@ -156,10 +187,15 @@ export default function MyCoursesTable({ data }) {
                     ? " - "
                     : new Date(course.publishedAt).toLocaleDateString()}
                 </TableCell>
-                <TableCell className="px-4 py-2">
-                  <Button variant="ghost" size="icon">
-                    <Pencil className="w-4 h-4" />
-                  </Button>
+                <TableCell className="px-4 py-4 flex gap-4 justify-center">
+                  <Pencil
+                    className="w-5 h-5 text-blue-500 cursor-pointer hover:text-blue-700"
+                    onClick={() => handleEdit(course)}
+                  />
+                  <Trash2
+                    className="w-5 h-5 text-red-500 cursor-pointer hover:text-red-700"
+                    onClick={() => handleDelete(course.id)}
+                  />
                 </TableCell>
               </TableRow>
             ))}

@@ -1,15 +1,17 @@
 package com.educonnect.educonnect.controller;
 
-import com.educonnect.educonnect.entity.*;
-import com.educonnect.educonnect.*;
-import com.educonnect.educonnect.dao.*;
-import lombok.*;
+import com.educonnect.educonnect.Role;
+import com.educonnect.educonnect.entity.User;
+import com.educonnect.educonnect.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/users")
@@ -17,38 +19,43 @@ import java.util.Optional;
 public class UserController {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
-    // Register a new user
-    @PostMapping("/register")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
-        // Check if user with this email already exists
-        if (userRepository.findByEmailIgnoreCase(user.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body(null); // 400 Bad Request
-        }
-
-        // Save new user
-        User savedUser = userRepository.save(user);
-        return ResponseEntity.ok(savedUser); // 200 OK with user JSON
-    }
-
-
-    // Get all users
+    // READ: Get all users - for both roles
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping
     public List<User> getAllUsers() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
-    // Get user by ID
+    // READ: Get user by ID - for both roles
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<User> getUserById(@PathVariable("id") UUID id) {
+        Optional<User> user = userService.getUserById(id);
+        System.out.println("This is user"+user);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    // Get users by role
+    // READ: Get users by role - for both roles
+    @PreAuthorize("hasAnyRole('INSTRUCTOR', 'STUDENT')")
     @GetMapping("/role/{role}")
     public List<User> getUsersByRole(@PathVariable Role role) {
-        return userRepository.findByRole(role);
+        return userService.getUsersByRole(role);
+    }
+
+    // UPDATE: Only INSTRUCTOR can update
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @PutMapping("/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable UUID id, @RequestBody User updatedUser) {
+        return ResponseEntity.ok(userService.updateUser(id, updatedUser));
+    }
+
+    // DELETE: Only INSTRUCTOR can delete
+    @PreAuthorize("hasRole('INSTRUCTOR')")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

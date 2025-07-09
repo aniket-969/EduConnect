@@ -1,59 +1,51 @@
 package com.educonnect.educonnect.controller;
 
 import com.educonnect.educonnect.entity.Enrollment;
-import com.educonnect.educonnect.entity.User;
-import com.educonnect.educonnect.entity.Course;
-import com.educonnect.educonnect.dao.EnrollmentRepository;
-import com.educonnect.educonnect.dao.UserRepository;
-import com.educonnect.educonnect.dao.CourseRepository;
+import com.educonnect.educonnect.service.EnrollmentService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/enrollments")
+@CrossOrigin(origins = "*")
 public class EnrollmentController {
 
     @Autowired
-    private EnrollmentRepository enrollmentRepository;
+    private EnrollmentService enrollmentService;
 
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private CourseRepository courseRepository;
-
+    // Enroll a student in a course
     @PostMapping("/enroll")
-    public String enrollStudent(@RequestParam Long studentId, @RequestParam Long courseId) {
-        Optional<User> userOpt = userRepository.findById(studentId);
-        Optional<Course> courseOpt = courseRepository.findById(courseId);
-
-        if (userOpt.isEmpty() || courseOpt.isEmpty()) {
-            return "Invalid student or course ID";
+    public ResponseEntity<String> enrollStudent(@RequestParam UUID studentId, @RequestParam UUID courseId) {
+        String result = enrollmentService.enrollStudent(studentId, courseId);
+        if (result.equals("Enrollment successful")) {
+            return ResponseEntity.ok(result);
+        } else {
+            return ResponseEntity.badRequest().body(result);
         }
-
-        if (enrollmentRepository.existsByStudentAndCourse(userOpt.get(), courseOpt.get())) {
-            return "Student already enrolled";
-        }
-
-        Enrollment enrollment = new Enrollment();
-        enrollment.setStudent(userOpt.get());
-        enrollment.setCourse(courseOpt.get());
-        enrollmentRepository.save(enrollment);
-        return "Enrollment successful";
     }
 
+    // Get enrollments by student ID
     @GetMapping("/student/{studentId}")
-    public List<Enrollment> getEnrollmentsByStudent(@PathVariable Long studentId) {
-        User student = userRepository.findById(studentId).orElse(null);
-        return enrollmentRepository.findByStudent(student);
+    public ResponseEntity<List<Enrollment>> getEnrollmentsByStudent(@PathVariable UUID studentId) {
+        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByStudent(studentId);
+        if (enrollments.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(enrollments);
     }
 
+    // Get enrollments by course ID
     @GetMapping("/course/{courseId}")
-    public List<Enrollment> getEnrollmentsByCourse(@PathVariable Long courseId) {
-        Course course = courseRepository.findById(courseId).orElse(null);
-        return enrollmentRepository.findByCourse(course);
+    public ResponseEntity<List<Enrollment>> getEnrollmentsByCourse(@PathVariable UUID courseId) {
+        List<Enrollment> enrollments = enrollmentService.getEnrollmentsByCourse(courseId);
+        if (enrollments.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(enrollments);
     }
 }

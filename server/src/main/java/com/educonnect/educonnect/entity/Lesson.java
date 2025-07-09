@@ -1,16 +1,18 @@
 package com.educonnect.educonnect.entity;
 
 import com.educonnect.educonnect.ContentType;
-
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Table(name = "lessons")
 public class Lesson {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue
+    private UUID id;
 
     private String title;
 
@@ -21,30 +23,55 @@ public class Lesson {
     @Column(length = 2000)
     private String content;
 
+    private Integer sequence;
+
+    private String thumbnailUrl;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)
     private Course course;
 
     // === Constructors ===
 
-    public Lesson() {
-    }
+    public Lesson() {}
 
-    public Lesson(Long id, String title, ContentType contentType, String content, Course course) {
+    public Lesson(UUID id, String title, ContentType contentType, String content,
+                  Integer sequence, String thumbnailUrl, LocalDateTime createdAt,
+                  LocalDateTime updatedAt, Course course) {
         this.id = id;
         this.title = title;
         this.contentType = contentType;
         this.content = content;
+        this.sequence = sequence;
+        this.thumbnailUrl = thumbnailUrl;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
         this.course = course;
+    }
+
+    // === Timestamps ===
+
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 
     // === Getters and Setters ===
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         this.id = id;
     }
 
@@ -70,6 +97,38 @@ public class Lesson {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    public String getThumbnailUrl() {
+        return thumbnailUrl;
+    }
+
+    public void setThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public Course getCourse() {
