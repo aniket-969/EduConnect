@@ -8,25 +8,25 @@ export const lessonSchema = z.object({
   contentType: z.enum(["VIDEO", "TEXT"], {
   errorMap: () => ({ message: "Lesson type is required" }),
 }),
-  videoUrl: z.string().trim().optional(),
+  thumbnailUrl: z.string().trim().optional(),
   content: z.string().trim().optional(),
 }).superRefine((lesson, ctx) => {
   if (lesson.contentType === "VIDEO") {
-    if (!lesson.videoUrl || lesson.videoUrl.trim() === "") {
+    if (!lesson.thumbnailUrl || lesson.thumbnailUrl.trim() === "") {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Video URL is required for VIDEO lessons",
-        path: ["videoUrl"],
+        path: ["thumbnailUrl"],
       });
     } else {
       // Validate if it's a valid URL
       try {
-        new URL(lesson.videoUrl);
+        new URL(lesson.thumbnailUrl);
       } catch {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Video URL must be a valid URL",
-          path: ["videoUrl"],
+          path: ["thumbnailUrl"],
         });
       }
     }
@@ -51,11 +51,11 @@ export const lessonSchema = z.object({
     }
 
     // Video URL must be blank
-    if (lesson.videoUrl && lesson.videoUrl.trim().length > 0) {
+    if (lesson.thumbnailUrl && lesson.thumbnailUrl.trim().length > 0) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: "Video URL must be empty for TEXT lessons",
-        path: ["videoUrl"],
+        path: ["thumbnailUrl"],
       });
     }
   }

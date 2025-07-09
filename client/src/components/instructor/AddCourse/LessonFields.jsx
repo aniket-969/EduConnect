@@ -73,7 +73,7 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
             if (e.target.value === "VIDEO") {
               setValue(`lessons.${idx}.content`, "");
             } else {
-              setValue(`lessons.${idx}.videoUrl`, "");
+              setValue(`lessons.${idx}.thumbnailUrl`, "");
             }
           }}
           checked={contentType === t}
@@ -98,12 +98,12 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
             <label className="block font-semibold mb-1">Video URL</label>
             <Input
               placeholder="https:// or http://"
-              {...register(`lessons.${idx}.videoUrl`)}
-              className={error.videoUrl ? "border-red-500" : ""}
-              data-error-key={`lessons.${idx}.videoUrl`}
+              {...register(`lessons.${idx}.thumbnailUrl`)}
+              className={error.thumbnailUrl ? "border-red-500" : ""}
+              data-error-key={`lessons.${idx}.thumbnailUrl`}
             />
-            {error.videoUrl && (
-              <p className="text-red-600 text-sm mt-1">{error.videoUrl.message}</p>
+            {error.thumbnailUrl && (
+              <p className="text-red-600 text-sm mt-1">{error.thumbnailUrl.message}</p>
             )}
           </>
         ) : (
@@ -196,7 +196,7 @@ const LessonFields = () => {
             append({
               title: "",
               contentType: "VIDEO",
-              videoUrl: "",
+              thumbnailUrl: "",
               content: "",
               sequence: fields.length + 1,
             })
