@@ -10,10 +10,10 @@ export const updateCourse = (id, data) => api.put(`/course/${id}`, data)
 export const publishCourse = (id, data) =>
   api.put(`/course/${id}`, {
     ...data,
-    status: "Published",
+    status: "PUBLISHED",
     publishedAt: new Date().toISOString(),
   });
-
+ 
 //uncomment this for real api
 //export const createCourse = (data) => api.post('api/courses/create', data)
 //export const updateCourse = (id, data) => api.put(`api/courses/${id}`, data)

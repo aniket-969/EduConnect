@@ -19,7 +19,7 @@ import { paths } from "@/config/paths";
 
 const CourseForm = ({ courseId }) => {
   const isEditMode = Boolean(courseId);
-  const [status, setStatus] = useState("Draft");
+  const [status, setStatus] = useState("DRAFT");
 const [savingDraft, setSavingDraft] = useState(false);
 const [publishing, setPublishing] = useState(false);
 
@@ -110,11 +110,11 @@ const [publishing, setPublishing] = useState(false);
   //     }
 
   //     // Only call publish endpoint if course is not published yet
-  //     if (status !== "Published") {
+  //     if (status !== "PUBLISHED") {
   //       await publishCourseMutation.mutateAsync(id);
   //     }
 
-  //     setStatus("Published");
+  //     setStatus("PUBLISHED");
   //     toast.success("Course published");
   //     navigate(paths.app.instructorDashboard.courses.getHref());
   //   } catch (err) {
@@ -148,18 +148,18 @@ const [publishing, setPublishing] = useState(false);
       }
 
       // Publish by updating course status & publishedAt
-      if (status !== "Published") {
+      if (status !== "PUBLISHED") {
         await publishCourseMutation.mutateAsync({
           id,
           data: {
             ...methods.getValues(),
-            status: "Published",
+            status: "PUBLISHED",
             publishedAt: new Date().toISOString(),
           },
         });
       }
 
-      setStatus("Published");
+      setStatus("PUBLISHED");
       toast.success("Course published");
       navigate(paths.app.instructorDashboard.courses.getHref());
     } catch (err) {
@@ -201,7 +201,7 @@ const [publishing, setPublishing] = useState(false);
             {isEditMode ? "Edit Course" : "Add Course"}
           </h1>
           <div className="flex gap-2">
-            {status !== "Published" ? (
+            {status !== "PUBLISHED" ? (
               <>
                 <Button onClick={handleSubmit(onSaveDraft)} className="cursor-pointer" disabled={savingDraft||publishing} >
                   {savingDraft ? "Saving..." : "Save as Draft"}
