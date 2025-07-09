@@ -32,8 +32,6 @@ export const paths = {
         path: "courses",
         getHref: () => "/app/instructor/courses",
       },
-<<<<<<< HEAD
-=======
       addcourses: {
         path: "courses/new",
         getHref: () => "/app/instructor/courses/new",
@@ -42,7 +40,6 @@ export const paths = {
         path: "courses/:courseId/edit",
         getHref: (id) => `/app/instructor/courses/${id}/edit`,
       },
->>>>>>> temp-merge
       enrolledStudents: {
         path: "enrolled-students",
         getHref: () => "/app/instructor/enrolled-students",
