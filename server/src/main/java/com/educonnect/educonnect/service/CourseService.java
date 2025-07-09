@@ -18,6 +18,11 @@ public class CourseService {
 
     // Create or update a course
     public Course saveCourse(Course course) {
+       if(course.getLessons()!=null){
+           for(Lesson lesson:course.getLessons()){
+               lesson.setCourse(course);
+           }
+       }
         return courseRepository.save(course);
     }
 
