@@ -14,7 +14,7 @@ const BasicFields = () => {
     trigger,
     formState: { errors },
   } = useFormContext();
-
+ 
   console.log("basic err",errors)
   const {
     fields: objectiveFields,
@@ -81,11 +81,14 @@ const BasicFields = () => {
       <div>
         <label className="block font-semibold mb-1">Level</label>
         <div className="flex gap-4">
-          {["easy", "intermediate", "hard"].map((lvl) => (
-            <label key={lvl} className="capitalize">
-              <input type="radio" value={lvl} {...register("level")} /> {lvl}
-            </label>
-          ))}
+          {["BEGINNER", "INTERMEDIATE", "ADVANCED"].map((lvl) => {
+      const displayLabel = lvl.charAt(0) + lvl.slice(1).toLowerCase();
+      return (
+        <label key={lvl} >
+          <input type="radio" value={lvl} {...register("level")} /> {displayLabel}
+        </label>
+      );
+    })}
         </div>
         {errors.level && (
           <p className="text-red-600 text-sm mt-1" data-error-key="level">

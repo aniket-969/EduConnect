@@ -61,7 +61,7 @@ export const lessonSchema = z.object({
   }
 });
 
-
+ 
 
 export const courseDraftSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
@@ -73,7 +73,7 @@ export const courseDraftSchema = z.object({
 export const coursePublishSchema = courseDraftSchema.extend({
   description: z.string().min(10, "Description must be at least 10 characters"),
   category: z.string().min(2, "Category must be at least 2 characters"),
-  level: z.enum(["easy", "intermediate", "hard"], "Level is required"),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"], "Level is required"),
   price: z.number().min(0, "Price must be zero or more"),
   learningObjectives: z.array(z.string().min(1, "Objective cannot be empty"))
                        .min(1, "At least one learning objective is required"),

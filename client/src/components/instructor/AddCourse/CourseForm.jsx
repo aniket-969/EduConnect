@@ -30,7 +30,7 @@ const [publishing, setPublishing] = useState(false);
       title: "",
       description: "",
       category: "",
-      level: "easy",
+      level: "BEGINNER",
       price: 0,
       thumbnail: null,
       learningObjectives: [],
@@ -125,7 +125,7 @@ const [publishing, setPublishing] = useState(false);
   const onPublish = async (data) => {
     try {
       setPublishing(true);
-      
+       
       applyValidationSchema(coursePublishSchema);
       const valid = await methods.trigger();
       if (!valid) {
