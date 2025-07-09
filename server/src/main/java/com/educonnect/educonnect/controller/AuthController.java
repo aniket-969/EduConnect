@@ -65,19 +65,11 @@ public class AuthController {
         );
     }
 
-    // --------------------------------------------------
-    // REGISTER
-    // --------------------------------------------------
-    @PostMapping(
-            value    = "/register",
-            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
-    )
+    @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(
-            @Valid @ModelAttribute RegistrationRequest incoming,
-            @RequestParam(value = "avatarUrl", required = false)
-            MultipartFile avatarFile
-    ) throws IOException {
-        // 1. Map incoming DTO to entity
+            @Valid @RequestBody RegistrationRequest incoming
+    ) {
+
         User u = new User();
         u.setName(incoming.getName());
         u.setEmail(incoming.getEmail());
@@ -85,22 +77,15 @@ public class AuthController {
         u.setRole(incoming.getRole());
         u.setBio(incoming.getBio());
 
-        // 2. Optional avatar upload
-        if (avatarFile != null && !avatarFile.isEmpty()) {
-            String url = cloudinaryService.uploadAvatar(avatarFile);
-            u.setAvatarUrl(url);
-        }
 
-        // 3. Save user & generate token
         User saved = userService.createUser(u);
         String token = jwtUtil.generateToken(saved);
 
-        // 4. Build UserDTO
         UserDTO dto = UserDTO.fromEntity(saved);
 
-        // 5. Return token + user details + message
         return ResponseEntity.ok(
                 new AuthResponse(token, dto, "Registered successfully")
         );
     }
+
 }
