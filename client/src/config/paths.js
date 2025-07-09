@@ -22,25 +22,54 @@ export const paths = {
       path: "/app",
       getHref: () => "/app",
     },
+
     instructorDashboard: {
       path: "instructor",
       getHref: () => "/app/instructor",
+
+      // Nested instructor routes
+      courses: {
+        path: "courses",
+        getHref: () => "/app/instructor/courses",
+      },
+      enrolledStudents: {
+        path: "enrolled-students",
+        getHref: () => "/app/instructor/enrolled-students",
+      },
     },
+
     studentDashboard: {
       path: "student",
       getHref: () => "/app/student",
-    },
-    addCourse: {
-      path: "instructor/add-course",
-      getHref: () => "/app/instructor/add-course",
-    },
-    enrolledStudents: {
-      path: "instructor/enrolled-students",
-      getHref: () => "/app/instructor/enrolled-students",
-    },
-    myCourses: {
-      path: "instructor/courses",
-      getHref: () => "/app/instructor/courses",
+
+      // Nested student routes
+      profile: {
+        path: "profile",
+        getHref: () => "/app/student/profile",
+      },
+
+      courses: {
+        path: "courses",
+        getHref: () => "/app/student/courses",
+
+        // 1. Course List (exactly /app/student/courses)
+        list: {
+          path: "",
+          getHref: () => "/app/student/courses",
+        },
+
+        // 2. Course Detail / Overview (e.g. /app/student/courses/123)
+        detail: {
+          path: ":courseId",
+          getHref: (id) => `/app/student/courses/${id}`,
+
+          // 3. Learn (protected) nested under detail (e.g. /app/student/courses/123/learn)
+          learn: {
+            path: "learn",
+            getHref: (id) => `/app/student/courses/${id}/learn`,
+          },
+        },
+      },
     },
   },
 };
