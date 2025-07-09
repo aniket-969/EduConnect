@@ -157,20 +157,20 @@ const BasicFields = () => {
       </div>
 
       {/* Thumbnail */}
-      <div data-error-key="thumbnail">
-        <label className="block font-semibold mb-1">Thumbnail *</label>
+      <div data-error-key="thumbnailUrl">
+        <label className="block font-semibold mb-1">thumbnailUrl</label>
         <Input
           type="file"
           accept="image/*"
           onChange={(e) =>
-            setValue("thumbnail", e.target.files?.[0] || null)
+            setValue("thumbnailUrl", e.target.files?.[0] || null)
             
           }
-          className={`file:mr-4 ${errors.thumbnail ? "border-red-500" : ""}`}
+          className={`file:mr-4 ${errors.thumbnailUrl ? "border-red-500" : ""}`}
           
         />
-        {errors.thumbnail && (
-          <p className="text-red-600 text-sm mt-1" data-error-key="thumbnail">{errors.thumbnail.message}</p>
+        {errors.thumbnailUrl && (
+          <p className="text-red-600 text-sm mt-1" data-error-key="thumbnailUrl">{errors.thumbnailUrl.message}</p>
         )}
         {thumbnailFile && thumbnailFile instanceof File && (
           <img

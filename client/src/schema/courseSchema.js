@@ -65,7 +65,7 @@ export const lessonSchema = z.object({
 
 export const courseDraftSchema = z.object({
   title: z.string().min(5, "Title must be at least 5 characters"),
-  thumbnail: z
+  thumbnailUrl: z
     .any()
     .refine((file) => file instanceof File, "Thumbnail image is required"),
 })

@@ -32,7 +32,7 @@ const [publishing, setPublishing] = useState(false);
       category: "",
       level: "BEGINNER",
       price: 0,
-      thumbnail: null,
+      thumbnailUrl: null,
       learningObjectives: [],
       lessons: [],
     },
@@ -50,7 +50,7 @@ const [publishing, setPublishing] = useState(false);
     if (isEditMode && courseData) {
       reset({
         ...courseData,
-        thumbnail: null,
+        thumbnailUrl: null,
         learningObjectives:
           courseData.learningObjectives?.length > 0
             ? courseData.learningObjectives
