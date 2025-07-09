@@ -20,7 +20,7 @@ import {
 import { paths } from '@/config/paths';
 
 const linkConfig = {
-  student: [
+  STUDENT: [
     {
       to: paths.app.studentDashboard.getHref(),
       label: 'Dashboard',
@@ -37,7 +37,7 @@ const linkConfig = {
       icon: User,
     },
   ],
-  instructor: [
+  INSTRUCTOR: [
     {
       to: paths.app.instructorDashboard.getHref(),
       label: 'Dashboard',
@@ -67,6 +67,7 @@ const linkConfig = {
 };
 
 const AppSidebar = React.memo(function AppSidebar({ user }) {
+  console.log(user)
   const location = useLocation();
   const items = useMemo(() => linkConfig[user.role] || [], [user.role]);
 

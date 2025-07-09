@@ -11,9 +11,13 @@ export function ProtectedRoute() {
   if (session.isLoading) {
     return <Spinner />;
   }
-
+if(session.isError){
+  return <>Something went wrong ,Pllease refresh</>
+}
   if (!session.data) {
+    console.log("data not found so redirecting")
     const loginPath = paths.auth.login.getHref(location.pathname);
+    return 
     return <Navigate to={loginPath} replace />;
   }
 

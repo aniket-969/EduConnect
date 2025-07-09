@@ -6,6 +6,7 @@ import {
   fetchSession,
 } from "@/api/queries/auth";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 const FAKE_STUDENT = {
   id: "stu_00123",
@@ -33,13 +34,13 @@ const FAKE_INSTRUCTOR = {
 
 
 export const useAuth = () => {
-  const isDev = "development";
-
+  const isDev = "";
+const navigate = useNavigate()
   if (isDev) {
     return {
       session: {
         isLoading: false,
-        data: FAKE_INSTRUCTOR,
+        data: FAKE_STUDENT,
       },
     };
   }
@@ -60,22 +61,27 @@ export const useAuth = () => {
   // — Register
   const registerMutation = useMutation({
     mutationFn: registerUser,
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log(data)
       toast.success("Registration successful!");
+      navigate('/auth/login')
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || "Something went wrong");
       console.error("Registration failed:", err);
-    },
+    }, 
   });
 
   // — Login
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      localStorage.setItem("session", JSON.stringify(data));
-      queryClient.setQueryData(["auth", "session"], data);
+      console.log(data)
+      const {token,user,message}=data
+       localStorage.setItem('eduToken', token);
+      localStorage.setItem("session", JSON.stringify(user));
       toast.success("Login successful!");
+      navigate("/app")
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || "Invalid credentials");

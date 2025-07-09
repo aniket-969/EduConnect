@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { registerSchema } from '@/schema/authSchema';
+import { useAuth } from '@/hooks/useAuth';
 
 const RegisterForm = () => {
   const form = useForm({
@@ -22,12 +23,15 @@ const RegisterForm = () => {
       name: '',
       email: '',
       password: '',
-      role: 'student',
+      role: 'STUDENT',
     },
   });
-
-  const onSubmit = (values) => {
+const {register} = useAuth()
+// console.log(register)
+  const onSubmit = async(values) => {
     console.log('register payload:', values);
+    
+   await register.mutateAsync(values)
   };
 
   return (
@@ -94,14 +98,14 @@ const RegisterForm = () => {
                   className="bg-input p-1 rounded-md flex gap-2 w-full sm:w-fit"
                 >
                   <ToggleGroupItem
-                    value="student"
+                    value="STUDENT"
                     aria-label="Student"
                     className="px-8 sm:px-16 py-1 rounded"
                   >
                     Student
                   </ToggleGroupItem>
                   <ToggleGroupItem
-                    value="instructor"
+                    value="INSTRUCTOR"
                     aria-label="Instructor"
                     className="px-8 sm:px-16 py-1 rounded "
                   >
