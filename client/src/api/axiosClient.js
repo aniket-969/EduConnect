@@ -19,6 +19,13 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response.data,
   (error) => {
+    const status = error.response?.status;
+    const url = error.config?.url;
+
+    // ✅ Suppress toast for 404 on fetching instructor courses in dashbord as new instructor will not have any courses
+    if (status === 404 && url?.includes("/instructor")) {
+      return Promise.reject(error); // silently reject (no toast)
+    }
     const message = error.response?.data?.message || error.message;
     toast.error(message);
     return Promise.reject(error);
