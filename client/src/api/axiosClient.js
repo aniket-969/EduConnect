@@ -4,7 +4,7 @@ import { toast } from 'react-toastify';
 // Basic API client
 export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
-  //withCredentials: true,    //uncommented it for real api
+  withCredentials: false,
   headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
@@ -12,7 +12,16 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(
-  (config) => config,
+  (config) => {
+    
+    const token = localStorage.getItem('eduToken');
+    
+    if (token) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
   (error) => Promise.reject(error)
 );
 

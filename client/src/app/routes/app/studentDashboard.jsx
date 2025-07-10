@@ -10,10 +10,11 @@ const StudenDashboard = () => {
   const {session} = useAuth()
   if(session.isLoading) return <Spinner/>
   if(session.isError)return <>Something went wrong , please refresh</>
-  console.log("here in student") 
+  console.log(session.data) 
+  
   return ( 
     <div className="w-full flex flex-col gap-6 ">
-      <ProfileHeader user ={session.data}/>
+      <ProfileHeader user ={session?.data}/>
       <CarouselBanner/>
       <MyLearning courses={fakeCourses} />
       <RecommendedCourses courses={fakeCourses}/>

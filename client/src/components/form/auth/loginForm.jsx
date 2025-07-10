@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const LoginForm = () => {
   const form = useForm({
@@ -21,9 +22,10 @@ const LoginForm = () => {
       password: "",
     },
   });
-
-  const onSubmit = (values) => {
+const {login} = useAuth()
+  const onSubmit = async(values) => {
     console.log("login payload:", values);
+    await login.mutateAsync(values)
   };
 
   return (

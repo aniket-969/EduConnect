@@ -15,12 +15,23 @@ import DashboardLayout, {
 import { useAuth } from "@/hooks/useAuth";
 
 function RoleRedirector() {
-  const { session } = useAuth();
-  const user = session.data;
+  const raw = localStorage.getItem("session");
+  if (!raw) {
+    return <Navigate to="/login" replace />;
+  }
+
+  let user;
+  try {
+    user = JSON.parse(raw);
+  } catch {
+    return <Navigate to="/login" replace />;
+  }
+
   const to =
-    user.role === "instructor"
+    user.role === "INSTRUCTOR"
       ? paths.app.instructorDashboard.getHref()
       : paths.app.studentDashboard.getHref();
+
   return <Navigate to={to} replace />;
 }
 
@@ -88,18 +99,42 @@ export function createAppRouter(queryClient) {
                 children: [
                   {
                     index: true,
-                    lazy: () =>
-                      import("./routes/app/studentDashboard").then(c),
+                    lazy: () => import("./routes/app/studentDashboard").then(c),
                   },
                   {
                     path: paths.app.studentDashboard.profile.path, // "profile"
-                    lazy: () =>
-                      import("./routes/app/student/profile").then(c),
+                    lazy: () => import("./routes/app/student/profile").then(c),
                   },
                   {
                     path: paths.app.studentDashboard.courses.path, // "courses"
-                    lazy: () =>
-                      import("./routes/app/student/courses").then(c),
+                    children: [
+                      // 1. Course List at /app/student/courses
+                      {
+                        index: true,
+                        lazy: () =>
+                          import("./routes/app/student/courses/index.jsx").then(
+                            c
+                          ),
+                      },
+
+                      // 2. Learn at /app/student/courses/:courseId/learn
+                      {
+                        path: `${paths.app.studentDashboard.courses.detail.path}/${paths.app.studentDashboard.courses.detail.learn.path}`, // ":courseId/learn"
+                        lazy: () =>
+                          import(
+                            "./routes/app/student/courses/courseLearn.jsx"
+                          ).then(c),
+                      },
+
+                      // 3. Course Detail at /app/student/courses/:courseId
+                      {
+                        path: paths.app.studentDashboard.courses.detail.path, // ":courseId"
+                        lazy: () =>
+                          import(
+                            "./routes/app/student/courses/courseDetail.jsx"
+                          ).then(c),
+                      },
+                    ],
                   },
                 ],
               },
@@ -124,18 +159,6 @@ export function createAppRouter(queryClient) {
                       import(
                         "./routes/app/instructor/enrolledStudents.jsx"
                       ).then(c),
-                      
-                  },
-                  {
-                    path: paths.app.instructorDashboard.addcourses.path, // "addcourses"
-                    lazy: () =>
-                      import("./routes/app/instructor/CourseFormPage.jsx").then(c),
-                    
-                  },
-                  {
-                    path: paths.app.instructorDashboard.editcourses.path, // "editcourses"
-                    lazy: () =>
-                      import("./routes/app/instructor/CourseFormPage.jsx").then(c),
                   },
                   {
                     path: "profile",

@@ -20,5 +20,5 @@ export const registerSchema = z.object({
   name: stringValidation(3, 30, 'Name'),
   email: z.string().email(),
   password: passwordSchema,
-  role: z.enum(['student', 'instructor']),
+  role: z.enum(['STUDENT', 'INSTRUCTOR']),
 });

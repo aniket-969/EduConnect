@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 
 
 export default function ProfileHeader({ user }) {
+  console.log(user)
   const initials = user.name
     .split(' ')
     .map(n => n[0])
@@ -13,10 +14,10 @@ export default function ProfileHeader({ user }) {
   return (
     <div className="flex items-center justify-between w-full">
       {/* Avatar + Welcome */}
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4"> 
         <Avatar className="w-12 h-12">
-          <AvatarImage src={user.avatarUrl} alt={`${user.name} avatar`} />
-          <AvatarFallback>{initials}</AvatarFallback>
+          <AvatarImage src={user.avatarUrl}  alt={(user.name).toUpperCase()} />
+          <AvatarFallback>{initials.toUpperCase()}</AvatarFallback>
         </Avatar>
         <h1 className="text-2xl font-semibold leading-tight">
           Welcome back,&nbsp;

@@ -1,14 +1,16 @@
-
-import React from 'react';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '@/components/ui/badge'; 
 import { Star } from 'lucide-react';
 import { cld } from '@/lib/utils';
+import { Link } from 'react-router-dom';
 
 export default function CourseCard({ course }) {
+  // console.log(course)
   const thumb = cld(course.thumbnailId, { width: 400, crop: 'fill' });
   return (
-    <Card className="rounded-lg overflow-hidden shadow">
+    <Link to={`/app/student/courses/${course.id}`}>
+   <Card className="rounded-lg overflow-hidden shadow transition hover:shadow-md hover:scale-[1.01]">
+
       {/* Thumbnail */}
       <img
         src={thumb}
@@ -48,5 +50,7 @@ export default function CourseCard({ course }) {
         </div>
       </CardContent>
     </Card>
+    </Link>
+   
   );
 }
