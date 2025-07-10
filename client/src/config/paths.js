@@ -29,8 +29,9 @@ export const paths = {
 
       // Nested instructor routes
       courses: {
-        path: "courses",
-        getHref: () => "/app/instructor/courses",
+        path: "courses/:type?", // type is optional
+        getHref: (type) =>
+          type ? `/app/instructor/courses/${type}` : "/app/instructor/courses",
       },
       addcourses: {
         path: "courses/new",

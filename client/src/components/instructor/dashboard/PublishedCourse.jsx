@@ -12,12 +12,10 @@ export default function PublishedCoursesCarousel({ courses }) {
   if (!courses || courses.length === 0) return null;
 
   return (
-    <div className="my-3">
-      <div className="flex items-center justify-between mb-2 px-2">
-        <h3 className="font-semibold text-lg">Published Courses</h3>
-      </div>
+    <div >
+      
 
-      <Carousel className="min-w-full xl:w-[74rem] lg:w-[56rem] md:w-[38rem] max-w-[18rem] my-4">
+      <Carousel className="min-w-full xl:w-[74rem] lg:w-[56rem] md:w-[38rem] max-w-[18rem]">
         <CarouselContent>
           {courses.map((course) => (
             <CarouselItem

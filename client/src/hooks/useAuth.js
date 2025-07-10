@@ -77,7 +77,7 @@ const navigate = useNavigate()
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-  //    console.log(data)
+    //  console.log(data)
       const {token,user,message}=data
        localStorage.setItem('eduToken', token);
       localStorage.setItem("session", JSON.stringify(user));

@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 
 
 export default function ProfileHeader({ user }) {
-  console.log(user)
+ 
   const initials = user.name
     .split(' ')
     .map(n => n[0])
