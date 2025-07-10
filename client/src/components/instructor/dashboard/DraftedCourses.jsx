@@ -12,7 +12,7 @@ export default function DraftedCoursesCarousel({ courses }) {
   if (!courses || courses.length === 0) return null;
 
   return (
-    <div className="my-5">
+    <div className="my-3">
       <div className="flex items-center justify-between mb-2 px-2">
         <h3 className="font-semibold text-lg">Drafted Courses</h3>
       </div>
