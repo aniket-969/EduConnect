@@ -40,25 +40,25 @@ export function useUpdateCourse() {
 
 //uncomment it for real api and comment below
 
-// export function usePublishCourse() {
-//   const queryClient = useQueryClient();
-//   return useMutation({
-//     mutationFn:(id)=> courseApi.publishCourse(id),
-//     onSuccess: () => {
-//       queryClient.invalidateQueries({ queryKey: ['courses'] });
-//        queryClient.invalidateQueries({ queryKey: ['course'] });
-//     },
-//   });
-// }
-
 export function usePublishCourse() {
   const queryClient = useQueryClient();
-
   return useMutation({
-    mutationFn: ({ id, data }) => courseApi.publishCourse(id, data),
+    mutationFn: (id) => courseApi.publishCourse(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
       queryClient.invalidateQueries({ queryKey: ["course"] });
     },
   });
 }
+
+// export function usePublishCourse() {
+//   const queryClient = useQueryClient();
+
+//   return useMutation({
+//     mutationFn: ({ id, data }) => courseApi.publishCourse(id, data),
+//     onSuccess: () => {
+//       queryClient.invalidateQueries({ queryKey: ["courses"] });
+//       queryClient.invalidateQueries({ queryKey: ["course"] });
+//     },
+//   });
+// }

@@ -1,5 +1,5 @@
 import { useAuth } from "@/hooks/useAuth";
-import ProfileHeader from "@/components/student/dashboard/profileHeader";
+//import ProfileHeader from "@/components/student/dashboard/profileHeader";
 import DraftedCoursesCarousel from "@/components/instructor/dashboard/DraftedCourses";
 import PublishedCoursesCarousel from "@/components/instructor/dashboard/PublishedCourse";
 import { useCoursesByInstructor } from "@/hooks/useCourse";
@@ -7,6 +7,7 @@ import { Spinner } from "@/components/ui/spinner";
 import CourseSkeleton from "@/components/instructor/common/CourseSkeleton";
 export default function InstructorDashboard() {
   const { session } = useAuth();
+  console.log("data",session.data);
   const instructorId = session.data?.id;
 
   const { data: courses = [], isLoading } =
@@ -35,7 +36,7 @@ const publishedCourses = getCoursesByStatus("PUBLISHED");
 
   return (
     <div className="w-full flex flex-col gap-6">
-      <ProfileHeader user={session.data} />
+      {/* <ProfileHeader user={session.data} /> */}
       {isLoading ? (
         <CourseSkeleton />
       ) : draftedCourses.length > 0 ? (

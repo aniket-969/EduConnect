@@ -14,16 +14,22 @@ const BasicFields = () => {
     trigger,
     formState: { errors },
   } = useFormContext();
- 
-  console.log("basic err",errors)
+
+  console.log("basic err", errors);
   const {
     fields: objectiveFields,
     append: appendObjective,
     remove: removeObjective,
   } = useFieldArray({ control, name: "learningObjectives" });
 
-  const thumbnailFile = watch("thumbnail");
-  
+  const thumbnailInput = watch("thumbnailUrl");
+
+const isFile = thumbnailInput instanceof File;
+const previewUrl = isFile
+  ? URL.createObjectURL(thumbnailInput)
+  : typeof thumbnailInput === "string" && thumbnailInput.length > 0
+    ? thumbnailInput
+    : null;
 
   const onRemoveObjective = (idx) => {
     removeObjective(idx);
@@ -59,7 +65,9 @@ const BasicFields = () => {
           data-error-key="description"
         />
         {errors.description && (
-          <p className="text-red-600 text-sm mt-1">{errors.description.message}</p>
+          <p className="text-red-600 text-sm mt-1">
+            {errors.description.message}
+          </p>
         )}
       </div>
 
@@ -82,13 +90,14 @@ const BasicFields = () => {
         <label className="block font-semibold mb-1">Level</label>
         <div className="flex gap-4">
           {["BEGINNER", "INTERMEDIATE", "ADVANCED"].map((lvl) => {
-      const displayLabel = lvl.charAt(0) + lvl.slice(1).toLowerCase();
-      return (
-        <label key={lvl} >
-          <input type="radio" value={lvl} {...register("level")} /> {displayLabel}
-        </label>
-      );
-    })}
+            const displayLabel = lvl.charAt(0) + lvl.slice(1).toLowerCase();
+            return (
+              <label key={lvl}>
+                <input type="radio" value={lvl} {...register("level")} />{" "}
+                {displayLabel}
+              </label>
+            );
+          })}
         </div>
         {errors.level && (
           <p className="text-red-600 text-sm mt-1" data-error-key="level">
@@ -122,7 +131,9 @@ const BasicFields = () => {
               <Input
                 placeholder="Eg: Understand JSX"
                 {...register(`learningObjectives.${idx}`)}
-                className={errors.learningObjectives?.[idx] ? "border-red-500" : ""}
+                className={
+                  errors.learningObjectives?.[idx] ? "border-red-500" : ""
+                }
                 data-error-key={`learningObjectives.${idx}`}
               />
               {errors.learningObjectives?.[idx] && (
@@ -149,9 +160,14 @@ const BasicFields = () => {
         >
           Add Objective
         </Button>
-        {(errors.learningObjectives?.message ?? errors.learningObjectives?.root?.message) && (
-          <p className="text-red-600 text-sm mt-1" data-error-key="learningObjectives">
-            {errors.learningObjectives.message || errors.learningObjectives.root.message}
+        {(errors.learningObjectives?.message ??
+          errors.learningObjectives?.root?.message) && (
+          <p
+            className="text-red-600 text-sm mt-1"
+            data-error-key="learningObjectives"
+          >
+            {errors.learningObjectives.message ||
+              errors.learningObjectives.root.message}
           </p>
         )}
       </div>
@@ -163,22 +179,25 @@ const BasicFields = () => {
           type="file"
           accept="image/*"
           onChange={(e) =>
-            setValue("thumbnailUrl", e.target.files?.[0] || null)
-            
+            setValue("thumbnailUrl", e.target.files?.[0] || "")
           }
           className={`file:mr-4 ${errors.thumbnailUrl ? "border-red-500" : ""}`}
-          
         />
         {errors.thumbnailUrl && (
-          <p className="text-red-600 text-sm mt-1" data-error-key="thumbnailUrl">{errors.thumbnailUrl.message}</p>
+          <p
+            className="text-red-600 text-sm mt-1"
+            data-error-key="thumbnailUrl"
+          >
+            {errors.thumbnailUrl.message}
+          </p>
         )}
-        {thumbnailFile && thumbnailFile instanceof File && (
-          <img
-            src={URL.createObjectURL(thumbnailFile)}
-            alt="Preview"
-            className="mt-2 max-h-40 rounded"
-          />
-        )}
+       {previewUrl && (
+    <img
+      src={previewUrl}
+      alt="Thumbnail preview"
+      className="mt-2 max-h-40 rounded"
+    />
+  )}
       </div>
     </div>
   );

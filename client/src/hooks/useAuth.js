@@ -23,10 +23,10 @@ const FAKE_STUDENT = {
 };
 
 const FAKE_INSTRUCTOR = {
-  id: "d2af7dae-8cd0-448f-8a1a-ddb8e435a5e9",
+  id: "1",
   name: "kavana",
   email: "kavana@gmail.com",
-  role: "instructor",
+  role: "INSTRUCTOR",
   avatarUrl: "https://i.pravatar.cc/150?img=18",
   preferences: { theme: "dark", notifications: true },
   lastLogin: "2025-06-23T14:32:00.000Z",
@@ -40,10 +40,11 @@ const navigate = useNavigate()
     return {
       session: {
         isLoading: false,
-        data: FAKE_STUDENT,
+        data: FAKE_INSTRUCTOR,
       },
     };
   }
+ 
   const queryClient = useQueryClient();
 
   // — Session
@@ -62,7 +63,7 @@ const navigate = useNavigate()
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
-      console.log(data)
+      //console.log(data)
       toast.success("Registration successful!");
       navigate('/auth/login')
     },
@@ -76,7 +77,7 @@ const navigate = useNavigate()
   const loginMutation = useMutation({
     mutationFn: loginUser,
     onSuccess: (data) => {
-      console.log(data)
+  //    console.log(data)
       const {token,user,message}=data
        localStorage.setItem('eduToken', token);
       localStorage.setItem("session", JSON.stringify(user));

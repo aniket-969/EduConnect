@@ -26,7 +26,6 @@ function RoleRedirector() {
   } catch {
     return <Navigate to="/login" replace />;
   }
-
   const to =
     user.role === "INSTRUCTOR"
       ? paths.app.instructorDashboard.getHref()
@@ -159,6 +158,16 @@ export function createAppRouter(queryClient) {
                       import(
                         "./routes/app/instructor/enrolledStudents.jsx"
                       ).then(c),
+                  },{
+                    path: paths.app.instructorDashboard.addcourses.path, // "addcourses"
+                    lazy: () =>
+                      import("./routes/app/instructor/CourseFormPage.jsx").then(c),
+                    
+                  },
+                  {
+                    path: paths.app.instructorDashboard.editcourses.path, // "editcourses"
+                    lazy: () =>
+                      import("./routes/app/instructor/CourseFormPage.jsx").then(c),
                   },
                   {
                     path: "profile",
