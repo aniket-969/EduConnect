@@ -20,7 +20,7 @@ export default function EnrolledStudentsTable({ enrolledStudents }) {
   const [sortField, setSortField] = useState(null);
   const [ascending, setAscending] = useState(true);
   const [page, setPage] = useState(1);
-  const pageSize = 5;
+  const pageSize = 10;
 
   // Sort logic
   const sortedData = (() => {
@@ -72,7 +72,7 @@ export default function EnrolledStudentsTable({ enrolledStudents }) {
 
   return (
     <div className="w-full">
-      <div className="overflow-x-auto rounded-md border border-border min-h-[370px] flex flex-col justify-between">
+      <div className="overflow-x-auto rounded-md border border-border  flex flex-col justify-between">
         <Table className="max-w-full  ">
           <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-1 ">
             <TableRow>
@@ -101,14 +101,14 @@ export default function EnrolledStudentsTable({ enrolledStudents }) {
             {paginatedData.map((student, index) => (
               <TableRow
                 key={index}
-                className="hover:bg-accent/30 transition-colors"
+                className="hover:bg-accent/30 transition-colors "
               >
-                <TableCell className="px-4 py-4 text-center ">
+                <TableCell className="px-4 py-3 text-center ">
                   {(page - 1) * pageSize + index + 1}
                 </TableCell>
-                <TableCell className="px-4 py-4">{student.studentName}</TableCell>
-                <TableCell className="px-4 py-4">{student.courseTitle}</TableCell>
-                <TableCell className="px-4 py-4 ">
+                <TableCell className="px-4 py-3">{student.studentName}</TableCell>
+                <TableCell className="px-4 py-3">{student.courseTitle}</TableCell>
+                <TableCell className="px-4 py-3 ">
                   {new Date(student.enrolledAt).toLocaleDateString()}
                 </TableCell>
               </TableRow>
