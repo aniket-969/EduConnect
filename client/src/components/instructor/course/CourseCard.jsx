@@ -36,14 +36,17 @@ export default function CourseCard({
   ) : showEmptyPlaceholders ? (
     <span className="italic text-gray-400">No level</span>
   ) : null;
-  const price =
-    course.price === 0 ? (
-      "Free"
-    ) : course.price ? (
-      course.price
-    ) : showEmptyPlaceholders ? (
-      <span className="italic text-gray-400">No price</span>
-    ) : null;
+
+  // Price logic: only show rupee symbol if price is a number
+  let priceDisplay = null;
+  if (course.price === 0) {
+    priceDisplay = "Free";
+  } else if (typeof course.price === "number") {
+    priceDisplay = course.price;
+  } else if (showEmptyPlaceholders) {
+    priceDisplay = <span className="italic text-gray-400">No price</span>;
+  }
+
   const dateLabel =
     showDateType === "publishedOn"
       ? `Published on ${publishedOn}`
@@ -72,14 +75,16 @@ export default function CourseCard({
           {level && <Badge variant="secondary">{level}</Badge>}
         </div>
         <div className="flex flex-wrap gap-4 text-muted-foreground text-sm -mt-1">
-          {price !== null &&
-            (price === "Free" ? (
+          {priceDisplay !== null &&
+            (priceDisplay === "Free" ? (
               <Badge variant="outline">Free</Badge>
-            ) : (
+            ) : typeof priceDisplay === "number" ? (
               <div className="flex items-center gap-1">
                 <IndianRupee className="w-3 h-3" />
-                {price}
+                {priceDisplay}
               </div>
+            ) : (
+              priceDisplay
             ))}
           <div className="flex items-center gap-1">
             <BookOpen className="w-3 h-3" /> {lessonCount}{" "}
@@ -101,7 +106,7 @@ export default function CourseCard({
                 onClick={() => handleEdit(course)}
               />
             </button>
-           
+
             {type === "draft" && (
               <button title="Delete">
                 <Trash2 className="w-5 h-5 cursor-pointer hover:text-red-700" />
