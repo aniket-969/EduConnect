@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as courseApi from "@/api/queries/course";
 
-export function useCourse(id) {
+export function useCourse(id, instructorId) {
   return useQuery({
     queryKey: ["course", id],
     queryFn: () => courseApi.getCourseById(id),

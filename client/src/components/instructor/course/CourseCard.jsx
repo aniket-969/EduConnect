@@ -61,8 +61,16 @@ export default function CourseCard({
     navigate(`/app/instructor/courses/${course.id}/edit`);
   };
 
+  const handlePreview = () => {
+    if (!course.id) return;
+    navigate(`/app/instructor/courses/${course.id}/preview`);
+  };
+
   return (
-    <Card className="rounded-lg overflow-hidden shadow transition-transform duration-200 hover:scale-[1.02] hover:shadow-md h-full flex flex-col">
+    <Card
+      className="rounded-lg overflow-hidden shadow transition-transform duration-200 hover:scale-[1.02] hover:shadow-md h-full flex flex-col cursor-pointer"
+      onClick={handlePreview}
+    >
       <img
         src={course.thumbnailUrl || "/placeholder.jpg"}
         alt={course.title}
@@ -99,7 +107,7 @@ export default function CourseCard({
         </div>
         <div className="mt-auto flex justify-between items-center text-muted-foreground -mb-2">
           <p className="text-xs">{dateLabel}</p>
-          <div className="flex gap-3">
+          <div className="flex gap-3" onClick={e => e.stopPropagation()}>
             <button title="edit">
               <Pencil
                 className="w-5 h-5 cursor-pointer hover:text-blue-700"

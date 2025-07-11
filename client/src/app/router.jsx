@@ -157,14 +157,14 @@ export function createAppRouter(queryClient) {
                       ).then(c),
                   },
                   {
-                    path: paths.app.instructorDashboard.addcourses.path, // "addcourses"
+                    path: paths.app.instructorDashboard.addcourses.path, // "courses/new"
                     lazy: () =>
                       import("./routes/app/instructor/CourseFormPage.jsx").then(
                         c
                       ),
                   },
                   {
-                    path: paths.app.instructorDashboard.editcourses.path, // "editcourses"
+                    path: paths.app.instructorDashboard.editcourses.path, // "courses/:courseId/edit"
                     lazy: () =>
                       import("./routes/app/instructor/CourseFormPage.jsx").then(
                         c
@@ -184,6 +184,11 @@ export function createAppRouter(queryClient) {
                     path: "courses/:type",
                     lazy: () =>
                       import("./routes/app/instructor/CoursesListPage.jsx").then(c),
+                  },
+                  {
+                    path: "courses/:id/preview",
+                    lazy: () =>
+                      import("./routes/app/instructor/CoursePreviewPage.jsx").then(c),
                   },
                 ],
               },
