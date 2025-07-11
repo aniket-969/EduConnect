@@ -50,5 +50,27 @@ export const fakeEnrolledStudents=[
     studentName: "Sanya Rao",
     courseTitle: "Spring Boot API",
     enrolledAt: "2025-01-10",
+  },{
+    id: 6,
+    studentName: "Aanya Singh",
+    courseTitle: "React Basics",
+    enrolledAt: "2024-12-21",
+  },
+  {
+    id: 7,
+    studentName: "Sanya Rao",
+    courseTitle: "Spring Boot API",
+    enrolledAt: "2025-01-10",
+  },
+  {
+    id: 8,
+    studentName: "Sanya Rao",
+    courseTitle: "Spring Boot API",
+    enrolledAt: "2025-01-10",
+  },{
+    id: 9,
+    studentName: "Sanya Rao",
+    courseTitle: "Spring Boot API",
+    enrolledAt: "2025-01-10",
   }
 ]

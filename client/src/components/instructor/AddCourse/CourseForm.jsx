@@ -16,13 +16,15 @@ import { Button } from "@/components/ui/button";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { paths } from "@/config/paths";
+import { uploadToCloudinary } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
 
 const CourseForm = ({ courseId }) => {
   const isEditMode = Boolean(courseId);
-  const [status, setStatus] = useState("Draft");
-const [savingDraft, setSavingDraft] = useState(false);
-const [publishing, setPublishing] = useState(false);
-
+  const [status, setStatus] = useState("DRAFT");
+  const [savingDraft, setSavingDraft] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const { session } = useAuth();
 
   const methods = useForm({
     resolver: zodResolver(courseDraftSchema),
@@ -30,9 +32,9 @@ const [publishing, setPublishing] = useState(false);
       title: "",
       description: "",
       category: "",
-      level: "easy",
+      level: "BEGINNER",
       price: 0,
-      thumbnail: null,
+      thumbnailUrl: "",
       learningObjectives: [],
       lessons: [],
     },
@@ -50,7 +52,7 @@ const [publishing, setPublishing] = useState(false);
     if (isEditMode && courseData) {
       reset({
         ...courseData,
-        thumbnail: null,
+        thumbnailUrl: courseData.thumbnailUrl || "",
         learningObjectives:
           courseData.learningObjectives?.length > 0
             ? courseData.learningObjectives
@@ -63,6 +65,9 @@ const [publishing, setPublishing] = useState(false);
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Failed to load course</p>;
 
+  const generateSlug = (title) => 
+  title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+
   const onSaveDraft = async (data) => {
     try {
       setSavingDraft(true);
@@ -70,25 +75,88 @@ const [publishing, setPublishing] = useState(false);
       const valid = await methods.trigger();
       if (!valid) return toast.error("Fix errors before saving draft");
 
+      if (data.thumbnailUrl instanceof File) {
+        const cloudinaryUrl = await uploadToCloudinary(data.thumbnailUrl);
+        data.thumbnailUrl = cloudinaryUrl;
+      }
+      const courseData = {
+        ...data,
+        slug: generateSlug(data.title),
+        instructor: {
+          id: session.data.id,
+        },
+      };
       if (isEditMode) {
-        await updateCourseMutation.mutateAsync({ id: courseId, data });
+        await updateCourseMutation.mutateAsync({ id: courseId, courseData });
         toast.success("Draft updated");
       } else {
-        await createCourseMutation.mutateAsync(data);
+        await createCourseMutation.mutateAsync(courseData);
         toast.success("Draft saved");
       }
       navigate(paths.app.instructorDashboard.courses.getHref());
     } catch {
       toast.error("Failed to save draft");
-    }finally {
-    setSavingDraft(false); // stop loading
-  }
+    } finally {
+      setSavingDraft(false); // stop loading
+    }
   };
 
   //uncomment this for real api and comment below
 
+  const onPublish = async (data) => {
+    try {
+      setPublishing(true);
+      applyValidationSchema(coursePublishSchema);
+      const valid = await methods.trigger();
+      if (!valid) {
+        scrollToFirstError(methods.formState.errors);
+        return toast.error("Fix errors before publishing");
+      }
+
+      if (data.thumbnailUrl instanceof File) {
+        const cloudinaryUrl = await uploadToCloudinary(data.thumbnailUrl);
+        data.thumbnailUrl = cloudinaryUrl;
+      }
+      const courseData = {
+        ...data,
+        instructor: {
+          id: session.data.id,
+        },
+      };
+
+      let id = courseId;
+      if (!isEditMode) {
+        const created = await createCourseMutation.mutateAsync(courseData);
+        id = created.id;
+      } else {
+        const valid = await methods.trigger();
+        if (!valid) {
+          scrollToFirstError(methods.formState.errors);
+          return toast.error("Fix errors before publishing");
+        }
+        await updateCourseMutation.mutateAsync({ id: courseId, courseData });
+      }
+
+      // Only call publish endpoint if course is not published yet
+      if (status !== "PUBLISHED") {
+        await publishCourseMutation.mutateAsync(id);
+      }
+
+      setStatus("PUBLISHED");
+      toast.success("Course published");
+      navigate(paths.app.instructorDashboard.courses.getHref());
+    } catch (err) {
+      toast.error(err.message || "Publish failed");
+    }
+    finally {
+    setPublishing(false);
+  }
+  };
+
   // const onPublish = async (data) => {
   //   try {
+  //     setPublishing(true);
+
   //     applyValidationSchema(coursePublishSchema);
   //     const valid = await methods.trigger();
   //     if (!valid) {
@@ -101,74 +169,37 @@ const [publishing, setPublishing] = useState(false);
   //       const created = await createCourseMutation.mutateAsync(data);
   //       id = created.id;
   //     } else {
-  // const valid = await methods.trigger();
-  //     if (!valid) {
-  //       scrollToFirstError(methods.formState.errors);
-  //       return toast.error("Fix errors before publishing");
-  //     }
+  //       // Update the course data first
+  //       const valid = await methods.trigger();
+  //       if (!valid) {
+  //         scrollToFirstError(methods.formState.errors);
+  //         return toast.error("Fix errors before republishing");
+  //       }
   //       await updateCourseMutation.mutateAsync({ id: courseId, data });
   //     }
 
-  //     // Only call publish endpoint if course is not published yet
-  //     if (status !== "Published") {
-  //       await publishCourseMutation.mutateAsync(id);
+  //     // Publish by updating course status & publishedAt
+  //     if (status !== "PUBLISHED") {
+  //       await publishCourseMutation.mutateAsync({
+  //         id,
+  //         data: {
+  //           ...methods.getValues(),
+  //           status: "PUBLISHED",
+  //           publishedAt: new Date().toISOString(),
+  //         },
+  //       });
   //     }
 
-  //     setStatus("Published");
+  //     setStatus("PUBLISHED");
   //     toast.success("Course published");
   //     navigate(paths.app.instructorDashboard.courses.getHref());
   //   } catch (err) {
   //     toast.error(err.message || "Publish failed");
   //   }
+  //   finally {
+  //   setPublishing(false);
+  // }
   // };
-
-  const onPublish = async (data) => {
-    try {
-      setPublishing(true);
-      
-      applyValidationSchema(coursePublishSchema);
-      const valid = await methods.trigger();
-      if (!valid) {
-        scrollToFirstError(methods.formState.errors);
-        return toast.error("Fix errors before publishing");
-      }
-
-      let id = courseId;
-      if (!isEditMode) {
-        const created = await createCourseMutation.mutateAsync(data);
-        id = created.id;
-      } else {
-        // Update the course data first
-        const valid = await methods.trigger();
-        if (!valid) {
-          scrollToFirstError(methods.formState.errors);
-          return toast.error("Fix errors before republishing");
-        }
-        await updateCourseMutation.mutateAsync({ id: courseId, data });
-      }
-
-      // Publish by updating course status & publishedAt
-      if (status !== "Published") {
-        await publishCourseMutation.mutateAsync({
-          id,
-          data: {
-            ...methods.getValues(),
-            status: "Published",
-            publishedAt: new Date().toISOString(),
-          },
-        });
-      }
-
-      setStatus("Published");
-      toast.success("Course published");
-      navigate(paths.app.instructorDashboard.courses.getHref());
-    } catch (err) {
-      toast.error(err.message || "Publish failed");
-    }
-    finally {
-    setPublishing(false);
-  }
-  };
 
   const applyValidationSchema = (schema) => {
     methods.reset(methods.getValues(), {
@@ -201,19 +232,32 @@ const [publishing, setPublishing] = useState(false);
             {isEditMode ? "Edit Course" : "Add Course"}
           </h1>
           <div className="flex gap-2">
-            {status !== "Published" ? (
+            {status !== "PUBLISHED" ? (
               <>
-                <Button onClick={handleSubmit(onSaveDraft)} className="cursor-pointer" disabled={savingDraft||publishing} >
+                <Button
+                  onClick={handleSubmit(onSaveDraft)}
+                  className="cursor-pointer"
+                  disabled={savingDraft || publishing}
+                >
                   {savingDraft ? "Saving..." : "Save as Draft"}
                 </Button>
-                <Button variant="outline" onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing||savingDraft}>
+                <Button
+                  variant="outline"
+                  onClick={handleSubmit(onPublish)}
+                  className="cursor-pointer"
+                  disabled={publishing || savingDraft}
+                >
                   {publishing ? "Publishing..." : "Publish Course"}
-                  
                 </Button>
               </>
             ) : (
-              <Button onClick={handleSubmit(onPublish)} className="cursor-pointer" disabled={publishing}>
-                {publishing ? "Updating..." : "Update Course"}</Button>
+              <Button
+                onClick={handleSubmit(onPublish)}
+                className="cursor-pointer"
+                disabled={publishing}
+              >
+                {publishing ? "Updating..." : "Update Course"}
+              </Button>
             )}
           </div>
         </div>

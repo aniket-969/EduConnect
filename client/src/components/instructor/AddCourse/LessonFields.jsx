@@ -8,7 +8,6 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import {
- 
   SortableContext,
   useSortable,
   verticalListSortingStrategy,
@@ -29,7 +28,7 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
   } = useSortable({ id: lesson.id });
   console.log("lesson err",error)
 
-  const type = watch(`lessons.${idx}.type`);
+  const contentType = watch(`lessons.${idx}.contentType`);
 
 
 
@@ -67,26 +66,26 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
         <input
           type="radio"
           value={t}
-          {...register(`lessons.${idx}.type`)}
+          {...register(`lessons.${idx}.contentType`)}
           onChange={(e) => {
             // Also handle conditional resets
-            setValue(`lessons.${idx}.type`, e.target.value);
+            setValue(`lessons.${idx}.contentType`, e.target.value);
             if (e.target.value === "VIDEO") {
               setValue(`lessons.${idx}.content`, "");
             } else {
-              setValue(`lessons.${idx}.videoUrl`, "");
+              setValue(`lessons.${idx}.thumbnailUrl`, "");
             }
           }}
-          checked={type === t}
+          checked={contentType === t}
         />
         {t}
       </label>
     ))}
   </div>
 
-  {error.type && (
-    <p className="text-red-600 text-sm mt-1" data-error-key={`lessons.${idx}.type`}>
-      {error.type.message}
+  {error.contentType && (
+    <p className="text-red-600 text-sm mt-1" data-error-key={`lessons.${idx}.contentType`}>
+      {error.contentType.message}
     </p>
   )}
 </div>
@@ -94,17 +93,17 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
   
 
       <div className="pl-6">
-        {type === "VIDEO" ? (
+        {contentType === "VIDEO" ? (
           <>
             <label className="block font-semibold mb-1">Video URL</label>
             <Input
               placeholder="https:// or http://"
-              {...register(`lessons.${idx}.videoUrl`)}
-              className={error.videoUrl ? "border-red-500" : ""}
-              data-error-key={`lessons.${idx}.videoUrl`}
+              {...register(`lessons.${idx}.thumbnailUrl`)}
+              className={error.thumbnailUrl ? "border-red-500" : ""}
+              data-error-key={`lessons.${idx}.thumbnailUrl`}
             />
-            {error.videoUrl && (
-              <p className="text-red-600 text-sm mt-1">{error.videoUrl.message}</p>
+            {error.thumbnailUrl && (
+              <p className="text-red-600 text-sm mt-1">{error.thumbnailUrl.message}</p>
             )}
           </>
         ) : (
@@ -196,8 +195,8 @@ const LessonFields = () => {
           onClick={() =>
             append({
               title: "",
-              type: "VIDEO",
-              videoUrl: "",
+              contentType: "VIDEO",
+              thumbnailUrl: "",
               content: "",
               sequence: fields.length + 1,
             })

@@ -16,6 +16,7 @@ import { useAuth } from "@/hooks/useAuth";
 
 function RoleRedirector() {
   const raw = localStorage.getItem("session");
+  console.log("raw", raw);
   if (!raw) {
     return <Navigate to="/login" replace />;
   }
@@ -23,10 +24,10 @@ function RoleRedirector() {
   let user;
   try {
     user = JSON.parse(raw);
+    console.log("user", user);
   } catch {
     return <Navigate to="/login" replace />;
   }
-
   const to =
     user.role === "INSTRUCTOR"
       ? paths.app.instructorDashboard.getHref()
@@ -149,11 +150,6 @@ export function createAppRouter(queryClient) {
                       import("./routes/app/instructorDashboard").then(c),
                   },
                   {
-                    path: paths.app.instructorDashboard.courses.path, // "courses"
-                    lazy: () =>
-                      import("./routes/app/instructor/myCourses.jsx").then(c),
-                  },
-                  {
                     path: paths.app.instructorDashboard.enrolledStudents.path, // "enrolled-students"
                     lazy: () =>
                       import(
@@ -161,9 +157,38 @@ export function createAppRouter(queryClient) {
                       ).then(c),
                   },
                   {
+                    path: paths.app.instructorDashboard.addcourses.path, // "courses/new"
+                    lazy: () =>
+                      import("./routes/app/instructor/CourseFormPage.jsx").then(
+                        c
+                      ),
+                  },
+                  {
+                    path: paths.app.instructorDashboard.editcourses.path, // "courses/:courseId/edit"
+                    lazy: () =>
+                      import("./routes/app/instructor/CourseFormPage.jsx").then(
+                        c
+                      ),
+                  },
+                  {
                     path: "profile",
                     lazy: () =>
                       import("./routes/app/instructor/profile.jsx").then(c),
+                  },
+                  {
+                    path: "courses",
+                    lazy: () =>
+                      import("./routes/app/instructor/CoursesListPage.jsx").then(c),
+                  },
+                  {
+                    path: "courses/:type",
+                    lazy: () =>
+                      import("./routes/app/instructor/CoursesListPage.jsx").then(c),
+                  },
+                  {
+                    path: "courses/:id/preview",
+                    lazy: () =>
+                      import("./routes/app/instructor/CoursePreviewPage.jsx").then(c),
                   },
                 ],
               },

@@ -1,7 +1,13 @@
-import React from 'react';
-import { Input } from '@/components/ui/input';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
+import React from "react";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 
 export default function FilterBar({
   search,
@@ -13,6 +19,8 @@ export default function FilterBar({
   sort,
   onSortChange,
   onApply,
+  categories = [],
+  levels = [],
 }) {
   return (
     <div className="flex flex-wrap items-end gap-4 p-4 bg-card rounded">
@@ -25,24 +33,26 @@ export default function FilterBar({
           id="search"
           placeholder="Search courses..."
           value={search}
-          onChange={e => onSearchChange(e.target.value)}
+          onChange={(e) => onSearchChange(e.target.value)}
         />
       </div>
 
       {/* Category Filter */}
       <div>
-        <label htmlFor="category" className="block text-sm font-medium mb-1">
+        <label htmlFor="category" className="block text-sm font-medium mb-1 ">
           Choose category
         </label>
-        <Select id="category" value={category} onValueChange={onCategoryChange}>
-          <SelectTrigger className="w-[150px]">
+        <Select value={category} onValueChange={onCategoryChange}>
+          <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="design">Design</SelectItem>
-            <SelectItem value="business">Business</SelectItem>
+            {categories.map((cat) => (
+              <SelectItem key={cat} value={cat}>
+                {cat}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -52,15 +62,17 @@ export default function FilterBar({
         <label htmlFor="level" className="block text-sm font-medium mb-1">
           Filter by level
         </label>
-        <Select id="level" value={level} onValueChange={onLevelChange}>
+        <Select value={level} onValueChange={onLevelChange}>
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="All levels" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All</SelectItem>
-            <SelectItem value="beginner">Beginner</SelectItem>
-            <SelectItem value="intermediate">Intermediate</SelectItem>
-            <SelectItem value="advanced">Advanced</SelectItem>
+            {["beginner", "intermediate", "advanced"].map((lvl) => (
+              <SelectItem key={lvl} value={lvl}>
+                {lvl.charAt(0).toUpperCase() + lvl.slice(1)}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -70,7 +82,7 @@ export default function FilterBar({
         <label htmlFor="sort" className="block text-sm font-medium mb-1">
           Sort by
         </label>
-        <Select id="sort" value={sort} onValueChange={onSortChange}>
+        <Select value={sort} onValueChange={onSortChange}>
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Sort" />
           </SelectTrigger>

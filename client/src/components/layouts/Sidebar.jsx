@@ -1,5 +1,5 @@
-import React, { useMemo } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Sidebar,
   SidebarContent,
@@ -8,66 +8,59 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-} from '@/components/ui/sidebar';
-import {
-  Home,
-  BookOpen,
-  User,
-  PlusCircle,
-  Users,
-  LogOut,
-} from 'lucide-react';
-import { paths } from '@/config/paths';
+} from "@/components/ui/sidebar";
+import { Home, BookOpen, User, PlusCircle, Users, LogOut } from "lucide-react";
+import { paths } from "@/config/paths";
 
 const linkConfig = {
   STUDENT: [
     {
       to: paths.app.studentDashboard.getHref(),
-      label: 'Dashboard',
+      label: "Dashboard",
       icon: Home,
     },
     {
       to: paths.app.studentDashboard.courses.getHref(),
-      label: 'Browse Courses',
+      label: "Browse Courses",
       icon: BookOpen,
     },
     {
       to: paths.app.studentDashboard.profile.getHref(),
-      label: 'Profile',
+      label: "Profile",
       icon: User,
     },
   ],
   INSTRUCTOR: [
     {
       to: paths.app.instructorDashboard.getHref(),
-      label: 'Dashboard',
+      label: "Dashboard",
       icon: Home,
     },
     {
       to: `${paths.app.instructorDashboard.courses.getHref()}/new`,
-      label: 'Add Course',
+      label: "Add Course",
       icon: PlusCircle,
     },
     {
       to: paths.app.instructorDashboard.courses.getHref(),
-      label: 'My Courses',
+      label: "My Courses",
       icon: BookOpen,
     },
     {
       to: paths.app.instructorDashboard.enrolledStudents.getHref(),
-      label: 'Enrolled Students',
+      label: "Enrolled Students",
       icon: Users,
     },
     {
       to: `${paths.app.instructorDashboard.getHref()}/profile`,
-      label: 'Profile',
+      label: "Profile",
       icon: User,
     },
   ],
 };
 
 const AppSidebar = React.memo(function AppSidebar({ user }) {
-  console.log(user)
+  console.log(user);
   const location = useLocation();
   const items = useMemo(() => linkConfig[user.role] || [], [user.role]);
 
@@ -83,8 +76,8 @@ const AppSidebar = React.memo(function AppSidebar({ user }) {
                   to={to}
                   className={
                     location.pathname === to
-                      ? 'flex items-center space-x-3 p-2 rounded bg-accent'
-                      : 'flex items-center space-x-3 p-2 rounded hover:bg-accent/20'
+                      ? "flex items-center space-x-3 p-2 rounded bg-accent"
+                      : "flex items-center space-x-3 p-2 rounded hover:bg-accent/20"
                   }
                 >
                   <Icon className="w-5 h-5" />
@@ -101,7 +94,9 @@ const AppSidebar = React.memo(function AppSidebar({ user }) {
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <button
-                  onClick={() => {/* logout logic */}}
+                  onClick={() => {
+                    /* logout logic */
+                  }}
                   className="w-full text-left flex items-center space-x-3 p-2 rounded hover:bg-accent/20"
                 >
                   <LogOut className="w-5 h-5" />

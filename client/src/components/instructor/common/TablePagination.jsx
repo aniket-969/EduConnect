@@ -12,7 +12,7 @@ export default function TablePagination({ page, setPage, totalPages }) {
   if (totalPages <= 1) return null;
 
   return (
-    <div className="flex justify-center border-t-2 p-2 bg-primary/5">
+    <div className="flex justify-center  p-2 ">
       <Pagination>
         <PaginationContent>
           <PaginationItem>
