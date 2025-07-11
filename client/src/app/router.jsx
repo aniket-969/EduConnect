@@ -178,12 +178,12 @@ export function createAppRouter(queryClient) {
                   {
                     path: "courses",
                     lazy: () =>
-                      import("./routes/app/CoursesListPage.jsx").then(c),
+                      import("./routes/app/instructor/CoursesListPage.jsx").then(c),
                   },
                   {
                     path: "courses/:type",
                     lazy: () =>
-                      import("./routes/app/CoursesListPage.jsx").then(c),
+                      import("./routes/app/instructor/CoursesListPage.jsx").then(c),
                   },
                 ],
               },

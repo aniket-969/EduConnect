@@ -30,7 +30,7 @@ export default function PublishedCourseCard({ course }) {
         alt={course.title}
         className="w-full h-40 object-cover -mt-6 "
       />
-      <CardContent className="pl-4 flex flex-col flex-grow gap-3 ">
+      <CardContent className="pl-4 flex flex-col flex-grow gap-2 ">
         <h3 className="text-base font-semibold truncate">{course.title}</h3>
 
         {/* Badges */}
@@ -74,7 +74,6 @@ export default function PublishedCourseCard({ course }) {
               className="w-5 h-5 cursor-pointer hover:text-blue-700"
               onClick={() => handleEdit(course)}
             />
-            <Eye className="w-5 h-5 cursor-pointer hover:text-green-700" />
           </div>
         </div>
       </CardContent>

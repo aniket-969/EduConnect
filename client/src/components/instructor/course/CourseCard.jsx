@@ -1,38 +1,41 @@
 import React from "react";
-import { Pencil, Eye, Trash2, BookOpen, IndianRupee } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-//import { cld } from "@/lib/utils";
+import {
+  Pencil,
+  Eye,
+  Trash2,
+  BookOpen,
+  IndianRupee,
+  Users,
+} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 
-export default function DraftedCourseCard({
+export default function CourseCard({
   course,
-  showDateType = "updatedAt",
+  type,
+  showDateType = "auto",
   showEmptyPlaceholders = false,
 }) {
-  //const thumb = cld(course.thumbnailUrl, { width: 400, crop: 'fill' });
-  const lessonCount = course.lessons?.length || 0;
-  const updatedAt = new Date(course.updatedAt).toLocaleDateString();
   const navigate = useNavigate();
-  const handleEdit = (course) => {
-    if (!course.id) return toast.error("Course ID missing");
-    navigate(`/app/instructor/courses/${course.id}/edit`);
-  };
-
+  const lessonCount = course.lessons?.length || 0;
+  const updatedAt = course.updatedAt
+    ? new Date(course.updatedAt).toLocaleDateString()
+    : null;
+  const publishedOn = course.publishedOn
+    ? new Date(course.publishedOn).toLocaleDateString()
+    : null;
+  const enrolledCount = course.students?.length || 0;
   const category =
     course.category ||
     (showEmptyPlaceholders ? (
       <span className="italic text-gray-400">No category</span>
-    ) : (
-      "Uncategorized"
-    ));
+    ) : null);
   const level = course.level ? (
     course.level.charAt(0) + course.level.slice(1).toLowerCase()
   ) : showEmptyPlaceholders ? (
     <span className="italic text-gray-400">No level</span>
-  ) : (
-    "Unknown"
-  );
+  ) : null;
   const price =
     course.price === 0 ? (
       "Free"
@@ -42,36 +45,32 @@ export default function DraftedCourseCard({
       <span className="italic text-gray-400">No price</span>
     ) : null;
   const dateLabel =
-    showDateType === "updatedAt"
-      ? `Updated on ${updatedAt}`
-      : showDateType === "publishedOn" && course.publishedOn
-        ? `Published on ${new Date(course.publishedOn).toLocaleDateString()}`
-        : `Updated on ${updatedAt}`;
+    showDateType === "publishedOn"
+      ? `Published on ${publishedOn}`
+      : showDateType === "updatedAt"
+        ? `Updated on ${updatedAt}`
+        : type === "published"
+          ? `Published on ${publishedOn}`
+          : `Updated on ${updatedAt}`;
+
+  const handleEdit = (course) => {
+    if (!course.id) return;
+    navigate(`/app/instructor/courses/${course.id}/edit`);
+  };
 
   return (
     <Card className="rounded-lg overflow-hidden shadow transition-transform duration-200 hover:scale-[1.02] hover:shadow-md h-full flex flex-col">
-      {/* Thumbnail */}
-      {/* <img
-        src={thumb}
-        alt={course.title}
-        className="w-full h-32 object-cover "
-      /> */}
       <img
         src={course.thumbnailUrl || "/placeholder.jpg"}
         alt={course.title}
         className="w-full h-40 object-cover -mt-6 "
       />
-
-      {/* Content */}
       <CardContent className="pl-4 flex flex-col flex-grow gap-2">
-        {/* Title */}
         <h3 className="text-base font-semibold truncate">{course.title}</h3>
-        {/* Badges */}
         <div className="flex flex-wrap gap-2 text-xs -mt-1">
-          <Badge variant="default">{category}</Badge>
-          <Badge variant="secondary">{level}</Badge>
+          {category && <Badge variant="default">{category}</Badge>}
+          {level && <Badge variant="secondary">{level}</Badge>}
         </div>
-        {/* Course Info Icons */}
         <div className="flex flex-wrap gap-4 text-muted-foreground text-sm -mt-1">
           {price !== null &&
             (price === "Free" ? (
@@ -86,11 +85,15 @@ export default function DraftedCourseCard({
             <BookOpen className="w-3 h-3" /> {lessonCount}{" "}
             {lessonCount === 1 ? "lesson" : "lessons"}
           </div>
+          {type === "published" && (
+            <div className="flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              <span className="text-sm">{enrolledCount}</span>
+            </div>
+          )}
         </div>
         <div className="mt-auto flex justify-between items-center text-muted-foreground -mb-2">
           <p className="text-xs">{dateLabel}</p>
-
-          {/* Action Icons */}
           <div className="flex gap-3">
             <button title="edit">
               <Pencil
@@ -98,10 +101,12 @@ export default function DraftedCourseCard({
                 onClick={() => handleEdit(course)}
               />
             </button>
-            
-            <button title="Delete">
-              <Trash2 className="w-5 h-5 cursor-pointer hover:text-red-700" />
-            </button>
+           
+            {type === "draft" && (
+              <button title="Delete">
+                <Trash2 className="w-5 h-5 cursor-pointer hover:text-red-700" />
+              </button>
+            )}
           </div>
         </div>
       </CardContent>

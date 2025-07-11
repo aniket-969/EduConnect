@@ -1,12 +1,12 @@
 import { useAuth } from "@/hooks/useAuth";
 import ProfileHeader from "@/components/student/dashboard/profileHeader";
-import DraftedCoursesCarousel from "@/components/instructor/dashboard/DraftedCourses";
-import PublishedCoursesCarousel from "@/components/instructor/dashboard/PublishedCourse";
+import CourseCard from "@/components/instructor/course/CourseCard";
 import { useCoursesByInstructor } from "@/hooks/useCourse";
 import { Spinner } from "@/components/ui/spinner";
 import CourseSkeleton from "@/components/instructor/common/CourseSkeleton";
 import { Link } from "react-router-dom";
 import { paths } from "@/config/paths";
+import DashboardCarousel from "@/components/instructor/dashboard/DashboardCarousel";
 
 export default function InstructorDashboard() {
   const { session } = useAuth();
@@ -40,7 +40,26 @@ export default function InstructorDashboard() {
     if (isLoading) {
       draftedSection = <CourseSkeleton />;
     } else if (draftedCourses.length > 0) {
-      draftedSection = <DraftedCoursesCarousel courses={draftedCourses} />;
+      draftedSection = (
+        <div>
+          <div className="flex items-center justify-between px-2">
+            <h3 className="text-lg font-semibold">Drafted Courses</h3>
+            <Link
+              to={paths.app.instructorDashboard.courses.getHref("draft")}
+              className="text-primary text-sm hover:underline"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                if (window.innerWidth < 1024)
+                  e.target.removeAttribute("target");
+              }}
+            >
+              See all
+            </Link>
+          </div>
+          <DashboardCarousel courses={draftedCourses} type="draft" />
+        </div>
+      );
     } else {
       draftedSection = (
         <p className="text-sm text-muted-foreground px-4">
@@ -54,7 +73,23 @@ export default function InstructorDashboard() {
       publishedSection = <CourseSkeleton />;
     } else if (publishedCourses.length > 0) {
       publishedSection = (
-        <PublishedCoursesCarousel courses={publishedCourses} />
+        <div>
+          <div className="flex items-center justify-between px-2 mt-4">
+            <h3 className="text-lg font-semibold">Published Courses</h3>
+            <Link
+              to={paths.app.instructorDashboard.courses.getHref("published")}
+              className="text-primary text-sm hover:underline"
+             
+              onClick={(e) => {
+                if (window.innerWidth < 1024)
+                  e.target.removeAttribute("target");
+              }}
+            >
+              See all
+            </Link>
+          </div>
+          <DashboardCarousel courses={publishedCourses} type="published" />
+        </div>
       );
     } else {
       publishedSection = (
@@ -67,28 +102,7 @@ export default function InstructorDashboard() {
     content = (
       <div className="w-full flex flex-col gap-6 ">
         <ProfileHeader user={session.data} />
-        <div className="flex items-center justify-between px-4 ">
-          <h3 className="text-lg font-semibold">Drafted Courses</h3>
-          <Link
-            to={paths.app.instructorDashboard.courses.getHref("draft")}
-            className="text-primary text-sm hover:underline"
-          
-          >
-            See all
-          </Link>
-        </div>
         {draftedSection}
-
-        <div className="flex items-center justify-between px-4 mt-4">
-          <h3 className="text-lg font-semibold">Published Courses</h3>
-          <Link
-            to={paths.app.instructorDashboard.courses.getHref("published")}
-            className="text-primary text-sm hover:underline"
-            
-          >
-            See all
-          </Link>
-        </div>
         {publishedSection}
       </div>
     );
