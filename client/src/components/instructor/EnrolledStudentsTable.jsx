@@ -73,7 +73,7 @@ export default function EnrolledStudentsTable({ enrolledStudents }) {
   return (
     <div className="w-full">
       <div className="overflow-x-auto rounded-md border border-border  flex flex-col justify-between">
-        <Table className="max-w-full  ">
+        <Table className="max-w-full ">
           <TableHeader className="sticky top-0 bg-primary text-muted-foreground z-1 ">
             <TableRow>
               <TableHead className="px-4 py-4 text-center ">#</TableHead>
@@ -97,11 +97,11 @@ export default function EnrolledStudentsTable({ enrolledStudents }) {
               </TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="border-b">
             {paginatedData.map((student, index) => (
               <TableRow
                 key={index}
-                className="hover:bg-accent/30 transition-colors "
+                className="hover:bg-accent/30 transition-colors border-b"
               >
                 <TableCell className="px-4 py-3 text-center ">
                   {(page - 1) * pageSize + index + 1}
