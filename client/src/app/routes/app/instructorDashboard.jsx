@@ -57,9 +57,13 @@ export default function InstructorDashboard() {
       );
     } else {
       draftedSection = (
-        <p className="text-sm text-muted-foreground px-4">
-          You have no drafted courses yet.
-        </p>
+          <div className="px-2 mt-4">
+            <h3 className="text-lg font-semibold">Drafted Courses</h3>
+            <p className="text-sm text-muted-foreground px-2 mt-4">
+              You have no drafted courses yet.
+            </p>
+          </div>
+         
       );
     }
 
@@ -69,7 +73,7 @@ export default function InstructorDashboard() {
     } else if (publishedCourses.length > 0) {
       publishedSection = (
         <div>
-          <div className="flex items-center justify-between px-2 mt-4">
+          <div className="flex items-center justify-between mt-4">
             <h3 className="text-lg font-semibold">Published Courses</h3>
             <Link
               to={paths.app.instructorDashboard.courses.getHref("published")}
@@ -83,9 +87,14 @@ export default function InstructorDashboard() {
       );
     } else {
       publishedSection = (
-        <p className="text-sm text-muted-foreground px-4">
-          You have no published courses yet.
-        </p>
+      
+          <div className="px-2 mt-4">
+            <h3 className="text-lg font-semibold">Published Courses</h3>
+            <p className="text-sm text-muted-foreground  mt-4">
+              You have no published courses yet.
+            </p>
+          </div>
+      
       );
     }
 
