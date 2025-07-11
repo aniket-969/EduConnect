@@ -47,12 +47,7 @@ export default function InstructorDashboard() {
             <Link
               to={paths.app.instructorDashboard.courses.getHref("draft")}
               className="text-primary text-sm hover:underline"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={(e) => {
-                if (window.innerWidth < 1024)
-                  e.target.removeAttribute("target");
-              }}
+            
             >
               See all
             </Link>
@@ -80,10 +75,6 @@ export default function InstructorDashboard() {
               to={paths.app.instructorDashboard.courses.getHref("published")}
               className="text-primary text-sm hover:underline"
              
-              onClick={(e) => {
-                if (window.innerWidth < 1024)
-                  e.target.removeAttribute("target");
-              }}
             >
               See all
             </Link>

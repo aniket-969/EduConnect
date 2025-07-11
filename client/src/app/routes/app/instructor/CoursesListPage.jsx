@@ -2,8 +2,7 @@ import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { useCoursesByInstructor } from "@/hooks/useCourse";
 import CourseSkeleton from "@/components/instructor/common/CourseSkeleton";
 import { useAuth } from "@/hooks/useAuth";
-import DraftedCourseCard from "@/components/instructor/course/DraftedCourseCard";
-import PublishedCourseCard from "@/components/instructor/course/PublishedCourseCard";
+import CourseCard from "@/components/instructor/course/CourseCard";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -37,16 +36,23 @@ export default function CoursesListPage() {
       .filter((c) => c.status === "PUBLISHED")
       .sort((a, b) => new Date(b.publishedOn) - new Date(a.publishedOn));
     renderCard = (course) => (
-      <PublishedCourseCard key={course.id} course={course} />
+      <CourseCard
+        key={course.id}
+        course={course}
+        type="published"
+        showDateType="publishedOn"
+      />
     );
   } else if (selectedTab === "draft") {
     filteredCourses = courses
       .filter((c) => c.status === "DRAFT")
       .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     renderCard = (course) => (
-      <DraftedCourseCard
+      <CourseCard
         key={course.id}
         course={course}
+        type="draft"
+        showDateType="updatedAt"
         showEmptyPlaceholders
       />
     );
@@ -56,26 +62,17 @@ export default function CoursesListPage() {
       const keyB = b.status === "DRAFT" ? b.updatedAt : b.publishedOn;
       return new Date(keyB) - new Date(keyA);
     });
-    renderCard = (course) => {
-      if (course.status === "PUBLISHED") {
-        return (
-          <PublishedCourseCard
-            key={course.id}
-            course={course}
-            showDateType="publishedOn"
-          />
-        );
-      } else {
-        return (
-          <DraftedCourseCard
-            key={course.id}
-            course={course}
-            showDateType="updatedAt"
-            showEmptyPlaceholders
-          />
-        );
-      }
-    };
+    renderCard = (course) => (
+      <CourseCard
+        key={course.id}
+        course={course}
+        type={course.status === "PUBLISHED" ? "published" : "draft"}
+        showDateType={
+          course.status === "PUBLISHED" ? "publishedOn" : "updatedAt"
+        }
+        showEmptyPlaceholders={course.status === "DRAFT"}
+      />
+    );
   }
 
   return (
