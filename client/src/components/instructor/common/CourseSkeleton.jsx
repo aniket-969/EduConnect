@@ -6,49 +6,52 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function CourseSkeleton() {
-  const skeletons = Array(3).fill(null);
+export default function CourseSkeleton({ count = 4 }) {
+  const skeletons = Array(count).fill(null);
 
   return (
     <div className="my-3">
-      <div className="flex items-center justify-between mb-2 px-2">
-        <div className="h-6 w-40 bg-card-foreground/5 animate-pulse" />
-      </div>
+                        <div className="h-5 w-1/4 bg-accent/5 rounded " />
 
-      <Carousel className="min-w-full xl:w-[74rem] lg:w-[56rem] md:w-[38rem] max-w-[18rem] my-6">
-        <CarouselContent className="-ml-4">
+      <Carousel className="min-w-full xl:w-[74rem] lg:w-[56rem] md:w-[38rem] max-w-[18rem] ml-1">
+        <CarouselContent className="p-4">
           {skeletons.map((_, i) => (
-            <CarouselItem key={i} className="md:basis-1/2 lg:basis-1/3">
-              <div className="p-3">
-                <div className="rounded-lg overflow-hidden shadow bg-card border border-border">
-                  {/* Thumbnail */}
-                  <div className="w-full h-38 pt-8 bg-card-foreground/5 animate-pulse" />
-
-                  {/* Content */}
-                  <div className="pt-8 pl-4 space-y-2">
-                    <div className="h-4 w-3/4 bg-card-foreground/5 animate-pulse pt-4" />
-                    <div className="h-3 w-1/2 bg-card-foreground/5 animate-pulse pt-4" />
-
-                    <div className="mt-auto flex justify-between items-center">
-                      <div className="h-3 w-1/3 bg-card-foreground/5 animate-pulse pt-4" />
-
-                      {/* Action Icons */}
-                      <div className="flex justify-end gap-4 pt-2 p-4">
-                        <div className="w-5 h-5 bg-card-foreground/5 rounded-sm animate-pulse" />
-                        <div className="w-5 h-5 bg-card-foreground/5 rounded-sm animate-pulse" />
-                        <div className="w-5 h-5 bg-card-foreground/5 rounded-sm animate-pulse" />
-                      </div>
+            <CarouselItem
+              key={i}
+              className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-2 pt-4"
+            >
+              <Card className="rounded-lg overflow-hidden shadow h-full flex flex-col animate-pulse">
+                {/* Thumbnail */}
+                <div className="w-full h-40 object-cover bg-accent/5 -mt-6" />
+                <CardContent className="flex flex-col flex-grow gap-2 pt-2">
+                  {/* Title */}
+                  <div className="h-5 w-3/4 bg-accent/5 rounded " />
+                  {/* Badges */}
+                  <div className="flex gap-2  -mt-1">
+                    <div className="h-4 w-16 bg-accent/5 rounded" />
+                    <div className="h-4 w-12 bg-accent/5 rounded" />
+                  </div>
+                  {/* Info Row */}
+                  <div className="flex gap-4">
+                    <div className="h-4 w-12 bg-accent/5 rounded" />
+                    <div className="h-4 w-16 bg-accent/5 rounded" />
+                  </div>
+                  {/* Date and Actions */}
+                  <div className="mt-auto flex justify-between items-center -mb-2">
+                    <div className="h-3 w-20 bg-accent/5 rounded" />
+                    <div className="flex gap-3">
+                      <div className="w-5 h-5 bg-accent/5 rounded" />
+                      <div className="w-5 h-5 bg-accent/5 rounded" />
                     </div>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </CarouselItem>
           ))}
         </CarouselContent>
 
-        <CarouselPrevious className="left-1" />
-        <CarouselNext className="right-1" />
       </Carousel>
     </div>
   );
