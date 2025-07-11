@@ -102,7 +102,7 @@ const navigate = useNavigate()
       console.error("Logout error:", err);
     },
   });
-
+ 
   return {
     session: sessionQuery,
     register: registerMutation,

@@ -47,7 +47,7 @@ export default function Profile() {
           100
       )
     : 0
-  const lastLogin = new Date(data.lastLogin).toLocaleString()
+  // const lastLogin = new Date(data.lastLogin).toLocaleString()
   const initials =
     data.name.split(" ").map((w) => w[0]).join("") || "U"
 
@@ -143,10 +143,10 @@ export default function Profile() {
                 </span>{" "}
                 {completedCount}
               </div>
-              <div>
+              {/* <div>
                 <span className="font-semibold uppercase">Last Login:</span>{" "}
                 {lastLogin}
-              </div>
+              </div> */}
             </div>
 
             {/* Progress */}

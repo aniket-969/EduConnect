@@ -22,7 +22,7 @@ export async function fetchSession() {
   }
   
   try {
-    
+     
     const user = await api.get(`/users/${id}`);
     console.log(user)
     localStorage.setItem('session', JSON.stringify(user));
@@ -47,6 +47,8 @@ export const loginUser = (data) => {
   
   return api.post(`${BASE}/login`, data);
 };
+
+
 
 export const logOut = () => {
   return api.post(`${BASE}/me/logout`);

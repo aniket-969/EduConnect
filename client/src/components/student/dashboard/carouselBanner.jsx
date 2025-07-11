@@ -17,7 +17,7 @@ const slides = [
     description:
       "Introducing Career Accelerators - focus on the skills and real-world experience that'll get you noticed.",
     ctaLabel: 'Explore All Career Accelerators',
-    ctaHref: '/app/courses',
+    ctaHref: '/app/student/courses',
   },
   {
     id: '6ddba6b6-3e71-4b0f-a825-d76977d3d6a4_gspjyj.png',
@@ -25,7 +25,7 @@ const slides = [
     description:
       'Stay on top of the skills you need. Courses as low as ₹479 through June 26.',
     ctaLabel: 'See Latest Courses',
-    ctaHref: '/app/courses',
+    ctaHref: '/app/student/courses',
   },
 ];
 

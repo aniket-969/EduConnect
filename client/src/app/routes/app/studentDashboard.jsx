@@ -10,7 +10,7 @@ const StudenDashboard = () => {
   const {session} = useAuth()
   if(session.isLoading) return <Spinner/>
   if(session.isError)return <>Something went wrong , please refresh</>
-  console.log(session.data) 
+  // console.log(session.data) 
   
   return ( 
     <div className="w-full flex flex-col gap-6 ">
