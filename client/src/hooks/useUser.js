@@ -7,9 +7,10 @@ import { uploadAvatar } from './../api/queries/user';
 export const useUser = (id) => {
   const queryClient = useQueryClient();
 
-  const uploadAvatarMutation = useMutation(
-    (file) => uploadAvatar(id, file),
-    {
+  const uploadAvatarMutation = useMutation({
+    mutationFn:
+    (avatar) => uploadAvatar(id, avatar),
+    
       onSuccess: (updatedUser) => {
     
         toast.success("Avatar updated!");
