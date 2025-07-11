@@ -7,6 +7,7 @@ import CourseSkeleton from "@/components/instructor/common/CourseSkeleton";
 import { Link } from "react-router-dom";
 import { paths } from "@/config/paths";
 import DashboardCarousel from "@/components/instructor/dashboard/DashboardCarousel";
+import CarouselBanner from "@/components/student/dashboard/carouselBanner";
 
 export default function InstructorDashboard() {
   const { session } = useAuth();
@@ -47,7 +48,6 @@ export default function InstructorDashboard() {
             <Link
               to={paths.app.instructorDashboard.courses.getHref("draft")}
               className="text-primary text-sm hover:underline"
-            
             >
               See all
             </Link>
@@ -74,7 +74,6 @@ export default function InstructorDashboard() {
             <Link
               to={paths.app.instructorDashboard.courses.getHref("published")}
               className="text-primary text-sm hover:underline"
-             
             >
               See all
             </Link>
@@ -90,9 +89,30 @@ export default function InstructorDashboard() {
       );
     }
 
+    // Instructor-specific slides for the carousel banner
+    const instructorSlides = [
+      {
+        id: "6ddba6b6-3e71-4b0f-a825-d76977d3d6a4_gspjyj.png",
+        title: "Share Your Expertise",
+        description:
+          "Create and publish courses to help learners grow and succeed.",
+        ctaLabel: "Create New Course",
+        ctaHref: "/app/instructor/courses/new",
+      },
+      {
+        id: "bedc6aeb-62a6-48d1-a8c3-187c075b1fe4_duwjd3.jpg",
+        title: "Track Your Impact",
+        description:
+          "See how many students are enrolling and learning from your content.",
+        ctaLabel: "View Enrollements",
+        ctaHref: "/app/instructor/enrolled-students",
+      },
+    ];
+
     content = (
       <div className="w-full flex flex-col gap-6 ">
         <ProfileHeader user={session.data} />
+        <CarouselBanner slides={instructorSlides} />
         {draftedSection}
         {publishedSection}
       </div>

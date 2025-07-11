@@ -17,8 +17,8 @@ export const stringValidation = (min, max, fieldName) => {
     });
 };
 
-//const CLOUD_NAME = "dni3ccfha";
-const CLOUD_NAME = "dmt0faojk";
+const CLOUD_NAME = "dni3ccfha";
+//const CLOUD_NAME = "dmt0faojk";
 
 export function cld(publicId, options = {}) {
   const {
