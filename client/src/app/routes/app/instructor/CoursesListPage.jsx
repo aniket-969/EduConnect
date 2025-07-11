@@ -5,6 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import CourseCard from "@/components/instructor/course/CourseCard";
 import { useEffect, useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import FilterBar from "@/components/student/course/filterBar";
 
 const TABS = [
   { label: "All", value: "all" },
@@ -28,13 +29,56 @@ export default function CoursesListPage() {
     setSelectedTab(type || "all");
   }, [type, location.key]);
 
-  let filteredCourses = courses;
-  // In 'all' tab, show both types and use the correct card for each
+  // Filter state
+  const [search, setSearch] = useState("");
+  const [category, setCategory] = useState("all");
+  const [level, setLevel] = useState("all");
+  const [sort, setSort] = useState("newest");
+
+  // Extract unique categories from courses
+  const categories = Array.from(
+    new Set(courses.map((c) => c.category).filter(Boolean))
+  );
+  // Always show all levels in dropdown (lowercase for UI, but filter against uppercase in data)
+  const levels = ["beginner", "intermediate", "advanced"];
+
+  // Filtering logic
+  let filteredCourses = courses
+    .filter((c) => c.title.toLowerCase().includes(search.toLowerCase()))
+    .filter((c) => category === "all" || c.category === category)
+    .filter(
+      (c) => level === "all" || (c.level && c.level.toLowerCase() === level)
+    );
+
+  // Tab filtering
+  if (selectedTab === "published") {
+    filteredCourses = filteredCourses
+      .filter((c) => c.status === "PUBLISHED")
+      .sort((a, b) => {
+        if (sort === "alphabetical") return a.title.localeCompare(b.title);
+        if (sort === "popular") return (b.rating || 0) - (a.rating || 0);
+        return new Date(b.publishedOn) - new Date(a.publishedOn);
+      });
+  } else if (selectedTab === "draft") {
+    filteredCourses = filteredCourses
+      .filter((c) => c.status === "DRAFT")
+      .sort((a, b) => {
+        if (sort === "alphabetical") return a.title.localeCompare(b.title);
+        if (sort === "popular") return (b.rating || 0) - (a.rating || 0);
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
+  } else if (selectedTab === "all") {
+    filteredCourses = filteredCourses.slice().sort((a, b) => {
+      if (sort === "alphabetical") return a.title.localeCompare(b.title);
+      if (sort === "popular") return (b.rating || 0) - (a.rating || 0);
+      const keyA = a.status === "DRAFT" ? a.updatedAt : a.publishedOn;
+      const keyB = b.status === "DRAFT" ? b.updatedAt : b.publishedOn;
+      return new Date(keyB) - new Date(keyA);
+    });
+  }
+
   let renderCard = (course) => null;
   if (selectedTab === "published") {
-    filteredCourses = courses
-      .filter((c) => c.status === "PUBLISHED")
-      .sort((a, b) => new Date(b.publishedOn) - new Date(a.publishedOn));
     renderCard = (course) => (
       <CourseCard
         key={course.id}
@@ -44,9 +88,6 @@ export default function CoursesListPage() {
       />
     );
   } else if (selectedTab === "draft") {
-    filteredCourses = courses
-      .filter((c) => c.status === "DRAFT")
-      .sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
     renderCard = (course) => (
       <CourseCard
         key={course.id}
@@ -57,11 +98,6 @@ export default function CoursesListPage() {
       />
     );
   } else if (selectedTab === "all") {
-    filteredCourses = courses.slice().sort((a, b) => {
-      const keyA = a.status === "DRAFT" ? a.updatedAt : a.publishedOn;
-      const keyB = b.status === "DRAFT" ? b.updatedAt : b.publishedOn;
-      return new Date(keyB) - new Date(keyA);
-    });
     renderCard = (course) => (
       <CourseCard
         key={course.id}
@@ -78,6 +114,18 @@ export default function CoursesListPage() {
   return (
     <div className="w-full  px-4">
       <h2 className="text-2xl font-bold mb-6 capitalize">My Courses</h2>
+      <FilterBar
+        search={search}
+        onSearchChange={setSearch}
+        category={category}
+        onCategoryChange={setCategory}
+        level={level}
+        onLevelChange={setLevel}
+        sort={sort}
+        onSortChange={setSort}
+        categories={categories}
+        levels={levels}
+      />
       <Tabs
         value={selectedTab}
         onValueChange={(val) => {
