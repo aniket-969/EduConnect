@@ -81,20 +81,20 @@ export function useCourseCatalog({
   page = 1,
   size = 10,
 }) {
-  return useQuery(
-    ['courseCatalog', { search, category, level, sortBy, page, size }],
-    () => fetchCourseCatalog({ search, category, level, sortBy, page, size }),
-    {
-      keepPreviousData: true,        
-      refetchOnWindowFocus: false,
-      staleTime: 5 * 60 * 1000,        
-      cacheTime: 30 * 60 * 1000,     
-      onError: (err) => {
-        toast.error(
-          err.response?.data?.message ||
-          'Failed to load courses'
-        );
-      },
-    }
-  );
+  return useQuery({
+    queryKey: ['courseCatalog', { search, category, level, sortBy, page, size }],
+    queryFn: () =>
+      courseApi.fetchCourseCatalog({ search, category, level, sortBy, page, size }),
+    keepPreviousData: true,
+    refetchOnWindowFocus: false,
+    staleTime: 5 * 60 * 1000,
+    cacheTime: 30 * 60 * 1000,
+    onError: (err) => {
+      toast.error(
+        err.response?.data?.message ||
+        'Failed to load courses'
+      )
+    },
+  })
 }
+

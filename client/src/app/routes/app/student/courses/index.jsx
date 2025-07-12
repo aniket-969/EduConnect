@@ -1,40 +1,47 @@
-import React, { useState, useMemo } from 'react';
-import FilterBar  from '@/components/student/course/filterBar';
-import  CourseGrid  from '@/components/student/course/CourseGrid';
-
-
-const allCourses = [
-  { id: 1, title: 'React Basics', instructor: { name: 'Jane Doe' }, thumbnailId: 'react.jpg', rating: 4.7, price: 0, category: 'javascript', level: 'beginner' },
-  { id: 2, title: 'Node Deep Dive', instructor: { name: 'John Smith' }, thumbnailId: 'node.jpg', rating: 4.2, price: 49.99, category: 'javascript', level: 'intermediate' },
-  { id: 3, title: 'UI/UX Fundamentals', instructor: { name: 'Jane Doe' }, thumbnailId: 'design.jpg', rating: 4.5, price: 0, category: 'design', level: 'beginner' },
-  // ...more fake courses
-];
+// src/components/student/course/Courses.jsx
+import React, { useState } from 'react'
+import FilterBar from '@/components/student/course/filterBar'
+import CourseGrid from '@/components/student/course/CourseGrid'
+import { useCourseCatalog } from '@/hooks/useCourse'
 
 export default function Courses() {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('all');
-  const [level, setLevel] = useState('all');
-  const [sort, setSort] = useState('newest');
-  const [page, setPage] = useState(1);
-  const pageSize = 12;
+  const [search, setSearch]     = useState('')
+  const [category, setCategory] = useState('All')
+  const [level, setLevel]       = useState('All')
+  const [sort, setSort]         = useState('newest')
+  const [page, setPage]         = useState(1)
+  const pageSize                = 12
 
-  const filtered = useMemo(() => {
-    return allCourses
-      .filter(c => c.title.toLowerCase().includes(search.toLowerCase()))
-      .filter(c => category === 'all' || c.category === category)
-      .filter(c => level === 'all' || c.level === level)
-      .sort((a, b) => {
-        if (sort === 'alphabetical') return a.title.localeCompare(b.title);
-        if (sort === 'popular') return b.rating - a.rating;
-        return b.id - a.id;
-      });
-  }, [search, category, level, sort]);
+  // use API hook instead of local filtering
+  const {
+    data,
+    isLoading,
+    isError,
+    error
+  } = useCourseCatalog({
+    search,
+    category,
+    level,
+    sortBy: sort,
+    page,
+    size: pageSize,
+  })
 
-  const totalPages = Math.ceil(filtered.length / pageSize);
-  const pageData = useMemo(
-    () => filtered.slice((page - 1) * pageSize, page * pageSize),
-    [filtered, page]
-  );
+  // // old local data & filtering — commented out
+  // const allCourses = [ … ]
+  // const filtered = useMemo(() => { … }, [search, category, level, sort])
+  // const totalPages = Math.ceil(filtered.length / pageSize)
+  // const pageData = useMemo(
+  //   () => filtered.slice((page - 1) * pageSize, page * pageSize),
+  //   [filtered, page]
+  // )
+
+  if (isLoading) return <p className="text-center py-8">Loading courses…</p>
+  if (isError)   return <p className="text-center py-8 text-destructive">Error: {error.message}</p>
+
+  const courses    = data?.items || []
+  const total      = data?.total || 0
+  const totalPages = Math.ceil(total / pageSize)
 
   return (
     <div className="flex">
@@ -53,7 +60,7 @@ export default function Courses() {
           onApply={() => setPage(1)}
         />
 
-        <CourseGrid courses={pageData} />
+        <CourseGrid courses={courses} />
 
         <div className="flex justify-center items-center space-x-2 py-4">
           <button
@@ -68,7 +75,11 @@ export default function Courses() {
             <button
               key={i + 1}
               onClick={() => setPage(i + 1)}
-              className={`px-3 py-1 rounded ${page === i + 1 ? 'bg-accent text-white' : 'hover:bg-accent/20'}`}
+              className={`px-3 py-1 rounded ${
+                page === i + 1
+                  ? 'bg-accent text-white'
+                  : 'hover:bg-accent/20'
+              }`}
             >
               {i + 1}
             </button>
@@ -84,5 +95,5 @@ export default function Courses() {
         </div>
       </div>
     </div>
-  );
+  )
 }

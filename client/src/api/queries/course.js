@@ -51,7 +51,7 @@ export async function fetchCourseCatalog({
   page = 1,
   size = 10,
 }) {
-  return
+  return {}
   const params = {
     ...(search ? { search } : {}),
     ...(category && category !== 'All' ? { category } : {}),
