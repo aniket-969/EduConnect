@@ -1,40 +1,83 @@
-import React, { useState } from "react";
-import { fakeLessons } from "@/data/fakeLessons";
-import LessonContent from "@/components/student/courseLessons/LessonContent";
-import CourseContentPanel from "@/components/student/courseLessons/CourseContentPanel";
-import OverviewPanel from "@/components/student/courseLessons/OverviewPanel";
-import ResponsiveTabs from "@/components/student/courseLessons/ResponsiveTabs";
+// src/pages/CourseLearn.jsx
+import React, { useState, useEffect } from 'react'
+import { useParams } from 'react-router-dom'
+import { Spinner } from '@/components/ui/spinner'
+import { useCourse, useLessonsByCourse, useLesson } from '@/hooks/useLessons' // assume you also export useCourse here
+import LessonContent from '@/components/student/courseLessons/LessonContent'
+import CourseContentPanel from '@/components/student/courseLessons/CourseContentPanel'
+import OverviewPanel from '@/components/student/courseLessons/OverviewPanel'
+import ResponsiveTabs from '@/components/student/courseLessons/ResponsiveTabs'
 
-const CourseLearn = () => {
-  const [lessons] = useState(fakeLessons);
-  const [currentLesson, setCurrentLesson] = useState(
-    fakeLessons[0].lessons[0]
-  );
+export default function CourseLearn() {
+  const { id: courseId } = useParams()
+
+  const {
+    data: courseData,
+    isLoading: courseLoading,
+    isError: courseError,
+    error: courseErrorObj,
+  } = useCourse(courseId)
+
+  const {
+    data: lessons = [],
+    isLoading: lessonsLoading,
+    isError: lessonsError,
+    error: lessonsErrorObj,
+  } = useLessonsByCourse(courseId)
+
+  const [currentLessonId, setCurrentLessonId] = useState(null)
+  useEffect(() => {
+    if (lessons.length > 0 && !currentLessonId) {
+      setCurrentLessonId(lessons[0].id)
+    }
+  }, [lessons, currentLessonId])
+
+  const {
+    data: currentLesson,
+    isLoading: lessonLoading,
+    isError: lessonError,
+    error: lessonErrorObj,
+  } = useLesson(currentLessonId)
+
+  // aggregate any loading/error state
+  if (courseLoading || lessonsLoading || lessonLoading) return <Spinner />
+  if (courseError)
+    return <p className="text-center text-destructive">Error: {courseErrorObj.message}</p>
+  if (lessonsError)
+    return <p className="text-center text-destructive">Error loading lessons: {lessonsErrorObj.message}</p>
+  if (lessonError)
+    return <p className="text-center text-destructive">Error loading lesson: {lessonErrorObj.message}</p>
+
+  const {
+    rating,
+    studentsCount,
+    totalDuration,
+    updatedAt,
+    description,
+  } = courseData
 
   const courseMeta = {
-    rating: 4.6,
-    studentsCount: 12676,
-    totalDuration: "79h 30m",
-    lastUpdated: "March 2025",
-    description:
-      "Only web development course that you will need. Covers HTML, CSS, Tailwind, Node, React, MongoDB, Prisma, Deployment etc.",
-  };
+    rating,
+    studentsCount,
+    totalDuration,
+    lastUpdated: new Date(updatedAt).toLocaleDateString(undefined, {
+      month: 'long',
+      year: 'numeric',
+    }),
+    description,
+  }
+  const enrolled = Boolean(courseData.enrollment?.enrolledAt)
 
-  // pretend these came from enrollment:
-  const [completedLessons, setCompletedLessons] = useState([]);
-
-  // toggles completion on or off
-  const handleToggleComplete = (lessonId) => {
-    setCompletedLessons((prev) =>
+  const handleToggleComplete = (lessonId) =>
+    setCompletedLessons(prev =>
       prev.includes(lessonId)
-        ? prev.filter((id) => id !== lessonId)
+        ? prev.filter(id => id !== lessonId)
         : [...prev, lessonId]
-    );
-  };
+    )
 
   return (
     <div className="flex flex-col h-full">
-      {/* ────── Large screens: Video + Content ────── */}
+      {/* Video + Content */}
       <div className="hidden lg:flex flex-1">
         <div className="w-2/3 p-4">
           <LessonContent lesson={currentLesson} />
@@ -43,14 +86,14 @@ const CourseLearn = () => {
           <CourseContentPanel
             lessons={lessons}
             currentLesson={currentLesson}
-            onSelectLesson={setCurrentLesson}
-            completedLessons={completedLessons}
+            onSelectLesson={(l) => setCurrentLessonId(l.id)}
+            completedLessons={courseData.enrollment?.completedLessonIds || []}
             onToggleComplete={handleToggleComplete}
           />
         </div>
       </div>
 
-      {/* ────── Small screens: Video + Tabs ────── */}
+      {/* Mobile: Video + Tabs */}
       <div className="lg:hidden flex flex-col flex-1">
         <div className="p-4">
           <LessonContent lesson={currentLesson} />
@@ -59,20 +102,18 @@ const CourseLearn = () => {
           <ResponsiveTabs
             lessons={lessons}
             currentLesson={currentLesson}
-            onSelectLesson={setCurrentLesson}
-            completedLessons={completedLessons}
+            onSelectLesson={(l) => setCurrentLessonId(l.id)}
+            completedLessons={courseData.enrollment?.completedLessonIds || []}
             onToggleComplete={handleToggleComplete}
             courseMeta={courseMeta}
           />
         </div>
       </div>
 
-      {/* ────── Overview on large screens ────── */}
+      {/* Overview bar */}
       <div className="hidden lg:block border-t p-4">
-        <OverviewPanel {...courseMeta} />
+        <OverviewPanel {...courseMeta} enrolled={enrolled} />
       </div>
     </div>
-  );
-};
-
-export default CourseLearn;
+  )
+}
