@@ -13,7 +13,6 @@ export const publishCourse = (id, data) =>
     status: "Published",
     publishedAt: new Date().toISOString(),
   });
-
  
 export async function fetchStudentCourses(userId) {
   return 
