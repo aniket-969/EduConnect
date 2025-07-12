@@ -43,3 +43,24 @@ export async function fetchRecommendedCourses(userId) {
   }
 }
 
+export async function fetchCourseCatalog({
+  search,
+  category,
+  level,
+  sortBy,
+  page = 1,
+  size = 10,
+}) {
+  return
+  const params = {
+    ...(search ? { search } : {}),
+    ...(category && category !== 'All' ? { category } : {}),
+    ...(level    && level    !== 'All' ? { level }    : {}),
+    ...(sortBy   ? { sortBy } : {}),
+    page,
+    size,
+  };
+
+  const { data } = await api.get('/courses', { params });
+  return data;
+}
