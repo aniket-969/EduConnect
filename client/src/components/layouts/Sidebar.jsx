@@ -60,6 +60,7 @@ const linkConfig = {
 };
 
 const AppSidebar = React.memo(function AppSidebar({ user }) {
+  // console.log(user)
   console.log(user);
   const location = useLocation();
   const items = useMemo(() => linkConfig[user.role] || [], [user.role]);

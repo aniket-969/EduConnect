@@ -5,6 +5,7 @@ import RecommendedCourses from "@/components/student/dashboard/recommendedCourse
 import { Spinner } from "@/components/ui/spinner"
 import { useAuth } from "@/hooks/useAuth"
 import { fakeCourses } from "@/data/fakeCourses"
+import { Download } from "lucide-react"
  const studentSlides = [
 {
     id: 'bedc6aeb-62a6-48d1-a8c3-187c075b1fe4_duwjd3.jpg',
@@ -28,14 +29,14 @@ const StudenDashboard = () => {
   const {session} = useAuth()
   if(session.isLoading) return <Spinner/>
   if(session.isError)return <>Something went wrong , please refresh</>
-  console.log(session.data) 
-  
+  // console.log(session.data) 
+  const userId = session.data?.id
   return ( 
     <div className="w-full flex flex-col gap-6 ">
       <ProfileHeader user ={session?.data}/>
       <CarouselBanner slides={studentSlides}/>
-      <MyLearning courses={fakeCourses} />
-      <RecommendedCourses courses={fakeCourses}/>
+      <MyLearning courses={fakeCourses} userId={userId}/>
+      <RecommendedCourses courses={fakeCourses} userId={userId}/>
     </div>
   )
 }
