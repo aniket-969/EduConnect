@@ -2,9 +2,7 @@
 import api from '../axiosClient'; 
 
 
-// api/queries/course.js
-//fake
-// src/lib/axiosClient.js
+//fake api start
 import axios from "axios";
 
 const axiosClient = axios.create({
@@ -61,6 +59,25 @@ export const publishCourse = async (id, data = {}) => {
   return response.data;
 };
 
+//fake api end
+
+
+//uncomment this for real api
+
+// export async function getCoursesByInstructor(instructorId) {
+//   const res = await axios.get(`/courses/instructor/${instructorId}`);
+//   return res.data||[];
+// }
+// export const getCourseById = (id) => api.get(`/courses/${id}`)
+// export const createCourse = (data) => {
+//   console.log("Creating course with data:", data);
+//   return(
+//     api.post('/courses/create', data)
+
+//   )
+// }
+// export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
+// export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
  
 export async function fetchStudentCourses(userId) {
   return 
@@ -114,22 +131,7 @@ export async function fetchCourseCatalog({
 
 
  
-//uncomment this for real api
 
-// export async function getCoursesByInstructor(instructorId) {
-//   const res = await axios.get(`/courses/instructor/${instructorId}`);
-//   return res.data||[];
-// }
-// export const getCourseById = (id) => api.get(`/courses/${id}`)
-// export const createCourse = (data) => {
-//   console.log("Creating course with data:", data);
-//   return(
-//     api.post('/courses/create', data)
-
-//   )
-// }
-// export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
-// export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
 
 
 
