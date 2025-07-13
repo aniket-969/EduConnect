@@ -39,6 +39,7 @@ export const getCourseById = async (id) => {
 
 // POST a new course
 export const createCourse = async (data) => {
+    console.log(data, "created course data");
   const response = await axiosClient.post(`/instructor`, data);
   return response.data;
 };
