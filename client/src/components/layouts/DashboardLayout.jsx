@@ -25,7 +25,7 @@ export default function DashboardLayout() {
     if(session.isLoading) return <Spinner/>
     if(session.isError)return <>Something went wrong , please refresh</>
 
-console.log(session.data)
+// console.log(session.data)
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">

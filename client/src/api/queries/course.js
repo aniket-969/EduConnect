@@ -1,4 +1,4 @@
-// src/api/queries/course.js
+
 import api from '../axiosClient'; 
 
 
@@ -55,11 +55,63 @@ export const publishCourse = async (id, data = {}) => {
     ...data,
     status: "PUBLISHED",
     publishedAt: new Date().toISOString(),
-  };
+  }
 
   const response = await axiosClient.put(`/course/${id}`, payload);
   return response.data;
 };
+
+ 
+export async function fetchStudentCourses(userId) {
+  return 
+  if (!userId) {
+    throw new Error('No userId provided');
+  }
+  try {
+    const { data } = await api.get(`/students/${userId}/courses`);
+    return data;
+  } catch (err) {
+   
+    throw err;
+  }
+}
+
+export async function fetchRecommendedCourses(userId) {
+  return
+  if (!userId) {
+    throw new Error('No userId provided');
+  }
+  try {
+    const { data } = await api.get(`/students/${userId}/recommended-courses`);
+    return
+    return data;
+  } catch (err) {
+    throw err;
+  }
+}
+
+export async function fetchCourseCatalog({
+  search,
+  category,
+  level,
+  sortBy,
+  page = 1,
+  size = 10,
+}) {
+  return {}
+  const params = {
+    ...(search ? { search } : {}),
+    ...(category && category !== 'All' ? { category } : {}),
+    ...(level    && level    !== 'All' ? { level }    : {}),
+    ...(sortBy   ? { sortBy } : {}),
+    page,
+    size,
+  };
+
+  const { data } = await api.get('/courses', { params });
+  return data;
+}
+
 
  
 //uncomment this for real api
@@ -78,6 +130,8 @@ export const publishCourse = async (id, data = {}) => {
 // }
 // export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
 // export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
+
+
 
 
 
