@@ -35,3 +35,5 @@ build/
 # misc
 .DS_Store
 *.log
+
+.vite/
