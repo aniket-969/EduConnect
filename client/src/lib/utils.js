@@ -18,7 +18,7 @@ export const stringValidation = (min, max, fieldName) => {
 };
 
 const CLOUD_NAME = "dni3ccfha";
-//const CLOUD_NAME = "dmt0faojk";
+
 
 export function cld(publicId, options = {}) {
   const {
@@ -43,13 +43,14 @@ export function cld(publicId, options = {}) {
   return `https://res.cloudinary.com/${CLOUD_NAME}/image/upload/${transforms}/${publicId}`;
 }
 
+const THUMBNAIL_CLOUD_NAME = "dmt0faojk";
 export const uploadToCloudinary = async (file) => {
   const formData = new FormData();
   formData.append("file", file);
   formData.append("upload_preset", "educonnect_uploads"); 
   formData.append("folder", "course/thumbnail"); 
 
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${THUMBNAIL_CLOUD_NAME}/image/upload`, {
     method: "POST",
     body: formData,
   });
