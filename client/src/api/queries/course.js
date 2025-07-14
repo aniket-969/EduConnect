@@ -86,6 +86,10 @@ export const publishCourse = async (id, data = {}) => {
 // }
 // export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
 // export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
+//  export const deleteCourse=async(id) =>{
+//   const response=await api.delete(`/courses/${id}`);
+//   return response
+// }
 
 export async function fetchStudentCourses(userId) {
   return 
