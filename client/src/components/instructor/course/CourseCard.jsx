@@ -11,14 +11,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useDeleteCourse } from "@/hooks/useCourse";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from "@/components/ui/dialog";
-import { toast } from "react-toastify";
+import DeleteCourseButton from "@/components/instructor/common/DeleteCourseButton";
 
 export default function CourseCard({
   course,
@@ -77,22 +70,6 @@ export default function CourseCard({
     navigate(`/app/instructor/courses/${course.id}/preview`);
   };
 
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    setShowDialog(true);
-  };
-
-  const confirmDelete = async () => {
-    try {
-      await deleteCourseMutation.mutateAsync(course.id);
-      toast.success(`Course deleted successfully.`);
-    } catch (err) {
-      toast.error(err?.response?.data?.message || "Could not delete course.");
-    }
-    setShowDialog(false);
-    // Optionally, you can refetch or show a toast here
-  };
-
   return (
     <>
       <Card
@@ -135,50 +112,25 @@ export default function CourseCard({
           </div>
           <div className="mt-auto flex justify-between items-center text-muted-foreground -mb-2">
             <p className="text-xs">{dateLabel}</p>
-            <div className="flex gap-3" onClick={(e) => e.stopPropagation()}>
+            <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
               <button title="edit">
                 <Pencil
-                  className="w-5 h-5 cursor-pointer hover:text-blue-700"
+                  className="w-4 h-4 cursor-pointer hover:text-blue-700"
                   onClick={() => handleEdit(course)}
                 />
               </button>
               {type === "draft" && (
-                <button title="Delete" onClick={handleDelete}>
-                  <Trash2 className="w-5 h-5 cursor-pointer hover:text-red-700" />
-                </button>
+                <DeleteCourseButton
+                  courseId={course.id}
+                  iconOnly={true}
+                  buttonClassName="p-1 rounded "
+                  stopPropagation={true}
+                />
               )}
             </div>
           </div>
         </CardContent>
       </Card>
-      {type === "draft" && (
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Delete Course</DialogTitle>
-            </DialogHeader>
-            <div>
-              Are you sure you want to delete this course? This action cannot be
-              undone.
-            </div>
-            <DialogFooter>
-              <button
-                className="px-4 py-2 rounded bg-muted text-foreground hover:bg-muted/80"
-                onClick={() => setShowDialog(false)}
-              >
-                Cancel
-              </button>
-              <button
-                className="px-4 py-2 rounded bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                onClick={confirmDelete}
-                disabled={deleteCourseMutation.isLoading}
-              >
-                {deleteCourseMutation.isLoading ? "Deleting..." : "Delete"}
-              </button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
     </>
   );
 }
