@@ -1,17 +1,23 @@
 import React from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useCourse } from "@/hooks/useCourse";
+import { useCourseRatings } from "@/hooks/useRating";
 import CoursePreviewHero from "@/components/instructor/preview/CoursePreviewHero";
 import CourseLearningObjectives from "@/components/student/course/courseLearningObjective";
 import CoursePreviewCurriculum from "@/components/instructor/preview/CoursePreviewCurriculum";
 import { Pencil } from "lucide-react";
 import { paths } from "@/config/paths";
 import DeleteCourseButton from "@/components/instructor/common/DeleteCourseButton";
+import CourseReviews from "../student/courses/courseReviews";
 
 export default function InstructorCoursePreviewPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: course, isLoading } = useCourse(id);
+  
+  const { data: ratings, isLoading: ratingsLoading } = useCourseRatings(
+    course && course.status === "PUBLISHED" ? id : null
+  );
 
   const handleEdit = () => {
     navigate(paths.app.instructorDashboard.editcourses.getHref(id));
@@ -51,8 +57,13 @@ export default function InstructorCoursePreviewPage() {
         title="Learning Objectives"
       />
       <CoursePreviewCurriculum lessons={course.lessons} />
-
       {/* Add ratings/reviews section here if needed */}
+      {course.status === "PUBLISHED" &&
+        (ratingsLoading ? (
+          <div>Loading reviews...</div>
+        ) : (
+          <CourseReviews ratings={ratings} />
+        ))}
     </div>
   );
 }
