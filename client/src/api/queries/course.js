@@ -1,8 +1,10 @@
-
+// src/api/queries/course.js
 import api from '../axiosClient'; 
 
 
-//fake api start
+
+//fake
+// src/lib/axiosClient.js
 import axios from "axios";
 
 const axiosClient = axios.create({
@@ -41,12 +43,17 @@ export const createCourse = async (data) => {
   const response = await axiosClient.post(`/instructor`, data);
   return response.data;
 };
+ export const deleteCourse=async(id) =>{
+  const response=await axiosClient.delete(`/instructor/${id}`);
+  return response
+}
 
 // PUT (update) a course
 export const updateCourse = async (id, data) => {
   const response = await axiosClient.put(`/course/${id}`, data);
   return response.data;
 };
+
 
 // PATCH to publish a course
 export const publishCourse = async (id, data = {}) => {
@@ -79,7 +86,7 @@ export const publishCourse = async (id, data = {}) => {
 // }
 // export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
 // export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
- 
+
 export async function fetchStudentCourses(userId) {
   return 
   if (!userId) {
@@ -131,7 +138,9 @@ export async function fetchCourseCatalog({
 }
 
 
- 
+
+
+
 
 
 
