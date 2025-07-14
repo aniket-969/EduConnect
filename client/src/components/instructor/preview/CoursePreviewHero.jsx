@@ -17,7 +17,6 @@ export default function CoursePreviewHero({ course }) {
     category,
     level,
     status,
-    instructor,
     thumbnailUrl,
     lessons,
     students,
