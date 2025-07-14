@@ -63,17 +63,7 @@ export function usePublishCourse() {
 //   });
 // }
 
-export function usePublishCourse() {
-  const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, data }) => courseApi.publishCourse(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['courses'] });
-      queryClient.invalidateQueries({ queryKey: ['course'] });
-    },
-  });
-}
 
 export function useStudentCourses(userId) {
   return useQuery({
