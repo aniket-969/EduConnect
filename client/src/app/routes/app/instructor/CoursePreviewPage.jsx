@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { toast } from "react-toastify";
 
 export default function InstructorCoursePreviewPage() {
   const { id } = useParams();
@@ -30,9 +31,15 @@ export default function InstructorCoursePreviewPage() {
   };
 
   const confirmDelete = async () => {
-    await deleteCourseMutation.mutateAsync(id);
-    setShowDialog(false);
-    navigate(paths.app.instructorDashboard.courses.getHref());
+    try {
+      await deleteCourseMutation.mutateAsync(id);
+      toast.success("Course deleted successfully.");
+      setShowDialog(false);
+      navigate(paths.app.instructorDashboard.courses.getHref());
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Could not delete course.");
+      setShowDialog(false);
+    }
   };
 
   if (isLoading) return <div>Loading...</div>;
@@ -45,14 +52,14 @@ export default function InstructorCoursePreviewPage() {
         <div className="flex gap-2">
           <button
             onClick={handleEdit}
-            className="w-20 inline-flex items-center gap-2 px-3 py-1.5 rounded text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition"
+            className="w-20 inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-sm font-medium bg-primary text-primary-foreground hover:bg-primary/90 transition"
           >
             <Pencil className="w-4 h-4" />
             Edit
           </button>
           <button
             onClick={handleDelete}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md text-sm font-medium bg-destructive text-destructive-foreground hover:bg-destructive/90 transition"
           >
             <Trash2 className="w-4 h-4" />
             Delete
