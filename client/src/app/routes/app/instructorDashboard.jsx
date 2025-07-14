@@ -101,7 +101,7 @@ export default function InstructorDashboard() {
     // Instructor-specific slides for the carousel banner
     const instructorSlides = [
       {
-        id: "6ddba6b6-3e71-4b0f-a825-d76977d3d6a4_gspjyj.png",
+        id: "bedc6aeb-62a6-48d1-a8c3-187c075b1fe4_duwjd3.jpg",
         title: "Share Your Expertise",
         description:
           "Create and publish courses to help learners grow and succeed.",
@@ -109,7 +109,7 @@ export default function InstructorDashboard() {
         ctaHref: "/app/instructor/courses/new",
       },
       {
-        id: "bedc6aeb-62a6-48d1-a8c3-187c075b1fe4_duwjd3.jpg",
+        id: "6ddba6b6-3e71-4b0f-a825-d76977d3d6a4_gspjyj.png",
         title: "Track Your Impact",
         description:
           "See how many students are enrolling and learning from your content.",
