@@ -50,8 +50,14 @@ export default function CoursePreviewHero({ course }) {
         <h2 className="text-2xl font-bold mb-2">{title}</h2>
         <div className="flex flex-wrap gap-2 mb-1">
           {category && <Badge>{category}</Badge>}
-          {level && <Badge variant="secondary">{level}</Badge>}
-          <Badge variant="outline">{status}</Badge>
+          {level && (
+            <Badge variant="secondary">
+              {level.charAt(0) + level.slice(1).toLowerCase()}{" "}
+            </Badge>
+          )}
+          <Badge variant="outline">
+            {status.charAt(0) + status.slice(1).toLowerCase()}
+          </Badge>
         </div>
         <p className="text-sm text-muted-foreground mb-1">
           <MonitorPlay className="inline w-4 h-4 mr-1" />
