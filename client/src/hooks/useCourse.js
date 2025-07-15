@@ -6,6 +6,16 @@ export function useCourse(id, instructorId) {
     queryKey: ["course", id],
     queryFn: () => courseApi.getCourseById(id),
     enabled: !!id,
+    staleTime: 30 * 60 * 1000, 
+    cacheTime: 60 * 60 * 1000,
+  });
+}
+export function usePopularCourses(){
+  return useQuery({
+    queryKey: ['popular-courses'],
+    queryFn:()=> courseApi.getPopularCourses(),
+    staleTime: 30 * 60 * 1000, 
+    cacheTime: 60 * 60 * 1000,
   });
 }
 

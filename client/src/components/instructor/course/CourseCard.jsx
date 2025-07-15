@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Pencil,
-  Eye,
-  Trash2,
   BookOpen,
   IndianRupee,
   Users,
@@ -76,6 +74,8 @@ export default function CourseCard({
         className="rounded-lg overflow-hidden shadow transition-transform duration-200 hover:scale-[1.02] hover:shadow-md h-full flex flex-col cursor-pointer"
         onClick={handlePreview}
       >
+    
+
         <img
           src={course.thumbnailUrl || "/placeholder.jpg"}
           alt={course.title}
