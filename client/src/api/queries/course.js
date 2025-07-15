@@ -1,8 +1,6 @@
-// src/api/queries/course.js
 import api from "../axiosClient";
 
-//fake
-// src/lib/axiosClient.js
+//used fake api as response of real api is nested infinte
 import axios from "axios";
 
 const axiosClient = axios.create({
@@ -47,6 +45,8 @@ export const createCourse = async (data) => {
   const response = await axiosClient.post(`/instructor`, payload);
   return response.data;
 };
+
+//delete a course
 export const deleteCourse = async (id) => {
   const response = await axiosClient.delete(`/instructor/${id}`);
   return response;
@@ -76,29 +76,34 @@ export const publishCourse = async (id, data = {}) => {
   const response = await axiosClient.put(`/instructor/${id}`, payload);
   return response.data;
 };
-
 //fake api end
 
-//uncomment this for real api
 
-// export async function getCoursesByInstructor(instructorId) {
-//   const res = await axios.get(`/courses/instructor/${instructorId}`);
-//   return res.data||[];
-// }
-// export const getCourseById = (id) => api.get(`/courses/${id}`)
-// export const createCourse = (data) => {
-//   console.log("Creating course with data:", data);
-//   return(
-//     api.post('/courses/create', data)
 
-//   )
-// }
-// export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
-// export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
-//  export const deleteCourse=async(id) =>{
-//   const response=await api.delete(`/courses/${id}`);
-//   return response
-// }
+//real api as per backend but gives nested infinite response
+
+//  export async function getCoursesByInstructor(instructorId) {
+//    const res = await axios.get(`/courses/instructor/${instructorId}`);
+//    return res.data||[];
+//  }
+
+//  export const getCourseById = async(id) => await api.get(`/courses/${id}`)
+
+//  export const createCourse = async(data) => {
+//    console.log("Creating course with data:", data);
+//    return(
+//      await api.post('/courses/create', data)
+
+//    )
+//  }
+
+// export const deleteCourse = async (id) => {
+//   const response = await api.delete(`/courses/${id}`);
+//   return response;
+// };
+
+//  export const updateCourse = async(id, data) =>await api.put(`/courses/${id}`, data)
+//  export const publishCourse =async (id) =>await api.put(`/courses/publish/${id}`)
 
 export async function fetchStudentCourses(userId) {
   return;

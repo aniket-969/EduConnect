@@ -24,12 +24,12 @@ const BasicFields = () => {
 
   const thumbnailInput = watch("thumbnailUrl");
 
-const isFile = thumbnailInput instanceof File;
-const previewUrl = isFile
-  ? URL.createObjectURL(thumbnailInput)
-  : typeof thumbnailInput === "string" && thumbnailInput.length > 0
-    ? thumbnailInput
-    : null;
+  const isFile = thumbnailInput instanceof File;
+  const previewUrl = isFile
+    ? URL.createObjectURL(thumbnailInput)
+    : typeof thumbnailInput === "string" && thumbnailInput.length > 0
+      ? thumbnailInput
+      : null;
 
   const onRemoveObjective = (idx) => {
     removeObjective(idx);
@@ -174,13 +174,11 @@ const previewUrl = isFile
 
       {/* Thumbnail */}
       <div data-error-key="thumbnailUrl">
-        <label className="block font-semibold mb-1">thumbnailUrl</label>
+        <label className="block font-semibold mb-1">Thumbnail</label>
         <Input
           type="file"
           accept="image/*"
-          onChange={(e) =>
-            setValue("thumbnailUrl", e.target.files?.[0] || "")
-          }
+          onChange={(e) => setValue("thumbnailUrl", e.target.files?.[0] || "")}
           className={`file:mr-4 ${errors.thumbnailUrl ? "border-red-500" : ""}`}
         />
         {errors.thumbnailUrl && (
@@ -191,13 +189,13 @@ const previewUrl = isFile
             {errors.thumbnailUrl.message}
           </p>
         )}
-       {previewUrl && (
-    <img
-      src={previewUrl}
-      alt="Thumbnail preview"
-      className="mt-2 max-h-40 rounded"
-    />
-  )}
+        {previewUrl && (
+          <img
+            src={previewUrl}
+            alt="Thumbnail preview"
+            className="mt-2 max-h-40 rounded"
+          />
+        )}
       </div>
     </div>
   );

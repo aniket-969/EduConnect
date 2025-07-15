@@ -122,6 +122,7 @@ const CourseForm = ({ courseId }) => {
       const courseData = {
         ...data,
         instructor: session.data.id,      //instructor:{id: session.data.id},
+        slug: generateSlug(data.title),
       
       };
       console.log("updating published courseData", courseData);
