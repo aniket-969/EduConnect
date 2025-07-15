@@ -1,8 +1,6 @@
+import api from "../axiosClient";
 
-import api from '../axiosClient'; 
-
-
-//fake api start
+//used fake api as response of real api is nested infinte
 import axios from "axios";
 
 const axiosClient = axios.create({
@@ -11,7 +9,6 @@ const axiosClient = axios.create({
     "Content-Type": "application/json",
   },
 });
-
 
 // GET all courses by instructor
 export const getCoursesByInstructor = async (instructorId) => {
@@ -37,13 +34,34 @@ export const getCourseById = async (id) => {
 
 // POST a new course
 export const createCourse = async (data) => {
-  const response = await axiosClient.post(`/instructor`, data);
+  console.log(data, "created course data");
+  const payload = {
+    ...data,
+    status: "DRAFT",
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    publishedOn: null,
+  };
+  const response = await axiosClient.post(`/instructor`, payload);
   return response.data;
+};
+
+//delete a course
+export const deleteCourse = async (id) => {
+  const response = await axiosClient.delete(`/instructor/${id}`);
+  return response;
 };
 
 // PUT (update) a course
 export const updateCourse = async (id, data) => {
-  const response = await axiosClient.put(`/course/${id}`, data);
+  console.log("updated course data",data);
+  const payload = {
+    ...data,
+    
+    updatedAt: new Date().toISOString(),
+  };
+  console.log("updated draft",payload)
+  const response = await axiosClient.put(`/instructor/${id}`, payload);
   return response.data;
 };
 
@@ -52,55 +70,62 @@ export const publishCourse = async (id, data = {}) => {
   const payload = {
     ...data,
     status: "PUBLISHED",
-    publishedAt: new Date().toISOString(),
-  }
+    publishedOn: new Date().toISOString(),
+  };
 
-  const response = await axiosClient.put(`/course/${id}`, payload);
+  const response = await axiosClient.put(`/instructor/${id}`, payload);
   return response.data;
 };
-
 //fake api end
 
 
-//uncomment this for real api
 
-// export async function getCoursesByInstructor(instructorId) {
-//   const res = await axios.get(`/courses/instructor/${instructorId}`);
-//   return res.data||[];
-// }
-// export const getCourseById = (id) => api.get(`/courses/${id}`)
-// export const createCourse = (data) => {
-//   console.log("Creating course with data:", data);
-//   return(
-//     api.post('/courses/create', data)
+//real api as per backend but gives nested infinite response
 
-//   )
-// }
-// export const updateCourse = (id, data) => api.put(`/courses/${id}`, data)
-// export const publishCourse = (id) => api.put(`/courses/publish/${id}`)
- 
+//  export async function getCoursesByInstructor(instructorId) {
+//    const res = await axios.get(`/courses/instructor/${instructorId}`);
+//    return res.data||[];
+//  }
+
+//  export const getCourseById = async(id) => await api.get(`/courses/${id}`)
+
+//  export const createCourse = async(data) => {
+//    console.log("Creating course with data:", data);
+//    return(
+//      await api.post('/courses/create', data)
+
+//    )
+//  }
+
+// export const deleteCourse = async (id) => {
+//   const response = await api.delete(`/courses/${id}`);
+//   return response;
+// };
+
+//  export const updateCourse = async(id, data) =>await api.put(`/courses/${id}`, data)
+//  export const publishCourse =async (id) =>await api.put(`/courses/publish/${id}`)
+
 export async function fetchStudentCourses(userId) {
-  return 
+  return;
   if (!userId) {
-    throw new Error('No userId provided');
+    throw new Error("No userId provided");
   }
   try {
     const { data } = await api.get(`/students/${userId}/courses`);
     return data;
   } catch (err) {
-   
     throw err;
   }
 }
 
 export async function fetchRecommendedCourses(userId) {
-  return
+  return;
   if (!userId) {
-    throw new Error('No userId provided');
+    throw new Error("No userId provided");
   }
   try {
     const { data } = await api.get(`/students/${userId}/recommended-courses`);
-    return
+    return;
     return data;
   } catch (err) {
     throw err;
@@ -115,28 +140,16 @@ export async function fetchCourseCatalog({
   page = 1,
   size = 10,
 }) {
-  return {}
+  return {};
   const params = {
     ...(search ? { search } : {}),
-    ...(category && category !== 'All' ? { category } : {}),
-    ...(level    && level    !== 'All' ? { level }    : {}),
-    ...(sortBy   ? { sortBy } : {}),
+    ...(category && category !== "All" ? { category } : {}),
+    ...(level && level !== "All" ? { level } : {}),
+    ...(sortBy ? { sortBy } : {}),
     page,
     size,
   };
 
-  const { data } = await api.get('/courses', { params });
+  const { data } = await api.get("/courses", { params });
   return data;
 }
-
-
- 
-
-
-
-
-
-
-
-
-

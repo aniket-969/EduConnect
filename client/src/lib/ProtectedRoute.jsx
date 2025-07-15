@@ -12,7 +12,7 @@ export function ProtectedRoute() {
     return <Spinner />;
   }
 if(session.isError){
-  return <>Something went wrong ,Pllease refresh</>
+  return <>Something went wrong ,Please refresh</>
 }
   if (!session.data) {
     console.log("data not found so redirecting")

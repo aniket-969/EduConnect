@@ -115,6 +115,12 @@ const SortableLessonCard = ({ lesson, idx, remove, register, watch,setValue, err
               {...register(`lessons.${idx}.content`)}
               className={error.content ? "border-red-500" : ""}
               data-error-key={`lessons.${idx}.content`}
+              style={{
+                          maxHeight: 300,
+                         
+                          scrollbarColor:
+                            "var(--primary) var(--color-foreground)",
+                        }}
             />
             {error.content && (
               <p className="text-red-600 text-sm mt-1">{error.content.message}</p>
@@ -194,6 +200,7 @@ const LessonFields = () => {
           variant="secondary"
           onClick={() =>
             append({
+              id: crypto.randomUUID(),//only for mockapi
               title: "",
               contentType: "VIDEO",
               thumbnailUrl: "",
