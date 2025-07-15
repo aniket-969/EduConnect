@@ -15,3 +15,8 @@ export const uploadAvatar  = (id, avatar) => {
     }
   );
 };
+
+export const updateUser = (id, data) => {
+  return api.put(`${BASE}/${id}`, data);
+  
+};
