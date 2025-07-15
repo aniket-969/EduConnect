@@ -65,8 +65,12 @@ const CourseForm = ({ courseId }) => {
   if (isLoading) return <p>Loading...</p>;
   if (isError) return <p>Failed to load course</p>;
 
-  const generateSlug = (title) => 
-  title.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const generateSlug = (title) =>
+    title
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
 
   const onSaveDraft = async (data) => {
     try {
@@ -82,12 +86,10 @@ const CourseForm = ({ courseId }) => {
       const courseData = {
         ...data,
         slug: generateSlug(data.title),
-        instructor: {
-          id: session.data.id,
-        },
+        instructor: session.data.id,        //instructor:{id: session.data.id},
       };
       if (isEditMode) {
-        await updateCourseMutation.mutateAsync({ id: courseId, courseData });
+        await updateCourseMutation.mutateAsync({ id: courseId, data:courseData });
         toast.success("Draft updated");
       } else {
         await createCourseMutation.mutateAsync(courseData);
@@ -119,10 +121,10 @@ const CourseForm = ({ courseId }) => {
       }
       const courseData = {
         ...data,
-        instructor: {
-          id: session.data.id,
-        },
+        instructor: session.data.id,      //instructor:{id: session.data.id},
+      
       };
+      console.log("updating published courseData", courseData);
 
       let id = courseId;
       if (!isEditMode) {
@@ -134,7 +136,7 @@ const CourseForm = ({ courseId }) => {
           scrollToFirstError(methods.formState.errors);
           return toast.error("Fix errors before publishing");
         }
-        await updateCourseMutation.mutateAsync({ id: courseId, courseData });
+        await updateCourseMutation.mutateAsync({ id: courseId, data:courseData });
       }
 
       // Only call publish endpoint if course is not published yet
@@ -147,10 +149,9 @@ const CourseForm = ({ courseId }) => {
       navigate(paths.app.instructorDashboard.courses.getHref());
     } catch (err) {
       toast.error(err.message || "Publish failed");
+    } finally {
+      setPublishing(false);
     }
-    finally {
-    setPublishing(false);
-  }
   };
 
   // const onPublish = async (data) => {

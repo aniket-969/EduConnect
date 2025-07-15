@@ -24,6 +24,7 @@ export function useCreateCourse() {
     mutationFn: courseApi.createCourse,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course"] });
     },
   });
 }
@@ -33,7 +34,9 @@ export function useUpdateCourse() {
   return useMutation({
     mutationFn: ({ id, data }) => courseApi.updateCourse(id, data),
     onSuccess: () => {
+      
       queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course"] });
     },
   });
 }

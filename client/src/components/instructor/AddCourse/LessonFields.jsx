@@ -200,6 +200,7 @@ const LessonFields = () => {
           variant="secondary"
           onClick={() =>
             append({
+              id: crypto.randomUUID(),//only for mockapi
               title: "",
               contentType: "VIDEO",
               thumbnailUrl: "",
