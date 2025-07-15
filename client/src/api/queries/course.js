@@ -24,6 +24,13 @@ export const getCoursesByInstructor = async (instructorId) => {
     throw error;
   }
 };
+export const getPopularCourses = async () => {
+  const response = await axiosClient.get(`/instructor`,{
+    params:{status: "PUBLISHED"},
+  });
+   console.log("Popular Courses Data:", response.data);
+  return response.data|| [];
+};
 
 // GET a single course by ID
 export const getCourseById = async (id) => {
@@ -76,6 +83,10 @@ export const publishCourse = async (id, data = {}) => {
   const response = await axiosClient.put(`/instructor/${id}`, payload);
   return response.data;
 };
+
+
+
+
 //fake api end
 
 

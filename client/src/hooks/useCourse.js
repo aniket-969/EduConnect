@@ -8,6 +8,12 @@ export function useCourse(id, instructorId) {
     enabled: !!id,
   });
 }
+export function usePopularCourses(){
+  return useQuery({
+    queryKey: ['popular-courses'],
+    queryFn:()=> courseApi.getPopularCourses(),
+  });
+}
 
 //get course by instructor id
 export function useCoursesByInstructor(instructorId) {
